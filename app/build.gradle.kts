@@ -58,8 +58,8 @@ dependencies {
 
     implementation(libs.retrofit)
     implementation(libs.converter.gson)
-    implementation("android.arch.lifecycle:viewmodel:2.8.0")
+    implementation(libs.androidx.lifecycle.viewmodel.compose)
     implementation(libs.okhttp)
     implementation(libs.androidx.compose.runtime.livedata)
-
+    implementation("io.coil-kt:coil-compose:2.7.0")
 }
