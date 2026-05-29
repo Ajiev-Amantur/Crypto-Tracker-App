@@ -60,6 +60,9 @@ dependencies {
     implementation(libs.converter.gson)
     implementation(libs.androidx.lifecycle.viewmodel.compose)
     implementation(libs.okhttp)
+    val nav_version = "2.9.8"
+
+    implementation(libs.androidx.navigation.compose)
     implementation(libs.androidx.compose.runtime.livedata)
     implementation("io.coil-kt:coil-compose:2.7.0")
 }

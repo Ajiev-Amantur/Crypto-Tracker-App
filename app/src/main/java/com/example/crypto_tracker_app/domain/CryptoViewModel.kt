@@ -17,14 +17,14 @@ val tocen : LiveData<List<CryptoTocensModel>> = _tocen
         loadTocens()
     }
     fun loadTocens(){
-try {
     viewModelScope.launch {
-        val tocens = RetrofitIntance.api.getTocens("usd")
+        try {
+            val tocens = RetrofitIntance.api.getTocens("usd")
         _tocen.value = tocens
-    }
 } catch (e: Exception){
-    println("ERROR:  $e")
-    Log.d("AMAN: ","$e")
+            println("ERROR:  $e")
+            Log.d("AMAN: ", "$e")
+        }
 }
 
     }
