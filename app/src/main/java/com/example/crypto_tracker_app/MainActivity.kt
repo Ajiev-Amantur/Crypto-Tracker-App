@@ -29,9 +29,15 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavController
+import androidx.navigation.NavHost
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.composable
+import androidx.navigation.compose.rememberNavController
 import coil.compose.AsyncImage
 import com.example.crypto_tracker_app.domain.CryptoViewModel
 import com.example.crypto_tracker_app.ui.theme.CryptoTrackerAppTheme
+import com.example.crypto_tracker_app.ui.theme.detailUITocen
 
 class MainActivity : ComponentActivity() {
     private  val cryptoViewModel: CryptoViewModel by viewModels()
@@ -40,12 +46,18 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
         setContent {
             CryptoTrackerAppTheme {
+
                 val tocens by cryptoViewModel.tocen.observeAsState()
                 LazyColumn(modifier = Modifier.fillMaxSize(
                 ).statusBarsPadding())
                  {
                     items(items = tocens?: emptyList()){token->
-                        cryptoUI(token.name,token.current_price.toDouble(), image = token.image)
+                        cryptoUI(token.name,token.current_price.toDouble()
+                            ,image = token.image,
+                            priceChange24h = token.price_change_percentage_24h,
+                            priceAltProsent = token.atl_change_percentage,
+                            athPrice = token.ath,
+                            atlPrice = token.atl)
 
                     }
                 }
@@ -56,17 +68,21 @@ class MainActivity : ComponentActivity() {
 
                 }
 @Composable
-fun cryptoUI(name: String,price: Double,image: String){
+fun cryptoUI(name: String,price: Double,image: String,
+             priceChange24h: Double,
+             priceAltProsent: Double,atlPrice: Double,athPrice: Int){
+    val navController = rememberNavController()
+    NavHost(navController,"menu"){
+        composable("menu"){
     val context = LocalContext.current
     Card(modifier = Modifier.fillMaxWidth()
         .padding(horizontal = 16.dp, vertical = 8.dp)
         .clickable(true, onClick = {
             Toast.makeText(context,"clicked!!! $name", Toast.LENGTH_LONG).show()
+            navController.navigate("player")
         })
         ,
-        elevation = CardDefaults.cardElevation(defaultElevation = 6.dp),
-        colors = CardDefaults.cardColors(containerColor =
-            Color.White.copy(alpha = 0.2f)),
+        elevation = CardDefaults.cardElevation(defaultElevation = 6.dp)
         ) {
         Column(modifier = Modifier.fillMaxWidth()) {
             AsyncImage(
@@ -81,21 +97,26 @@ fun cryptoUI(name: String,price: Double,image: String){
                 color = Color(color = android.graphics.Color.BLACK),
                 modifier = Modifier.padding(start = 12.dp)
             )
-                Text(
-                    price.toString(), fontStyle = FontStyle.Normal,
-                    fontSize = 14.sp,
-                    modifier = Modifier.padding(start =12.dp,4.dp)
-                )
-
+            Text(
+                price.toString(), fontStyle = FontStyle.Normal,
+                fontSize = 14.sp,
+                modifier = Modifier.padding(start = 12.dp, 4.dp)
+            )
 
         }
     }
+        }
+        composable("player"){
+            detailUITocen(name,price.toInt(),image,priceChange24h,priceAltProsent,
+                priceAltProsent,athPrice)
+        }
+    }
 }
-@Preview(showBackground = true)
-@Composable
-fun Preview(){
-    cryptoUI("crypto",1222.0,"alla")
-}
+//@Preview(showBackground = true)
+//@Composable
+//fun Preview(){
+//    cryptoUI("crypto",1222.0,"alla")
+//}
 
 @Composable
 fun Greeting(name: String, modifier: Modifier = Modifier) {
