@@ -13,6 +13,13 @@ class CryptoViewModel: ViewModel() {
 
 private var _tocen = MutableLiveData<List<CryptoTocensModel>>()
 val tocen : LiveData<List<CryptoTocensModel>> = _tocen
+
+    private var _selectedToken = MutableLiveData<CryptoTocensModel>()
+    val selectedTocen: LiveData<CryptoTocensModel?> = _selectedToken
+
+    fun selectTocen(token: CryptoTocensModel){
+        _selectedToken.value = token
+    }
     init {
         loadTocens()
     }

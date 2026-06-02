@@ -8,5 +8,5 @@ data class CryptoTocensModel(
     val atl_change_percentage: Double,
     val price_change_percentage_24h: Double,
     val atl: Double,
-    val ath: Int,
+    val ath: Double,
 )

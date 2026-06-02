@@ -1,6 +1,7 @@
 package com.example.crypto_tracker_app
 import androidx.compose.foundation.lazy.items
 import android.os.Bundle
+import android.util.Log
 import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -31,10 +32,12 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import androidx.navigation.NavHost
+import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import coil.compose.AsyncImage
+import com.example.crypto_tracker_app.data.CryptoTocensModel
 import com.example.crypto_tracker_app.domain.CryptoViewModel
 import com.example.crypto_tracker_app.ui.theme.CryptoTrackerAppTheme
 import com.example.crypto_tracker_app.ui.theme.detailUITocen
@@ -46,41 +49,55 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
         setContent {
             CryptoTrackerAppTheme {
-
-                val tocens by cryptoViewModel.tocen.observeAsState()
-                LazyColumn(modifier = Modifier.fillMaxSize(
-                ).statusBarsPadding())
-                 {
-                    items(items = tocens?: emptyList()){token->
-                        cryptoUI(token.name,token.current_price.toDouble()
-                            ,image = token.image,
-                            priceChange24h = token.price_change_percentage_24h,
-                            priceAltProsent = token.atl_change_percentage,
-                            athPrice = token.ath,
-                            atlPrice = token.atl)
+                val navController = rememberNavController()
+                NavHost(navController,"UI1") {
+                composable("UI1"){
+                    val tocens by cryptoViewModel.tocen.observeAsState()
+                    LazyColumn(modifier = Modifier.fillMaxSize(
+                    ).statusBarsPadding())
+                    {
+                        items(items = tocens?: emptyList()){token->
+                            cryptoUI(token.name,token.current_price
+                                ,image = token.image,
+                                navController,
+                                cryptoViewModel,
+                                token
+                                )
 
                     }
                 }
+                    }
+                    composable("UI2"){
+                        val selectedTocen by cryptoViewModel.selectedTocen.observeAsState()
+                        selectedTocen?.let { tocen->
+                            detailUITocen(
+                                name = tocen.name,
+                                price = tocen.current_price.toInt(),
+                                image = tocen.image,
+                                priceChange24h = tocen.price_change_percentage_24h,
+                                priceAltProsent = tocen.atl_change_percentage,
+                                atlPrice = tocen.atl,
+                                athPrice = tocen.ath,
+                                )
+                        }
+                    }
+
+                    }
             }
-                     }
-
-                 }
-
-                }
+        }
+    }
+}
 @Composable
-fun cryptoUI(name: String,price: Double,image: String,
-             priceChange24h: Double,
-             priceAltProsent: Double,atlPrice: Double,athPrice: Int){
-    val navController = rememberNavController()
-    NavHost(navController,"menu"){
-        composable("menu"){
+fun cryptoUI(name: String,price: Double,image: String,nav:
+NavHostController,viewModel: CryptoViewModel,tocen: CryptoTocensModel){
     val context = LocalContext.current
     Card(modifier = Modifier.fillMaxWidth()
         .padding(horizontal = 16.dp, vertical = 8.dp)
         .clickable(true, onClick = {
+            viewModel.selectTocen(tocen)
+            nav.navigate("UI2")
             Toast.makeText(context,"clicked!!! $name", Toast.LENGTH_LONG).show()
-            navController.navigate("player")
-        })
+            })
         ,
         elevation = CardDefaults.cardElevation(defaultElevation = 6.dp)
         ) {
@@ -106,12 +123,7 @@ fun cryptoUI(name: String,price: Double,image: String,
         }
     }
         }
-        composable("player"){
-            detailUITocen(name,price.toInt(),image,priceChange24h,priceAltProsent,
-                priceAltProsent,athPrice)
-        }
-    }
-}
+
 //@Preview(showBackground = true)
 //@Composable
 //fun Preview(){
