@@ -5,8 +5,8 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.crypto_tracker_app.data.CryptoTocensModel
-import com.example.crypto_tracker_app.data.RetrofitIntance
+import com.example.crypto_tracker_app.data.TocenAPI.CryptoTocensModel
+import com.example.crypto_tracker_app.data.TocenAPI.RetrofitIntance
 import kotlinx.coroutines.launch
 
 class CryptoViewModel: ViewModel() {

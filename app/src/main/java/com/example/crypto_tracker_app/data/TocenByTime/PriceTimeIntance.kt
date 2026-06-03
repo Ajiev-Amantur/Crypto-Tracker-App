@@ -1,14 +1,12 @@
-package com.example.crypto_tracker_app.data
+package com.example.crypto_tracker_app.data.TocenByTime
 
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 
-object RetrofitIntance {
-
+object PriceTimeIntance {
 
     val api = Retrofit.Builder()
         .baseUrl("https://api.coingecko.com/api/v3/")
         .addConverterFactory(GsonConverterFactory.create())
-        .build()
-        .create(CryptoApi::class.java)
+        .build().create(TocenByTimeAPi::class.java)
 }

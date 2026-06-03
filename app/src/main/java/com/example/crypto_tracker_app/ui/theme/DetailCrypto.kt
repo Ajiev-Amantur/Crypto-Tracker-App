@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.material3.LocalTextStyle
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -27,8 +28,8 @@ import coil.compose.AsyncImage
 @Composable
 fun detailUITocen(name: String,price: Int,image: String,priceChange24h: Double,
                   priceAltProsent: Double,atlPrice: Double,athPrice: Double){
-
-    Box(modifier = Modifier.fillMaxWidth()) {
+    Box(modifier = Modifier.fillMaxWidth().padding(10.dp)
+        .statusBarsPadding()) {
         Column(modifier = Modifier.fillMaxWidth()) {
             Row() {
                 AsyncImage(
@@ -41,50 +42,48 @@ fun detailUITocen(name: String,price: Int,image: String,priceChange24h: Double,
                     fontSize = 30.sp
                 )
                 Text(
-                    "$price$",
+                    "${price}$",
                     modifier = Modifier.padding(10.dp),
                     fontSize = 30.sp
                 )
 
                 Text(
-                    "$priceChange24h%.",
+                    "${priceChange24h.toInt()}%",
                     fontSize = 30.sp,
                     modifier = Modifier.padding(10.dp),
                     color = Color.Magenta
                 )
             }
                 Box(
-                    modifier = Modifier.padding(50.dp).fillMaxWidth(),
+                    modifier = Modifier.padding(20.dp).fillMaxWidth(1f),
                     contentAlignment = Alignment.Center
                 ) {
-
-
                     Text(
-                        "$priceAltProsent%",
-                        fontSize = 70.sp,
+                        "${priceAltProsent.toInt()}%",
+                        fontSize = 50.sp,
                         color = Color.Green,
                         fontStyle = FontStyle.Italic
                     )
                 }
-            Column() {
                 Text(
                     "Minimum price all time: $atlPrice",
-                    fontSize = 20.sp
+                    fontSize = 20.sp,
+                    modifier = Modifier.padding(10.dp, bottom = 20.dp)
                 )
 
                 Text(
                     "Max price all time: $athPrice",
-                    fontSize = 20.sp
+                    fontSize = 20.sp,
+                    modifier = Modifier.padding(10.dp, bottom = 20.dp)
                 )
-            }
         }
     }
         }
 
 
-//@Preview(showBackground = true)
-//@Composable
-//fun Preview(){
-//detailUITocen("BNB",700,"image",8.9,
-//    100000.0,0.001,95000)
-//}
+@Preview(showBackground = true)
+@Composable
+fun Preview(){
+detailUITocen("BNB",700,"image",8.9,
+   100000.0,0.001,95000.0)
+}

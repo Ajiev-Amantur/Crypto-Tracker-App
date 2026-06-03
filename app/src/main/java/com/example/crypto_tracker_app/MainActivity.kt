@@ -37,7 +37,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import coil.compose.AsyncImage
-import com.example.crypto_tracker_app.data.CryptoTocensModel
+import com.example.crypto_tracker_app.data.TocenAPI.CryptoTocensModel
 import com.example.crypto_tracker_app.domain.CryptoViewModel
 import com.example.crypto_tracker_app.ui.theme.CryptoTrackerAppTheme
 import com.example.crypto_tracker_app.ui.theme.detailUITocen

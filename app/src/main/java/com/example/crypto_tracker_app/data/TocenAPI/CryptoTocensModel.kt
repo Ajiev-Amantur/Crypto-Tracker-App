@@ -1,4 +1,4 @@
-package com.example.crypto_tracker_app.data
+package com.example.crypto_tracker_app.data.TocenAPI
 
 data class CryptoTocensModel(
     val id: String,
