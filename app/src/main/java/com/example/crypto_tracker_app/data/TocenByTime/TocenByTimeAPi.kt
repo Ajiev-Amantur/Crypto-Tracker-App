@@ -5,10 +5,9 @@ import retrofit2.http.Path
 import retrofit2.http.Query
 
 interface TocenByTimeAPi {
-    @GET("coins/{id}/contact/{address}/market-chart")
+    @GET("coins/{id}/market_chart")
     suspend fun getTocenByTime(
         @Path("id") id: String,
-        @Path("address") address: String,
         @Query("vs_currency") currency: String,
         @Query("days") days: String
     ): PriceTimeModel

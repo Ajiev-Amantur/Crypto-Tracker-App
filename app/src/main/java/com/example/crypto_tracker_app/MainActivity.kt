@@ -30,6 +30,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import androidx.navigation.NavHost
 import androidx.navigation.NavHostController
@@ -39,10 +40,12 @@ import androidx.navigation.compose.rememberNavController
 import coil.compose.AsyncImage
 import com.example.crypto_tracker_app.data.TocenAPI.CryptoTocensModel
 import com.example.crypto_tracker_app.domain.CryptoViewModel
+import com.example.crypto_tracker_app.domain.TocenP_TimeViewModel
 import com.example.crypto_tracker_app.ui.theme.CryptoTrackerAppTheme
 import com.example.crypto_tracker_app.ui.theme.detailUITocen
 
 class MainActivity : ComponentActivity() {
+    private val tocenPriceViewModel: TocenP_TimeViewModel by viewModels()
     private  val cryptoViewModel: CryptoViewModel by viewModels()
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -78,6 +81,7 @@ class MainActivity : ComponentActivity() {
                                 priceAltProsent = tocen.atl_change_percentage,
                                 atlPrice = tocen.atl,
                                 athPrice = tocen.ath,
+                                viewModel= tocenPriceViewModel
                                 )
                         }
                     }
