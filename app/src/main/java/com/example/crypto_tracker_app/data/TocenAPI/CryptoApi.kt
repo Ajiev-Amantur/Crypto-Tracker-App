@@ -1,6 +1,6 @@
 package com.example.crypto_tracker_app.data.TocenAPI
 
-import com.example.crypto_tracker_app.data.TocenAPI.CryptoTocensModel
+import com.example.crypto_tracker_app.domain.repository.CryptoTocensModel
 import retrofit2.http.GET
 import retrofit2.http.Query
 

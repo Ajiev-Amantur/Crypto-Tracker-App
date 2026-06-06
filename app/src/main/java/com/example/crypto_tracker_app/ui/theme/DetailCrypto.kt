@@ -31,7 +31,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
-import com.example.crypto_tracker_app.domain.TocenP_TimeViewModel
+import com.example.crypto_tracker_app.presentation.TocenP_TimeViewModel
 
 @Composable
 fun detailUITocen(name: String,price: Int,image: String,priceChange24h: Double,
@@ -42,6 +42,7 @@ fun detailUITocen(name: String,price: Int,image: String,priceChange24h: Double,
         Column(modifier = Modifier.fillMaxWidth().background(Color.Unspecified)) {
             Row() {
                 val tocen by viewModel.tocen.observeAsState()
+                val price = tocen?.prices?.last()[1]
                 AsyncImage(
                     image, contentDescription = "image",
                     modifier = Modifier.size(60.dp)
@@ -52,7 +53,7 @@ fun detailUITocen(name: String,price: Int,image: String,priceChange24h: Double,
                     fontSize = 30.sp
                 )
                 Text(
-                    "${tocen}$",
+                    "${price?.toInt()}$",
                     modifier = Modifier.padding(10.dp),
                     fontSize = 30.sp
                 )
@@ -122,7 +123,7 @@ fun detailUITocen(name: String,price: Int,image: String,priceChange24h: Double,
                     viewModel.updateSelectB("30")
                 },
                     colors = ButtonDefaults.buttonColors(
-                        containerColor = if(days =="7")Color.LightGray else Color.White,
+                        containerColor = if(days =="30")Color.LightGray else Color.White,
                         contentColor = Color.Black
                     )
                     ) {
@@ -138,7 +139,7 @@ fun detailUITocen(name: String,price: Int,image: String,priceChange24h: Double,
                     viewModel.updateSelectB("365")
                 },
                     colors = ButtonDefaults.buttonColors(
-                        containerColor = if(days =="7")Color.LightGray else Color.White,
+                        containerColor = if(days =="365")Color.LightGray else Color.White,
                         contentColor = Color.Black
                     )
                     ) {

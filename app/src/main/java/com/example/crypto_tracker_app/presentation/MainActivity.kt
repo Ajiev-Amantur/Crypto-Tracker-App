@@ -1,13 +1,11 @@
-package com.example.crypto_tracker_app
+package com.example.crypto_tracker_app.presentation
 import androidx.compose.foundation.lazy.items
 import android.os.Bundle
-import android.util.Log
 import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.viewModels
-import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
@@ -30,17 +28,14 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.lifecycle.viewmodel.compose.viewModel
-import androidx.navigation.NavController
-import androidx.navigation.NavHost
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import coil.compose.AsyncImage
-import com.example.crypto_tracker_app.data.TocenAPI.CryptoTocensModel
-import com.example.crypto_tracker_app.domain.CryptoViewModel
-import com.example.crypto_tracker_app.domain.TocenP_TimeViewModel
+import com.example.crypto_tracker_app.domain.repository.CryptoTocensModel
+import com.example.crypto_tracker_app.presentation.CryptoViewModel
+import com.example.crypto_tracker_app.presentation.TocenP_TimeViewModel
 import com.example.crypto_tracker_app.ui.theme.CryptoTrackerAppTheme
 import com.example.crypto_tracker_app.ui.theme.detailUITocen
 

@@ -1,4 +1,4 @@
-package com.example.crypto_tracker_app.domain
+package com.example.crypto_tracker_app.presentation
 
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel

@@ -65,4 +65,6 @@ dependencies {
     implementation(libs.androidx.navigation.compose)
     implementation(libs.androidx.compose.runtime.livedata)
     implementation("io.coil-kt:coil-compose:2.7.0")
+    implementation(libs.logging.interceptor)
+
 }
