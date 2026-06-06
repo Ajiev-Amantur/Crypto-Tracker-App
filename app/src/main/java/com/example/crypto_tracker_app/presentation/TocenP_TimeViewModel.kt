@@ -3,13 +3,13 @@ package com.example.crypto_tracker_app.presentation
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.crypto_tracker_app.data.TocenByTime.PriceTimeIntance
-import com.example.crypto_tracker_app.data.TocenByTime.PriceTimeModel
+import com.example.crypto_tracker_app.domain.model.PriceTimeModel
+import com.example.crypto_tracker_app.domain.repository.PriceTimeRepository
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 
-class TocenP_TimeViewModel: ViewModel(){
+class TocenP_TimeViewModel(private val tocenByTime: PriceTimeRepository): ViewModel(){
 
     private var _tocenP = MutableLiveData<PriceTimeModel>()
     val tocen: MutableLiveData<PriceTimeModel> = _tocenP
@@ -22,15 +22,17 @@ class TocenP_TimeViewModel: ViewModel(){
     }
 
     fun loadTocensByTime(id: String,currency: String,days: String){
+        try {
         viewModelScope.launch {
-
-            val tocen = PriceTimeIntance.api.getTocenByTime(
-                id,
-   //             address,
-                currency,
-                days
+            val result = tocenByTime.getTocenPriceByTime(
+                id = id,
+                currency = currency,
+                days = days
             )
-            _tocenP.value = tocen
+            _tocenP.value = result
+        }
+        }catch (e: Exception){
+            e.printStackTrace()
         }
     }
 }

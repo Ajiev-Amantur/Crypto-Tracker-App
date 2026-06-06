@@ -1,4 +1,4 @@
-package com.example.crypto_tracker_app.data.TocenByTime
+package com.example.crypto_tracker_app.data.TocenByTimeApi
 
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor

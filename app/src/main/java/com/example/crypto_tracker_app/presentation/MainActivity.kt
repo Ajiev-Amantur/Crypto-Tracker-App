@@ -28,20 +28,39 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import coil.compose.AsyncImage
-import com.example.crypto_tracker_app.domain.repository.CryptoTocensModel
-import com.example.crypto_tracker_app.presentation.CryptoViewModel
-import com.example.crypto_tracker_app.presentation.TocenP_TimeViewModel
+import com.example.crypto_tracker_app.data.TocenAPI.RetrofitIntance
+import com.example.crypto_tracker_app.data.TocenByTimeApi.PriceTimeIntance
+import com.example.crypto_tracker_app.data.repository.GetTocensRepositoryImpl
+import com.example.crypto_tracker_app.data.repository.PriceTimeRepositoryImpl
+import com.example.crypto_tracker_app.domain.model.CryptoTocensModel
 import com.example.crypto_tracker_app.ui.theme.CryptoTrackerAppTheme
-import com.example.crypto_tracker_app.ui.theme.detailUITocen
 
 class MainActivity : ComponentActivity() {
-    private val tocenPriceViewModel: TocenP_TimeViewModel by viewModels()
-    private  val cryptoViewModel: CryptoViewModel by viewModels()
+    private val tocenPriceViewModel: TocenP_TimeViewModel by viewModels {
+        object: ViewModelProvider.Factory{
+            override fun <T : ViewModel> create(modelClass: Class<T>): T {
+                val api = PriceTimeIntance.api
+                val repository = PriceTimeRepositoryImpl(api)
+                return TocenP_TimeViewModel(repository)as T
+            }
+        }
+    }
+    private  val cryptoViewModel: CryptoViewModel by viewModels {
+        object : ViewModelProvider.Factory{
+            override fun <T : ViewModel> create(modelClass: Class<T>): T {
+                val api = RetrofitIntance.api
+                val repository = GetTocensRepositoryImpl(api)
+                return CryptoViewModel(repository) as T
+            }
+        }
+    }
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()

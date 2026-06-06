@@ -1,6 +1,6 @@
-package com.example.crypto_tracker_app.domain.repository
+package com.example.crypto_tracker_app.data.modelDto
 
-data class CryptoTocensModel(
+data class CryptoTocenDto(
     val id: String,
     val name: String,
     val image: String,

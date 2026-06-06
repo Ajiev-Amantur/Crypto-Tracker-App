@@ -5,8 +5,7 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.crypto_tracker_app.domain.repository.CryptoTocensModel
-import com.example.crypto_tracker_app.data.TocenAPI.RetrofitIntance
+import com.example.crypto_tracker_app.domain.model.CryptoTocensModel
 import com.example.crypto_tracker_app.domain.repository.GetTocensRepository
 import kotlinx.coroutines.launch
 
@@ -26,7 +25,7 @@ val tocen : LiveData<List<CryptoTocensModel>> = _tocen
     }
     fun loadTocens(){
     viewModelScope.launch {
-        try { 
+        try {
             val tocens = getTocenRepo.getAllTocens()
             _tocen.value = tocens
 } catch (e: Exception){

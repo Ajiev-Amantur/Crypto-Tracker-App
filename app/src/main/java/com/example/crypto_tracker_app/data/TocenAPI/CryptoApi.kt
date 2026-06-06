@@ -1,6 +1,6 @@
 package com.example.crypto_tracker_app.data.TocenAPI
 
-import com.example.crypto_tracker_app.domain.repository.CryptoTocensModel
+import com.example.crypto_tracker_app.data.modelDto.CryptoTocenDto
 import retrofit2.http.GET
 import retrofit2.http.Query
 
@@ -9,6 +9,6 @@ interface CryptoApi {
 //    suspend fun getTocens(): List<CryptoTocensModel>
 @GET("coins/markets")
     suspend fun getTocens(
-    @Query("vs_currency") currency: String): List<CryptoTocensModel>
+    @Query("vs_currency") currency: String): List<CryptoTocenDto>
 
 }
