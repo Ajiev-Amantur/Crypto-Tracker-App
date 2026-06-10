@@ -6,7 +6,9 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.viewModels
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -15,9 +17,12 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material3.Card
+import androidx.compose.material3.CardColors
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.SearchBar
+import androidx.compose.material3.SearchBarColors
+import androidx.compose.material3.SearchBarDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -25,6 +30,7 @@ import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
@@ -80,35 +86,51 @@ class MainActivity : ComponentActivity() {
                     var searchText by remember {
                         mutableStateOf("")
                     }
-                    Column(modifier = Modifier.fillMaxSize().statusBarsPadding()) {
-                        SearchBar(
-                            query = searchText,
-                            onQueryChange = { text ->
-                                searchText = text
-                            },
-                            onSearch = {
-
-                            },
-                            active = false,
-                            onActiveChange = {},
-                            placeholder = { Text("Search") }
+                    if (tocens?.isEmpty() != false) {
+                        Box(
+                            modifier = Modifier.padding(20.dp).fillMaxWidth(1f),
+                            contentAlignment = Alignment.Center
                         ) {
 
-                        LazyColumn(
-                            modifier = Modifier.fillMaxSize(
-                            ).statusBarsPadding())
-                        {
-                            val filtredTOcens = tocens?.filter {
-                                it.name.contains(searchText, ignoreCase = true)
+                        }
+                    } else {
+                        Column(
+                            modifier = Modifier.fillMaxSize().statusBarsPadding()
+                                .background(Color.LightGray)
+                        ) {
+                            SearchBar(
+                                modifier = Modifier.padding(12.dp),
+                                colors = SearchBarDefaults.colors(containerColor = Color.White),
+                                query = searchText,
+                                onQueryChange = { text ->
+                                    searchText = text
+                                },
+                                onSearch = {
+                                },
+                                active = false,
+                                onActiveChange = {
+                                },
+                                placeholder = {
+                                    Text("Search")
+                                }
+                            ) {
                             }
-                            items(items = filtredTOcens ?: emptyList()) { token ->
-                                cryptoUI(
-                                    token.name, token.current_price, image = token.image,
-                                    navController,
-                                    cryptoViewModel,
-                                    token
-                                )
-                            }
+                            LazyColumn(
+                                modifier = Modifier.fillMaxSize(
+                                ).statusBarsPadding().background(Color.LightGray)
+                            )
+                            {
+                                val filtredTOcens = tocens?.filter {
+                                    it.name.contains(searchText, ignoreCase = true)
+                                }
+                                items(items = filtredTOcens ?: emptyList()) { token ->
+                                    cryptoUI(
+                                        token.name, token.current_price, image = token.image,
+                                        navController,
+                                        cryptoViewModel,
+                                        token
+                                    )
+                                }
                             }
                         }
                     }
@@ -144,8 +166,9 @@ NavHostController,viewModel: CryptoViewModel,tocen: CryptoTocensModel){
             viewModel.selectTocen(tocen)
             nav.navigate("UI2")
             Toast.makeText(context,"clicked!!! $name", Toast.LENGTH_LONG).show()
-            })
-        ,
+            }
+        ),
+        colors = CardDefaults.cardColors(Color.White),
         elevation = CardDefaults.cardElevation(defaultElevation = 6.dp)
         ) {
         Column(modifier = Modifier.fillMaxWidth()) {
@@ -162,7 +185,7 @@ NavHostController,viewModel: CryptoViewModel,tocen: CryptoTocensModel){
                 modifier = Modifier.padding(start = 12.dp)
             )
             Text(
-                price.toString(), fontStyle = FontStyle.Normal,
+                "$price$", fontStyle = FontStyle.Normal,
                 fontSize = 14.sp,
                 modifier = Modifier.padding(start = 12.dp, 4.dp)
             )

@@ -66,5 +66,6 @@ dependencies {
     implementation(libs.androidx.compose.runtime.livedata)
     implementation("io.coil-kt:coil-compose:2.7.0")
     implementation(libs.logging.interceptor)
+    implementation("co.yml:ycharts:2.1.0")
 
 }

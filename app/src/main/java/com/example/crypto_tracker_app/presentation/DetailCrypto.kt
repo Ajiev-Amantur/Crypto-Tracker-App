@@ -5,14 +5,18 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
@@ -20,21 +24,43 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontStyle
+import androidx.compose.ui.text.style.LineHeightStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import co.yml.charts.axis.AxisData
+import co.yml.charts.common.extensions.formatToSinglePrecision
+import co.yml.charts.ui.linechart.LineChart
+import co.yml.charts.ui.linechart.model.GridLines
+import co.yml.charts.ui.linechart.model.IntersectionPoint
+import co.yml.charts.ui.linechart.model.Line
+import co.yml.charts.ui.linechart.model.LineChartData
+import co.yml.charts.ui.linechart.model.LinePlotData
+import co.yml.charts.ui.linechart.model.LineStyle
+import co.yml.charts.ui.linechart.model.SelectionHighlightPoint
+import co.yml.charts.ui.linechart.model.SelectionHighlightPopUp
+import co.yml.charts.ui.linechart.model.ShadowUnderLine
 import coil.compose.AsyncImage
 
 @Composable
 fun detailUITocen(name: String,price: Int,image: String,priceChange24h: Double,
                   priceAltProsent: Double,atlPrice: Double,athPrice: Double,
                   viewModel: TocenP_TimeViewModel){
+    val priceByTime by viewModel.graphPoints.collectAsState()
+
     Box(modifier = Modifier.fillMaxWidth().padding(10.dp)
         .statusBarsPadding()) {
         Column(modifier = Modifier.fillMaxWidth().background(Color.Unspecified)) {
             Row() {
+                LaunchedEffect(name) {
+                    viewModel.loadTocensByTime(
+                        id = name.lowercase(), // Проверь, что это ID (например, "bitcoin"), а не имя
+                        currency = "usd",
+                        days = "1"
+                    )
+                }
                 val tocen by viewModel.tocen.observeAsState()
-                val price = tocen?.prices?.last()[1]
-                AsyncImage(
+//                val price = tocen?.prices
+                    AsyncImage(
                     image, contentDescription = "image",
                     modifier = Modifier.size(60.dp)
                 )
@@ -44,7 +70,7 @@ fun detailUITocen(name: String,price: Int,image: String,priceChange24h: Double,
                     fontSize = 30.sp
                 )
                 Text(
-                    "${price?.toInt()}$",
+                    "${price}$",
                     modifier = Modifier.padding(10.dp),
                     fontSize = 30.sp
                 )
@@ -54,6 +80,61 @@ fun detailUITocen(name: String,price: Int,image: String,priceChange24h: Double,
                     fontSize = 30.sp,
                     modifier = Modifier.padding(10.dp),
                     color = Color.Magenta
+                )
+            }
+            if (priceByTime.isEmpty()){
+                Box(modifier = Modifier.fillMaxSize(),
+                    contentAlignment = Alignment.Center){
+                    CircularProgressIndicator()
+                }
+
+            }else {
+                val steps = 5
+
+                val xAxisData = AxisData.Builder()
+                    .axisStepSize(20.dp)
+                    .backgroundColor(Color.Blue)
+                    .steps(priceByTime.size -1)
+                    .labelData { i -> "" }
+                    .labelAndAxisLinePadding(15.dp)
+                    .build()
+                val minPrice = priceByTime.minBy { it.y }.y
+                val maxPrice = priceByTime.maxBy { it.y }.y
+                val yAxisData = AxisData.Builder()
+                    .steps(steps)
+                    .backgroundColor(Color.Red)
+                    .labelAndAxisLinePadding(20.dp)
+                    .labelData { i ->
+                        val yScale = (maxPrice - minPrice) / steps
+                        ((i * yScale) + minPrice).formatToSinglePrecision()
+
+//                    val yScale = 100 / steps
+//                    (i * yScale).formatToSinglePrecision()
+                    }.build()
+
+                val lineChartData = LineChartData(
+                    linePlotData = LinePlotData(
+                        lines = listOf(
+                            Line(
+                                dataPoints = priceByTime,
+                                LineStyle(color = Color.Green),
+                                IntersectionPoint(color = Color.Yellow),
+                                SelectionHighlightPoint(),
+                                ShadowUnderLine(),
+                                SelectionHighlightPopUp()
+                            )
+                        ),
+                    ),
+                    xAxisData = xAxisData,
+                    yAxisData = yAxisData,
+                    gridLines = GridLines(),
+                    backgroundColor = Color.White
+                )
+                LineChart(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(300.dp),
+                    lineChartData = lineChartData
                 )
             }
                 Box(
@@ -152,7 +233,15 @@ fun detailUITocen(name: String,price: Int,image: String,priceChange24h: Double,
         }
     }
         }
-
+//data class Point(
+//    val x: Float,
+//    val y: Float,
+//)
+//
+//@Composable
+//fun PointData(): List<Point>{
+//    return
+//}
 
 //@Preview(showBackground = true)
 //@Composable
