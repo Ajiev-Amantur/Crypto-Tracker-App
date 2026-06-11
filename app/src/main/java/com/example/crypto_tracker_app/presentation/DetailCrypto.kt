@@ -1,5 +1,6 @@
 package com.example.crypto_tracker_app.presentation
 
+import android.R
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -23,6 +24,7 @@ import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.style.LineHeightStyle
 import androidx.compose.ui.unit.dp
@@ -46,6 +48,7 @@ fun detailUITocen(name: String,price: Int,image: String,priceChange24h: Double,
                   priceAltProsent: Double,atlPrice: Double,athPrice: Double,
                   viewModel: TocenP_TimeViewModel){
     val priceByTime by viewModel.graphPoints.collectAsState()
+    val loadingProgress by viewModel.progressBar.observeAsState(false)
 
     Box(modifier = Modifier.fillMaxWidth().padding(10.dp)
         .statusBarsPadding()) {
@@ -82,27 +85,34 @@ fun detailUITocen(name: String,price: Int,image: String,priceChange24h: Double,
                     color = Color.Magenta
                 )
             }
-            if (priceByTime.isEmpty()){
+
+
+            if (priceByTime.size < 2){
                 Box(modifier = Modifier.fillMaxSize(),
                     contentAlignment = Alignment.Center){
                     CircularProgressIndicator()
                 }
 
             }else {
+                val configuration = LocalConfiguration.current
+                val screenWithDp = configuration.screenWidthDp
+
                 val steps = 5
+                val minPrice = priceByTime.minBy { it.y }.y
+                val maxPrice = priceByTime.maxBy { it.y }.y
+                val screen = screenWithDp / priceByTime.size
 
                 val xAxisData = AxisData.Builder()
-                    .axisStepSize(20.dp)
-                    .backgroundColor(Color.Blue)
-                    .steps(priceByTime.size -1)
+                    .axisStepSize(screen.dp)
+                    .backgroundColor(Color.White)
+                    .steps(priceByTime.size / -1 )
                     .labelData { i -> "" }
                     .labelAndAxisLinePadding(15.dp)
                     .build()
-                val minPrice = priceByTime.minBy { it.y }.y
-                val maxPrice = priceByTime.maxBy { it.y }.y
+
                 val yAxisData = AxisData.Builder()
                     .steps(steps)
-                    .backgroundColor(Color.Red)
+                    .backgroundColor(Color.White)
                     .labelAndAxisLinePadding(20.dp)
                     .labelData { i ->
                         val yScale = (maxPrice - minPrice) / steps
@@ -117,17 +127,18 @@ fun detailUITocen(name: String,price: Int,image: String,priceChange24h: Double,
                         lines = listOf(
                             Line(
                                 dataPoints = priceByTime,
-                                LineStyle(color = Color.Green),
-                                IntersectionPoint(color = Color.Yellow),
-                                SelectionHighlightPoint(),
-                                ShadowUnderLine(),
-                                SelectionHighlightPopUp()
+                                LineStyle(color = Color.Green, width = 4.0f),
+                                IntersectionPoint(radius = 0.dp),
+                                SelectionHighlightPoint(color = Color.Black,1.dp),
+                                ShadowUnderLine(color = Color.White),
+                                SelectionHighlightPopUp(backgroundColor = Color.White  )
                             )
                         ),
                     ),
                     xAxisData = xAxisData,
                     yAxisData = yAxisData,
-                    gridLines = GridLines(),
+                    gridLines = GridLines(enableHorizontalLines = false,
+                        enableVerticalLines = false),
                     backgroundColor = Color.White
                 )
                 LineChart(
@@ -137,17 +148,17 @@ fun detailUITocen(name: String,price: Int,image: String,priceChange24h: Double,
                     lineChartData = lineChartData
                 )
             }
-                Box(
-                    modifier = Modifier.padding(20.dp).fillMaxWidth(1f),
-                    contentAlignment = Alignment.Center
-                ) {
-                    Text(
-                        "${priceAltProsent.toInt()}%",
-                        fontSize = 50.sp,
-                        color = Color.Green,
-                        fontStyle = FontStyle.Italic
-                    )
-                }
+//                Box(
+//                    modifier = Modifier.padding(20.dp).fillMaxWidth(1f),
+//                    contentAlignment = Alignment.Center
+//                ) {
+//                    Text(
+//                        "${priceAltProsent.toInt()}%",
+//                        fontSize = 50.sp,
+//                        color = Color.Green,
+//                        fontStyle = FontStyle.Italic
+//                    )
+//                }
             Row(modifier = Modifier.fillMaxWidth(1f),
                 horizontalArrangement = Arrangement.SpaceAround){
                 val days by viewModel.selectedButton.collectAsState()

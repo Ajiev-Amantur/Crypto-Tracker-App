@@ -17,6 +17,9 @@ val tocen : LiveData<List<CryptoTocensModel>> = _tocen
     private var _selectedToken = MutableLiveData<CryptoTocensModel>()
     val selectedTocen: LiveData<CryptoTocensModel?> = _selectedToken
 
+    private var _progressBar = MutableLiveData(false)
+    val progressBar: LiveData<Boolean> = _progressBar
+
     fun selectTocen(token: CryptoTocensModel){
         _selectedToken.value = token
     }
@@ -24,13 +27,15 @@ val tocen : LiveData<List<CryptoTocensModel>> = _tocen
         loadTocens()
     }
     fun loadTocens(){
+        _progressBar.value = true
     viewModelScope.launch {
         try {
             val tocens = getTocenRepo.getAllTocens()
             _tocen.value = tocens
 } catch (e: Exception){
             println("ERROR:  $e")
-            Log.d("AMAN: ", "$e")
+        }finally {
+            _progressBar.value = false
         }
 }
 

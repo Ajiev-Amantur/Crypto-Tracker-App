@@ -22,6 +22,8 @@ class TocenP_TimeViewModel(private val tocenByTime: PriceTimeRepository): ViewMo
 
     private val _grapchPoints = MutableStateFlow<List<Point>>(emptyList())
     var graphPoints: StateFlow<List<Point>> = _grapchPoints
+    private var _progressBar = MutableLiveData(false)
+    val progressBar: LiveData<Boolean> = _progressBar
 
     fun updateSelectB(selectedB: String) {
         _selectedButton.value = selectedB
@@ -29,6 +31,7 @@ class TocenP_TimeViewModel(private val tocenByTime: PriceTimeRepository): ViewMo
 
         fun loadTocensByTime(id: String, currency: String, days: String) {
             viewModelScope.launch {
+                _progressBar.value = true
                 try {
                     val result = tocenByTime.getTocenPriceByTime(
                         id = id,
@@ -36,12 +39,17 @@ class TocenP_TimeViewModel(private val tocenByTime: PriceTimeRepository): ViewMo
                         days = days
                     )
                     _tocenP.value = result
+                    _progressBar.value = false
+
+
+                    _progressBar.value = true
                     _grapchPoints.value = result.prices.mapIndexed { index,priceByTime ->
                         Point(
                             x = index.toFloat(),
                             y = priceByTime[1].toFloat()
                         )
                     }
+                    _progressBar.value = false
                 } catch (e: Exception) {
                     e.printStackTrace()
                 }

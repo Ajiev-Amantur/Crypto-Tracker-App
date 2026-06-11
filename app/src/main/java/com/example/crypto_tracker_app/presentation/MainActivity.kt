@@ -82,18 +82,18 @@ class MainActivity : ComponentActivity() {
                 NavHost(navController,"UI1") {
                 composable("UI1"){
                     val tocens by cryptoViewModel.tocen.observeAsState()
-
+                    val loading by cryptoViewModel.progressBar.observeAsState(false)
                     var searchText by remember {
                         mutableStateOf("")
                     }
-                    if (tocens?.isEmpty() != false) {
+                    if (loading) {
                         Box(
                             modifier = Modifier.padding(20.dp).fillMaxWidth(1f),
                             contentAlignment = Alignment.Center
                         ) {
 
                         }
-                    } else {
+                    } else  {
                         Column(
                             modifier = Modifier.fillMaxSize().statusBarsPadding()
                                 .background(Color.LightGray)
