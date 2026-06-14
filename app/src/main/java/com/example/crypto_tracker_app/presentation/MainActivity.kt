@@ -51,6 +51,8 @@ import com.example.crypto_tracker_app.data.TocenByTimeApi.PriceTimeIntance
 import com.example.crypto_tracker_app.data.repository.GetTocensRepositoryImpl
 import com.example.crypto_tracker_app.data.repository.PriceTimeRepositoryImpl
 import com.example.crypto_tracker_app.domain.model.CryptoTocensModel
+import com.example.crypto_tracker_app.presentation.viewmodel.CryptoViewModel
+import com.example.crypto_tracker_app.presentation.viewmodel.TocenP_TimeViewModel
 import com.example.crypto_tracker_app.ui.theme.CryptoTrackerAppTheme
 
 class MainActivity : ComponentActivity() {
@@ -59,7 +61,7 @@ class MainActivity : ComponentActivity() {
             override fun <T : ViewModel> create(modelClass: Class<T>): T {
                 val api = PriceTimeIntance.api
                 val repository = PriceTimeRepositoryImpl(api)
-                return TocenP_TimeViewModel(repository)as T
+                return TocenP_TimeViewModel(repository) as T
             }
         }
     }
@@ -125,7 +127,7 @@ class MainActivity : ComponentActivity() {
                                 }
                                 items(items = filtredTOcens ?: emptyList()) { token ->
                                     cryptoUI(
-                                        token.name, token.current_price, image = token.image,
+                                        token.name, token.currentPrice, image = token.image,
                                         navController,
                                         cryptoViewModel,
                                         token
@@ -139,13 +141,18 @@ class MainActivity : ComponentActivity() {
                         val selectedTocen by cryptoViewModel.selectedTocen.observeAsState()
                         selectedTocen?.let { tocen->
                             detailUITocen(
+                                id = tocen.id,
                                 name = tocen.name,
-                                price = tocen.current_price.toInt(),
+                                price = tocen.currentPrice.toInt(),
                                 image = tocen.image,
-                                priceChange24h = tocen.price_change_percentage_24h,
-                                priceAltProsent = tocen.atl_change_percentage,
+                                priceChange24h = tocen.priceChange24h,
+                                priceAltProsent = tocen.atlChangePercentage,
                                 atlPrice = tocen.atl,
                                 athPrice = tocen.ath,
+                                totalSupply = tocen.totalSupply,
+                                maxSypply = tocen.maxSupply,
+                                highPrice24h = tocen.high24h,
+                                lowPrice24h = tocen.low24h,
                                 viewModel= tocenPriceViewModel
                                 )
                         }
@@ -157,8 +164,8 @@ class MainActivity : ComponentActivity() {
     }
 }
 @Composable
-fun cryptoUI(name: String,price: Double,image: String,nav:
-NavHostController,viewModel: CryptoViewModel,tocen: CryptoTocensModel){
+fun cryptoUI(name: String, price: Double, image: String, nav:
+NavHostController, viewModel: CryptoViewModel, tocen: CryptoTocensModel){
     val context = LocalContext.current
     Card(modifier = Modifier.fillMaxWidth()
         .padding(horizontal = 16.dp, vertical = 8.dp)
