@@ -1,6 +1,5 @@
 package com.example.crypto_tracker_app.presentation
 
-import android.util.Log.i
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -24,10 +23,8 @@ import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.modifier.modifierLocalConsumer
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.text.TextStyle
-import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontStyle
 
 import androidx.compose.ui.unit.dp
@@ -55,60 +52,75 @@ fun detailUITocen(id: String,name: String,price: Int,image: String,priceChange24
                   priceAltProsent: Double,atlPrice: Double,athPrice: Double,
                   totalSupply : Double,maxSypply: Double,
                   highPrice24h: Double,lowPrice24h: Double,
-                  viewModel: TocenP_TimeViewModel
-){
+                  viewModel: TocenP_TimeViewModel,
+                  priceChange24hProsent: Double,
+                  priceChange7dProsent: Double,
+                  priceChange30dProsent: Double,
+                  priceChange1yProsent: Double,
+) {
     val priceByTime by viewModel.graphPoints.collectAsState()
+    val selectedDay by viewModel.selectedButton.collectAsState()
     val loadingProgress by viewModel.progressBar.observeAsState(false)
     val datePriceTocen by viewModel.dateGraph.observeAsState(emptyList())
 
-    Box(modifier = Modifier.fillMaxWidth().padding(10.dp)
-        .statusBarsPadding()) {
+    Box(
+        modifier = Modifier.fillMaxWidth().padding(10.dp)
+            .statusBarsPadding()
+    ) {
         Column(modifier = Modifier.fillMaxWidth().background(Color.Unspecified)) {
             Row() {
                 LaunchedEffect(name) {
                     viewModel.loadTocensByTime(
-                        id = name.lowercase(), // Проверь, что это ID (например, "bitcoin"), а не имя
+                        id = name.lowercase(),
                         currency = "usd",
                         days = "1"
                     )
                 }
-                if (loadingProgress){
-                    Box(modifier = Modifier.fillMaxSize()){
+                if (loadingProgress) {
+                    Box(modifier = Modifier.fillMaxSize()) {
                         CircularProgressIndicator()
                     }
                 }
 //                val price = tocen?.prices
-                    AsyncImage(
+                AsyncImage(
                     image, contentDescription = "image",
                     modifier = Modifier.size(60.dp)
                 )
                 Text(
                     name,
                     Modifier.padding(10.dp),
-                    fontSize = 30.sp
+                    fontSize = 20.sp
                 )
                 Text(
                     "${price}$",
                     modifier = Modifier.padding(10.dp),
-                    fontSize = 30.sp
+                    fontSize = 20.sp
                 )
-
+                var price = when (selectedDay) {
+                    "1" -> priceChange24hProsent
+                    "7" -> priceChange7dProsent
+                    "30" -> priceChange30dProsent
+                    "365" -> priceChange1yProsent
+                    else -> priceChange24hProsent
+                }
                 Text(
-                    "${priceChange24h.toInt()}%",
+                    "${price.toInt()}%",
                     fontSize = 30.sp,
                     modifier = Modifier.padding(10.dp),
-                    color = Color.Magenta
+                    color = if (price > 0) Color.Green else Color.Red
                 )
             }
 
 
-            if (priceByTime.size < 2){
-                Box(modifier = Modifier.fillMaxSize(),
-                    contentAlignment = Alignment.Center){
+            if (priceByTime.size < 2) {
+                Box(
+                    modifier = Modifier.fillMaxSize(),
+                    contentAlignment = Alignment.Center
+                ) {
                     CircularProgressIndicator()
                 }
 
-            }else {
+            } else {
                 val configuration = LocalConfiguration.current
                 val screenWithDp = configuration.screenWidthDp
                 val steps = 5
@@ -122,7 +134,7 @@ fun detailUITocen(id: String,name: String,price: Int,image: String,priceChange24
                     .backgroundColor(Color.White)
                     .steps(5)
                     .labelData { i ->
-                        if (datePriceTocen.isEmpty()|| i >= datePriceTocen.size){
+                        if (datePriceTocen.isEmpty() || i >= datePriceTocen.size) {
                             return@labelData ""
                         }
 
@@ -156,16 +168,18 @@ fun detailUITocen(id: String,name: String,price: Int,image: String,priceChange24
                                 dataPoints = priceByTime,
                                 LineStyle(color = Color.Black, width = 4.0f),
                                 IntersectionPoint(radius = 0.dp),
-                                SelectionHighlightPoint(color = Color.Black,1.dp),
+                                SelectionHighlightPoint(color = Color.Black, 1.dp),
                                 ShadowUnderLine(color = Color.White),
-                                SelectionHighlightPopUp(backgroundColor = Color.White  )
+                                SelectionHighlightPopUp(backgroundColor = Color.White)
                             )
                         ),
                     ),
                     xAxisData = xAxisData,
                     yAxisData = yAxisData,
-                    gridLines = GridLines(enableHorizontalLines = false,
-                        enableVerticalLines = false),
+                    gridLines = GridLines(
+                        enableHorizontalLines = false,
+                        enableVerticalLines = false
+                    ),
                     backgroundColor = Color.White
                 )
                 LineChart(
@@ -187,20 +201,21 @@ fun detailUITocen(id: String,name: String,price: Int,image: String,priceChange24
 //                        fontStyle = FontStyle.Italic
 //                    )
 //                }
-            Row(modifier = Modifier.fillMaxWidth(1f),
-                horizontalArrangement = Arrangement.SpaceAround){
-                val days by viewModel.selectedButton.collectAsState()
-                Button(onClick = {
-                    viewModel.loadTocensByTime(
-                        id = id,
-                        currency = "usd",
-                        "1"
-                    )
-
-                    viewModel.updateSelectB("1")
-                },
+            Row(
+                modifier = Modifier.fillMaxWidth(1f),
+                horizontalArrangement = Arrangement.SpaceAround
+            ) {
+                Button(
+                    onClick = {
+                        viewModel.loadTocensByTime(
+                            id = id,
+                            currency = "usd",
+                            "1"
+                        )
+                        viewModel.updateSelectB("1")
+                    },
                     colors = ButtonDefaults.buttonColors(
-                        containerColor = if (days == "1") Color.LightGray else Color.White,
+                        containerColor = if (selectedDay == "1") Color.LightGray else Color.White,
                         contentColor = Color.Black
                     )
                 ) {
@@ -208,60 +223,65 @@ fun detailUITocen(id: String,name: String,price: Int,image: String,priceChange24
                 }
 
 
-                Button(onClick = {
-                    viewModel.loadTocensByTime(
-                        id = id.toString(),
-                        currency = "usd",
-                        "7"
-                    )
-                    viewModel.updateSelectB("7")
+                Button(
+                    onClick = {
+                        viewModel.loadTocensByTime(
+                            id = id.toString(),
+                            currency = "usd",
+                            "7"
+                        )
+                        viewModel.updateSelectB("7")
 
-                },
+                    },
                     colors = ButtonDefaults.buttonColors(
-                        containerColor = if(days =="7")Color.LightGray else Color.White,
+                        containerColor = if (selectedDay == "7") Color.LightGray else Color.White,
                         contentColor = Color.Black
                     )
-                    ) {
+                ) {
                     Text("7day")
                 }
 
-                Button(onClick = {
-                    viewModel.loadTocensByTime(
-                        id = id.toString(),
-                        currency = "usd",
-                        "30"
-                    )
-                    viewModel.updateSelectB("30")
-                },
+                Button(
+                    onClick = {
+                        viewModel.loadTocensByTime(
+                            id = id.toString(),
+                            currency = "usd",
+                            "30"
+                        )
+                        viewModel.updateSelectB("30")
+                    },
                     colors = ButtonDefaults.buttonColors(
-                        containerColor = if(days =="30")Color.LightGray else Color.White,
+                        containerColor = if (selectedDay == "30") Color.LightGray else Color.White,
                         contentColor = Color.Black
                     )
-                    ) {
+                ) {
                     Text("30")
                 }
 
-                Button(onClick = {
-                    viewModel.loadTocensByTime(
-                        id = id.toString(),
-                        currency = "usd",
-                        "365"
-                    )
-                    viewModel.updateSelectB("365")
-                },
+                Button(
+                    onClick = {
+                        viewModel.loadTocensByTime(
+                            id = id.toString(),
+                            currency = "usd",
+                            "365"
+                        )
+                        viewModel.updateSelectB("365")
+                    },
                     colors = ButtonDefaults.buttonColors(
-                        containerColor = if(days =="365")Color.LightGray else Color.White,
+                        containerColor = if (selectedDay == "365") Color.LightGray else Color.White,
                         contentColor = Color.Black
                     )
-                    ) {
+                ) {
                     Text("1year")
                 }
 
             }
             Box(modifier = Modifier.fillMaxWidth().padding(10.dp).background(Color.White)) {
                 Column(modifier = Modifier.fillMaxSize()) {
-                    Row(modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.SpaceAround) {
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceAround
+                    ) {
                         Text(
                             "Min price: $atlPrice$",
                             style = TextStyle(fontStyle = FontStyle.Italic),
@@ -276,8 +296,10 @@ fun detailUITocen(id: String,name: String,price: Int,image: String,priceChange24
                             modifier = Modifier.padding(6.dp, bottom = 20.dp)
                         )
                     }
-                    Row(modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.SpaceAround) {
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceAround
+                    ) {
                         Text(
                             "High price 24h: $highPrice24h$",
                             fontSize = 14.sp,
@@ -291,10 +313,12 @@ fun detailUITocen(id: String,name: String,price: Int,image: String,priceChange24
                             modifier = Modifier.padding(6.dp, bottom = 20.dp),
                             style = TextStyle(fontStyle = FontStyle.Italic)
 
-                            )
+                        )
                     }
-                    Row(modifier = Modifier.fillMaxWidth(),
-                       horizontalArrangement = Arrangement.SpaceAround) {
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceAround
+                    ) {
                         Text(
                             "total Supply: ${totalSupply.toInt()}$",
                             fontSize = 14.sp,
@@ -310,11 +334,11 @@ fun detailUITocen(id: String,name: String,price: Int,image: String,priceChange24
 
                         )
                     }
-                    }
                 }
             }
         }
     }
+}
 
 //data class Point(
 //    val x: Float,

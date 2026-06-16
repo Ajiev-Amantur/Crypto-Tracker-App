@@ -8,8 +8,10 @@ import androidx.activity.enableEdgeToEdge
 import androidx.activity.viewModels
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -33,7 +35,9 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.modifier.modifierLocalConsumer
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
@@ -130,7 +134,8 @@ class MainActivity : ComponentActivity() {
                                         token.name, token.currentPrice, image = token.image,
                                         navController,
                                         cryptoViewModel,
-                                        token
+                                        token,
+                                        priceProsent1d = token.priceChange24hProsent
                                     )
                                 }
                             }
@@ -153,7 +158,11 @@ class MainActivity : ComponentActivity() {
                                 maxSypply = tocen.maxSupply,
                                 highPrice24h = tocen.high24h,
                                 lowPrice24h = tocen.low24h,
-                                viewModel= tocenPriceViewModel
+                                viewModel= tocenPriceViewModel,
+                                priceChange24hProsent = tocen.priceChange24hProsent,
+                                priceChange7dProsent = tocen.priceChange7dProsent,
+                                priceChange30dProsent = tocen.priceChange30dProsent,
+                                priceChange1yProsent = tocen.priceChange1yProsent
                                 )
                         }
                     }
@@ -165,7 +174,7 @@ class MainActivity : ComponentActivity() {
 }
 @Composable
 fun cryptoUI(name: String, price: Double, image: String, nav:
-NavHostController, viewModel: CryptoViewModel, tocen: CryptoTocensModel){
+NavHostController, viewModel: CryptoViewModel, tocen: CryptoTocensModel,priceProsent1d: Double){
     val context = LocalContext.current
     Card(modifier = Modifier.fillMaxWidth()
         .padding(horizontal = 16.dp, vertical = 8.dp)
@@ -182,15 +191,24 @@ NavHostController, viewModel: CryptoViewModel, tocen: CryptoTocensModel){
             AsyncImage(
                 model = image,
                 contentDescription = "image",
-                modifier = Modifier.size(80.dp).padding(12.dp)
+                modifier = Modifier.size(60.dp).padding(12.dp)
             )
-            Text(
-                name, fontStyle = FontStyle.Italic,
-                fontSize = 20.sp,
-                fontWeight = FontWeight.Bold,
-                color = Color(color = android.graphics.Color.BLACK),
-                modifier = Modifier.padding(start = 12.dp)
-            )
+            Row(modifier = Modifier.fillMaxWidth(), Arrangement.SpaceBetween) {
+                Text(
+                    name, fontStyle = FontStyle.Italic,
+                    fontSize = 20.sp,
+                    fontWeight = FontWeight.Bold,
+                    color = Color(color = android.graphics.Color.BLACK),
+                    modifier = Modifier.padding(start = 12.dp)
+                )
+                Text(
+                    color = if (priceProsent1d.toFloat() > 0) Color.Green else Color.Red,
+                    modifier = Modifier.padding(10.dp),
+                    text = "${priceProsent1d.toInt()}%",
+                    fontSize = 20.sp,
+                    style = TextStyle(fontStyle = FontStyle.Italic)
+                )
+            }
             Text(
                 "$price$", fontStyle = FontStyle.Normal,
                 fontSize = 14.sp,

@@ -6,6 +6,8 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.crypto_tracker_app.domain.model.CryptoTocensModel
 import com.example.crypto_tracker_app.domain.repository.GetTocensRepository
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 
 class CryptoViewModel(private val getTocenRepo: GetTocensRepository): ViewModel() {
@@ -18,6 +20,8 @@ val tocen : LiveData<List<CryptoTocensModel>> = _tocen
 
     private var _progressBar = MutableLiveData(false)
     val progressBar: LiveData<Boolean> = _progressBar
+
+
 
     fun selectTocen(token: CryptoTocensModel){
         _selectedToken.value = token

@@ -15,4 +15,8 @@ data class CryptoTocenDto(
     @SerializedName("max_supply") val maxSupply: Double,
     @SerializedName("high_24h") val high24h: Double,
     @SerializedName("low_24h") val low24h: Double,
+    @SerializedName("price_change_percentage_24h_in_currency") val priceChange24hProsent: Double,
+    @SerializedName("price_change_percentage_7d_in_currency") val priceChange7dProsent: Double,
+    @SerializedName("price_change_percentage_30d_in_currency") val priceChange30dProsent: Double,
+    @SerializedName("price_change_percentage_1y_in_currency") val priceChange1yProsent: Double,
 )

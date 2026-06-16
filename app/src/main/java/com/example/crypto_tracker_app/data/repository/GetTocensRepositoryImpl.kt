@@ -6,7 +6,7 @@ import com.example.crypto_tracker_app.domain.model.CryptoTocensModel
 import com.example.crypto_tracker_app.domain.repository.GetTocensRepository
 
 class GetTocensRepositoryImpl(private val api: CryptoApi): GetTocensRepository {
-    override suspend fun getAllTocens(): List<CryptoTocensModel> {
-        return api.getTocens("usd").map { it.toDomain() }
+    override suspend fun getAllTocens(priceBytime: String): List<CryptoTocensModel> {
+        return api.getTocens(priceBytime,"usd").map { it.toDomain() }
     }
 }

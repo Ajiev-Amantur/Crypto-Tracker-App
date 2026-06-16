@@ -1,5 +1,7 @@
 package com.example.crypto_tracker_app.domain.model
 
+import com.google.gson.annotations.SerializedName
+
 data class CryptoTocensModel(
     val id: String,
     val name: String,
@@ -12,5 +14,9 @@ data class CryptoTocensModel(
     val totalSupply: Double,
     val maxSupply: Double,
     val high24h: Double,
-    val low24h: Double
+    val low24h: Double,
+    val priceChange24hProsent: Double,
+    val priceChange7dProsent: Double,
+    val priceChange30dProsent: Double,
+    val priceChange1yProsent: Double,
 )

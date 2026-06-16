@@ -33,6 +33,10 @@ class TocenP_TimeViewModel(private val tocenByTime: PriceTimeRepository): ViewMo
     private var _dataGraph = MutableLiveData<List<Long>>(emptyList())
     val dateGraph : MutableLiveData<List<Long>> = _dataGraph
 
+//    //selectedDate 1,7,30,1y
+//    private var _selectedDate = MutableStateFlow<Double>(0.0)
+//    val selectedDate : StateFlow<Double> = _selectedDate
+
     fun updateSelectB(selectedB: String) {
         _selectedButton.value = selectedB
     }

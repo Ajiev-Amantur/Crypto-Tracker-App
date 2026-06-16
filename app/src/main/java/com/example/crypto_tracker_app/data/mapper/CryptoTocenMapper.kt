@@ -16,7 +16,11 @@ fun CryptoTocenDto.toDomain(): CryptoTocensModel {
             totalSupply = totalSupply,
             maxSupply = maxSupply,
             high24h = high24h,
-            low24h = low24h
+            low24h = low24h,
+            priceChange24hProsent = priceChange24hProsent,
+            priceChange7dProsent = priceChange7dProsent,
+            priceChange30dProsent = priceChange30dProsent,
+            priceChange1yProsent = priceChange1yProsent
         )
     }
     fun CryptoTocensModel.toDto(): CryptoTocenDto {
@@ -32,6 +36,10 @@ fun CryptoTocenDto.toDomain(): CryptoTocensModel {
             totalSupply = totalSupply,
             maxSupply = maxSupply,
             high24h = high24h,
-            low24h = low24h
+            low24h = low24h,
+            priceChange24hProsent = priceChange24hProsent,
+            priceChange7dProsent = priceChange7dProsent,
+            priceChange30dProsent = priceChange30dProsent,
+            priceChange1yProsent = priceChange1yProsent
         )
     }
