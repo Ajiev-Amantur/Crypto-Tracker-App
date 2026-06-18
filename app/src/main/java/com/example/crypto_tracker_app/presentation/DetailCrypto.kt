@@ -1,5 +1,6 @@
 package com.example.crypto_tracker_app.presentation
 
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -13,6 +14,8 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -23,7 +26,9 @@ import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.platform.LocalConfiguration
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontStyle
 
@@ -42,6 +47,7 @@ import co.yml.charts.ui.linechart.model.SelectionHighlightPoint
 import co.yml.charts.ui.linechart.model.SelectionHighlightPopUp
 import co.yml.charts.ui.linechart.model.ShadowUnderLine
 import coil.compose.AsyncImage
+import com.example.crypto_tracker_app.R
 import com.example.crypto_tracker_app.presentation.viewmodel.TocenP_TimeViewModel
 import java.text.SimpleDateFormat
 import java.util.Date
@@ -68,7 +74,10 @@ fun detailUITocen(id: String,name: String,price: Int,image: String,priceChange24
             .statusBarsPadding()
     ) {
         Column(modifier = Modifier.fillMaxWidth().background(Color.Unspecified)) {
-            Row() {
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.SpaceBetween
+            ) {
                 LaunchedEffect(name) {
                     viewModel.loadTocensByTime(
                         id = name.lowercase(),
@@ -76,15 +85,9 @@ fun detailUITocen(id: String,name: String,price: Int,image: String,priceChange24
                         days = "1"
                     )
                 }
-                if (loadingProgress) {
-                    Box(modifier = Modifier.fillMaxSize()) {
-                        CircularProgressIndicator()
-                    }
-                }
-//                val price = tocen?.prices
                 AsyncImage(
                     image, contentDescription = "image",
-                    modifier = Modifier.size(60.dp)
+                    modifier = Modifier.size(36.dp)
                 )
                 Text(
                     name,
@@ -103,13 +106,33 @@ fun detailUITocen(id: String,name: String,price: Int,image: String,priceChange24
                     "365" -> priceChange1yProsent
                     else -> priceChange24hProsent
                 }
-                Text(
-                    "${price.toInt()}%",
-                    fontSize = 30.sp,
-                    modifier = Modifier.padding(10.dp),
-                    color = if (price > 0) Color.Green else Color.Red
-                )
-            }
+                val formatterPrice = "%.1f".format(price)
+                Card(
+                    colors = CardDefaults.cardColors(containerColor =
+                        if (price > 0) Color.Green else Color.Red)
+                ) {
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Image(
+                            modifier = Modifier.size(20.dp),
+                            painter = painterResource(
+                                id =
+                                    if (price > 0)
+                                        R.drawable.arrow_up_right else R.drawable.arrow_up_right__1_
+                            ),
+                            contentDescription = "image"
+                        )
+                        Text(
+                            color = if (price > 0) Color.Black else Color.White,
+                            modifier = Modifier.padding(5.dp),
+                            text = "$formatterPrice%",
+                            fontSize = 18.sp,
+                            style = TextStyle(fontStyle = FontStyle.Italic)
+                        )
+                    }
+                    }
+                }
 
 
             if (priceByTime.size < 2) {

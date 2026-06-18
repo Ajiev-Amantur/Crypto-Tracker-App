@@ -6,12 +6,14 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.viewModels
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -26,6 +28,7 @@ import androidx.compose.material3.SearchBar
 import androidx.compose.material3.SearchBarColors
 import androidx.compose.material3.SearchBarDefaults
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextFieldColors
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
@@ -37,6 +40,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.modifier.modifierLocalConsumer
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
@@ -50,6 +54,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import coil.compose.AsyncImage
+import com.example.crypto_tracker_app.R
 import com.example.crypto_tracker_app.data.TocenAPI.RetrofitIntance
 import com.example.crypto_tracker_app.data.TocenByTimeApi.PriceTimeIntance
 import com.example.crypto_tracker_app.data.repository.GetTocensRepositoryImpl
@@ -193,7 +198,10 @@ NavHostController, viewModel: CryptoViewModel, tocen: CryptoTocensModel,pricePro
                 contentDescription = "image",
                 modifier = Modifier.size(60.dp).padding(12.dp)
             )
-            Row(modifier = Modifier.fillMaxWidth(), Arrangement.SpaceBetween) {
+            Row(
+                modifier = Modifier.fillMaxWidth().padding(end = 10.dp)
+                , Arrangement.SpaceBetween
+            ) {
                 Text(
                     name, fontStyle = FontStyle.Italic,
                     fontSize = 20.sp,
@@ -201,13 +209,30 @@ NavHostController, viewModel: CryptoViewModel, tocen: CryptoTocensModel,pricePro
                     color = Color(color = android.graphics.Color.BLACK),
                     modifier = Modifier.padding(start = 12.dp)
                 )
-                Text(
-                    color = if (priceProsent1d.toFloat() > 0) Color.Green else Color.Red,
-                    modifier = Modifier.padding(10.dp),
-                    text = "${priceProsent1d.toInt()}%",
-                    fontSize = 20.sp,
-                    style = TextStyle(fontStyle = FontStyle.Italic)
-                )
+                val formatterPrice = "%.1f".format(priceProsent1d)
+                Card(
+                    colors = CardDefaults.cardColors(containerColor =
+                    if (priceProsent1d > 0) Color.Green else Color.Red)
+                ) {
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Image(
+                            modifier = Modifier.size(20.dp),
+                            painter = painterResource(id =
+                                if (priceProsent1d > 0)
+                                R.drawable.arrow_up_right else R.drawable.arrow_up_right__1_),
+                            contentDescription = "image"
+                        )
+                        Text(
+                            color = if (priceProsent1d > 0) Color.Black else Color.White,
+                            modifier = Modifier.padding(5.dp),
+                            text = "$formatterPrice%",
+                            fontSize = 18.sp,
+                            style = TextStyle(fontStyle = FontStyle.Italic)
+                        )
+                    }
+                }
             }
             Text(
                 "$price$", fontStyle = FontStyle.Normal,
