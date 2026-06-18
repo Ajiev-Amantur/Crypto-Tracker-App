@@ -26,7 +26,6 @@ import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
@@ -68,7 +67,13 @@ fun detailUITocen(id: String,name: String,price: Int,image: String,priceChange24
     val selectedDay by viewModel.selectedButton.collectAsState()
     val loadingProgress by viewModel.progressBar.observeAsState(false)
     val datePriceTocen by viewModel.dateGraph.observeAsState(emptyList())
-
+    var priceChanged = when (selectedDay) {
+        "1" -> priceChange24hProsent
+        "7" -> priceChange7dProsent
+        "30" -> priceChange30dProsent
+        "365" -> priceChange1yProsent
+        else -> priceChange24hProsent
+    }
     Box(
         modifier = Modifier.fillMaxWidth().padding(10.dp)
             .statusBarsPadding()
@@ -99,17 +104,11 @@ fun detailUITocen(id: String,name: String,price: Int,image: String,priceChange24
                     modifier = Modifier.padding(10.dp),
                     fontSize = 20.sp
                 )
-                var price = when (selectedDay) {
-                    "1" -> priceChange24hProsent
-                    "7" -> priceChange7dProsent
-                    "30" -> priceChange30dProsent
-                    "365" -> priceChange1yProsent
-                    else -> priceChange24hProsent
-                }
-                val formatterPrice = "%.1f".format(price)
+
+                val formatterPrice = "%.1f".format(priceChanged)
                 Card(
                     colors = CardDefaults.cardColors(containerColor =
-                        if (price > 0) Color.Green else Color.Red)
+                        if (priceChanged > 0) Color.Green else Color.Red)
                 ) {
                     Row(
                         verticalAlignment = Alignment.CenterVertically
@@ -118,13 +117,13 @@ fun detailUITocen(id: String,name: String,price: Int,image: String,priceChange24
                             modifier = Modifier.size(20.dp),
                             painter = painterResource(
                                 id =
-                                    if (price > 0)
+                                    if (priceChanged > 0)
                                         R.drawable.arrow_up_right else R.drawable.arrow_up_right__1_
                             ),
                             contentDescription = "image"
                         )
                         Text(
-                            color = if (price > 0) Color.Black else Color.White,
+                            color = if (priceChanged > 0) Color.Black else Color.White,
                             modifier = Modifier.padding(5.dp),
                             text = "$formatterPrice%",
                             fontSize = 18.sp,
@@ -189,7 +188,7 @@ fun detailUITocen(id: String,name: String,price: Int,image: String,priceChange24
                         lines = listOf(
                             Line(
                                 dataPoints = priceByTime,
-                                LineStyle(color = Color.Black, width = 4.0f),
+                                LineStyle(color = if (priceChanged > 0) Color.Green else Color.Red, width = 3.0f),
                                 IntersectionPoint(radius = 0.dp),
                                 SelectionHighlightPoint(color = Color.Black, 1.dp),
                                 ShadowUnderLine(color = Color.White),
