@@ -1,35 +1,22 @@
 package com.example.crypto_tracker_app.presentation
 import androidx.compose.foundation.lazy.items
 import android.os.Bundle
-import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.viewModels
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.material3.Card
-import androidx.compose.material3.CardColors
-import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.SearchBar
-import androidx.compose.material3.SearchBarColors
 import androidx.compose.material3.SearchBarDefaults
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextFieldColors
-import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
@@ -38,31 +25,20 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.modifier.modifierLocalConsumer
-import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.text.TextStyle
-import androidx.compose.ui.text.font.FontStyle
-import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
-import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import coil.compose.AsyncImage
-import com.example.crypto_tracker_app.R
 import com.example.crypto_tracker_app.data.TocenAPI.RetrofitIntance
 import com.example.crypto_tracker_app.data.TocenByTimeApi.PriceTimeIntance
 import com.example.crypto_tracker_app.data.repository.GetTocensRepositoryImpl
 import com.example.crypto_tracker_app.data.repository.PriceTimeRepositoryImpl
-import com.example.crypto_tracker_app.domain.model.CryptoTocensModel
 import com.example.crypto_tracker_app.presentation.viewmodel.CryptoViewModel
 import com.example.crypto_tracker_app.presentation.viewmodel.TocenP_TimeViewModel
 import com.example.crypto_tracker_app.ui.theme.CryptoTrackerAppTheme
+
 
 class MainActivity : ComponentActivity() {
     private val tocenPriceViewModel: TocenP_TimeViewModel by viewModels {
@@ -139,8 +115,9 @@ class MainActivity : ComponentActivity() {
                                         token.name, token.currentPrice, image = token.image,
                                         navController,
                                         cryptoViewModel,
+                                        tocenPriceViewModel,
                                         token,
-                                        priceProsent1d = token.priceChange24hProsent
+                                        priceChange24hProsent = token.priceChange24hProsent
                                     )
                                 }
                             }
@@ -177,92 +154,4 @@ class MainActivity : ComponentActivity() {
         }
     }
 }
-@Composable
-fun cryptoUI(name: String, price: Double, image: String, nav:
-NavHostController, viewModel: CryptoViewModel, tocen: CryptoTocensModel,priceProsent1d: Double){
-    val context = LocalContext.current
-    Card(modifier = Modifier.fillMaxWidth()
-        .padding(horizontal = 16.dp, vertical = 8.dp)
-        .clickable(true, onClick = {
-            viewModel.selectTocen(tocen)
-            nav.navigate("UI2")
-            Toast.makeText(context,"clicked!!! $name", Toast.LENGTH_LONG).show()
-            }
-        ),
-        colors = CardDefaults.cardColors(Color.White),
-        elevation = CardDefaults.cardElevation(defaultElevation = 6.dp)
-        ) {
-        Column(modifier = Modifier.fillMaxWidth()) {
-            AsyncImage(
-                model = image,
-                contentDescription = "image",
-                modifier = Modifier.size(60.dp).padding(12.dp)
-            )
-            Row(
-                modifier = Modifier.fillMaxWidth().padding(end = 10.dp)
-                , Arrangement.SpaceBetween
-            ) {
-                Text(
-                    name, fontStyle = FontStyle.Italic,
-                    fontSize = 20.sp,
-                    fontWeight = FontWeight.Bold,
-                    color = Color(color = android.graphics.Color.BLACK),
-                    modifier = Modifier.padding(start = 12.dp)
-                )
-                val formatterPrice = "%.1f".format(priceProsent1d)
-                Card(
-                    colors = CardDefaults.cardColors(containerColor =
-                    if (priceProsent1d > 0) Color.Green else Color.Red)
-                ) {
-                    Row(
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        Image(
-                            modifier = Modifier.size(20.dp),
-                            painter = painterResource(id =
-                                if (priceProsent1d > 0)
-                                R.drawable.arrow_up_right else R.drawable.arrow_up_right__1_),
-                            contentDescription = "image"
-                        )
-                        Text(
-                            color = if (priceProsent1d > 0) Color.Black else Color.White,
-                            modifier = Modifier.padding(5.dp),
-                            text = "$formatterPrice%",
-                            fontSize = 18.sp,
-                            style = TextStyle(fontStyle = FontStyle.Italic)
-                        )
-                    }
-                }
-            }
-            Text(
-                "$price$", fontStyle = FontStyle.Normal,
-                fontSize = 14.sp,
-                modifier = Modifier.padding(start = 12.dp, 4.dp)
-            )
 
-        }
-    }
-        }
-
-//@Preview(showBackground = true)
-//@Composable
-//fun Preview(){
-//   cryptoUI("crypto",1222.0,"alla",
-//       NavHostController, CryptoViewModel, CryptoTocensModel)
-//}
-
-@Composable
-fun Greeting(name: String, modifier: Modifier = Modifier) {
-    Text(
-        text = "Hello $name!",
-        modifier = modifier
-    )
-}
-
-@Preview(showBackground = true)
-@Composable
-fun GreetingPreview() {
-    CryptoTrackerAppTheme {
-        Greeting("Android")
-    }
-}

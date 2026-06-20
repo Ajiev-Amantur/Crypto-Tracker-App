@@ -18,7 +18,7 @@ val tocen : LiveData<List<CryptoTocensModel>> = _tocen
     private var _selectedToken = MutableLiveData<CryptoTocensModel>()
     val selectedTocen: LiveData<CryptoTocensModel?> = _selectedToken
 
-    private var _progressBar = MutableLiveData(false)
+    private var _progressBar = MutableLiveData(true)
     val progressBar: LiveData<Boolean> = _progressBar
 
 
