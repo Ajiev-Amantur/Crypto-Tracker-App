@@ -12,7 +12,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
-
+import kotlin.collections.emptyList
 
 
 class TocenP_TimeViewModel(private val tocenByTime: PriceTimeRepository): ViewModel() {
@@ -23,15 +23,17 @@ class TocenP_TimeViewModel(private val tocenByTime: PriceTimeRepository): ViewMo
     // selectedButton
     private var _selectedButton = MutableStateFlow("1")
     val selectedButton = _selectedButton.asStateFlow()
-    // points for grafic
-    private val _grapchPoints = MutableStateFlow<List<Point>>(emptyList())
+
+        // points for grafic detailUI
+   private val _grapchPoints = MutableStateFlow<List<Point>>(emptyList())
     var graphPoints: StateFlow<List<Point>> = _grapchPoints
     //progress Bar
     private var _progressBar = MutableLiveData(false)
     val progressBar: LiveData<Boolean> = _progressBar
+
     // dates
     private var _dataGraph = MutableLiveData<List<Long>>(emptyList())
-    val dateGraph : MutableLiveData<List<Long>> = _dataGraph
+    val dateGraph: MutableLiveData<List<Long>> = _dataGraph
 
 //    //selectedDate 1,7,30,1y
 //    private var _selectedDate = MutableStateFlow<Double>(0.0)
@@ -41,34 +43,51 @@ class TocenP_TimeViewModel(private val tocenByTime: PriceTimeRepository): ViewMo
         _selectedButton.value = selectedB
     }
 
-        fun loadTocensByTime(id: String, currency: String, days: String) {
-            _grapchPoints.value = emptyList()
+    fun loadTocensByTime(id: String, currency: String, days: String) {
+        viewModelScope.launch {
+            _progressBar.value = true
+            try {
+                val result = tocenByTime.getTocenPriceByTime(
+                    id = id,
+                    currency = currency,
+                    days = days
+                )
+                _tocenP.value = result
 
-            viewModelScope.launch {
-                _progressBar.value = true
-                try {
-                    val result = tocenByTime.getTocenPriceByTime(
-                        id = id,
-                        currency = currency,
-                        days = days
+                val filtredPrices = result.prices.filterIndexed { index, _ ->  index % 10 == 0}
+
+                dateGraph.value = filtredPrices.map { it[0].toLong() }
+
+                _grapchPoints.value = filtredPrices.mapIndexed { index, priceByTime ->
+                    Point(
+                        x = index.toFloat(),
+                        y = priceByTime[1].toFloat()
                     )
-                    _tocenP.value = result
-                    _progressBar.value = false
-
-
-                    _progressBar.value = true
-                    val filtredPrices = result.prices.filterIndexed { index, _-> index % 10 == 0  }
-                    _dataGraph.value = filtredPrices.map { it[0].toLong() }
-                    _grapchPoints.value = filtredPrices.mapIndexed { index,priceByTime ->
-                        Point(
-                            x = index.toFloat(),
-                            y = priceByTime[1].toFloat()
-                        )
-                    }
-                    _progressBar.value = false
-                } catch (e: Exception) {
-                    e.printStackTrace()
                 }
+
+            } catch (e: Exception) {
+                e.printStackTrace()
+            } finally {
+                _progressBar.value = false
+
             }
         }
     }
+
+    suspend fun loadPoints(id: String, currency: String, day: String): List<Point> {
+        return try {
+            val data = tocenByTime.getTocenPriceByTime(id, currency, day)
+            data.prices.filterIndexed { index, _ -> index % 10 == 0 }
+                .mapIndexed { index, priceByTime ->
+                    Point(
+                        x = index.toFloat(),
+                        y = priceByTime[1].toFloat()
+                    )
+                }
+        } catch (e: Exception) {
+            e.printStackTrace()
+            emptyList()
+        }
+
+    }
+}

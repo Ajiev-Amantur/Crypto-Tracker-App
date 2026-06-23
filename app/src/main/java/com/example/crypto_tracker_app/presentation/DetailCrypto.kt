@@ -63,7 +63,7 @@ fun detailUITocen(id: String,name: String,price: Int,image: String,priceChange24
                   priceChange30dProsent: Double,
                   priceChange1yProsent: Double,
 ) {
-    val priceByTime by viewModel.graphPoints.collectAsState()
+    val points by viewModel.graphPoints.collectAsState()
     val selectedDay by viewModel.selectedButton.collectAsState()
     val loadingProgress by viewModel.progressBar.observeAsState(false)
     val datePriceTocen by viewModel.dateGraph.observeAsState(emptyList())
@@ -74,307 +74,278 @@ fun detailUITocen(id: String,name: String,price: Int,image: String,priceChange24
         "365" -> priceChange1yProsent
         else -> priceChange24hProsent
     }
-    Box(
-        modifier = Modifier.fillMaxWidth().padding(10.dp)
-            .statusBarsPadding()
-    ) {
-        Column(modifier = Modifier.fillMaxWidth().background(Color.Unspecified)) {
-            Row(
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.SpaceBetween
-            ) {
-                LaunchedEffect(name) {
-                    viewModel.loadTocensByTime(
-                        id = name.lowercase(),
-                        currency = "usd",
-                        days = "1"
+        Box(
+            modifier = Modifier.fillMaxWidth().padding(10.dp)
+                .statusBarsPadding()
+        ) {
+            Column(modifier = Modifier.fillMaxWidth().background(Color.Unspecified)) {
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.SpaceBetween
+                ) {
+                    LaunchedEffect(name) {
+                        viewModel.loadTocensByTime(
+                            id = name.lowercase(),
+                            currency = "usd",
+                            days = "1"
+                        )
+                    }
+                    AsyncImage(
+                        image, contentDescription = "image",
+                        modifier = Modifier.size(36.dp)
                     )
-                }
-                AsyncImage(
-                    image, contentDescription = "image",
-                    modifier = Modifier.size(36.dp)
-                )
-                Text(
-                    name,
-                    Modifier.padding(10.dp),
-                    fontSize = 20.sp
-                )
-                Text(
-                    "${price}$",
-                    modifier = Modifier.padding(10.dp),
-                    fontSize = 20.sp
-                )
+                    Text(
+                        name,
+                        Modifier.padding(10.dp),
+                        fontSize = 20.sp
+                    )
+                    Text(
+                        "${price}$",
+                        modifier = Modifier.padding(10.dp),
+                        fontSize = 20.sp
+                    )
 
-                val formatterPrice = "%.1f".format(priceChanged)
-                Card(
-                    colors = CardDefaults.cardColors(containerColor =
-                        if (priceChanged > 0) Color.Green else Color.Red)
-                ) {
-                    Row(
-                        verticalAlignment = Alignment.CenterVertically
+                    val formatterPrice = "%.1f".format(priceChanged)
+                    Card(
+                        colors = CardDefaults.cardColors(
+                            containerColor =
+                                if (priceChanged > 0) Color.Green else Color.Red
+                        )
                     ) {
-                        Image(
-                            modifier = Modifier.size(20.dp),
-                            painter = painterResource(
-                                id =
-                                    if (priceChanged > 0)
-                                        R.drawable.arrow_up_right else R.drawable.arrow_up_right__1_
-                            ),
-                            contentDescription = "image"
-                        )
-                        Text(
-                            color = if (priceChanged > 0) Color.Black else Color.White,
-                            modifier = Modifier.padding(5.dp),
-                            text = "$formatterPrice%",
-                            fontSize = 18.sp,
-                            style = TextStyle(fontStyle = FontStyle.Italic)
-                        )
-                    }
-                    }
-                }
-
-
-            if (priceByTime.size < 2) {
-                Box(
-                    modifier = Modifier.fillMaxSize(),
-                    contentAlignment = Alignment.Center
-                ) {
-                    CircularProgressIndicator()
-                }
-
-            } else {
-                val configuration = LocalConfiguration.current
-                val screenWithDp = configuration.screenWidthDp
-                val steps = 5
-                val minPrice = priceByTime.minBy { it.y }.y
-                val maxPrice = priceByTime.maxBy { it.y }.y
-                val screen = screenWithDp / priceByTime.size
-
-                val xAxisData = AxisData.Builder()
-                    .axisLineColor(Color.White)
-                    .axisStepSize(screen.dp)
-                    .backgroundColor(Color.White)
-                    .steps(5)
-                    .labelData { i ->
-                        if (datePriceTocen.isEmpty() || i >= datePriceTocen.size) {
-                            return@labelData ""
-                        }
-
-                        val timeInMs = datePriceTocen[i]
-                        val date = Date(timeInMs)
-                        val formater = SimpleDateFormat("d MMM", Locale.getDefault())
-                        formater.format(date)
-
-
-                    }
-                    .labelAndAxisLinePadding(15.dp)
-                    .build()
-
-                val yAxisData = AxisData.Builder()
-                    .axisLineColor(Color.Transparent)
-                    .steps(steps)
-                    .backgroundColor(Color.White)
-                    .labelAndAxisLinePadding(20.dp)
-                    .labelData { i ->
-                        val yScale = (maxPrice - minPrice) / steps
-                        ((i * yScale) + minPrice).formatToSinglePrecision()
-
-//                    val yScale = 100 / steps
-//                    (i * yScale).formatToSinglePrecision()
-                    }.build()
-
-                val lineChartData = LineChartData(
-                    linePlotData = LinePlotData(
-                        lines = listOf(
-                            Line(
-                                dataPoints = priceByTime,
-                                LineStyle(color = if (priceChanged > 0) Color.Green else Color.Red, width = 3.0f),
-                                IntersectionPoint(radius = 0.dp),
-                                SelectionHighlightPoint(color = Color.Black, 1.dp),
-                                ShadowUnderLine(color = Color.White),
-                                SelectionHighlightPopUp(backgroundColor = Color.White)
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            Image(
+                                modifier = Modifier.size(20.dp),
+                                painter = painterResource(
+                                    id =
+                                        if (priceChanged > 0)
+                                            R.drawable.arrow_up_right else R.drawable.arrow_up_right__1_
+                                ),
+                                contentDescription = "image"
                             )
+                            Text(
+                                color = if (priceChanged > 0) Color.Black else Color.White,
+                                modifier = Modifier.padding(5.dp),
+                                text = "$formatterPrice%",
+                                fontSize = 18.sp,
+                                style = TextStyle(fontStyle = FontStyle.Italic)
+                            )
+                        }
+                    }
+                }
+
+                if (points.size < 2) {
+                    Box(
+                        modifier = Modifier.fillMaxSize(),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        CircularProgressIndicator()
+                    }
+
+                } else {
+                    val configuration = LocalConfiguration.current
+                    val screenWithDp = configuration.screenWidthDp
+                    val steps = 5
+                    val minPrice = points.minBy { it.y }.y
+                    val maxPrice = points.maxBy { it.y }.y
+                    val screen = screenWithDp / points.size
+
+                    val xAxisData = AxisData.Builder()
+                        .axisLineColor(Color.White)
+                        .axisStepSize(screen.dp)
+                        .backgroundColor(Color.White)
+                        .steps(5)
+                        .labelData { i ->
+                            if (datePriceTocen.isEmpty() || i >= datePriceTocen.size) {
+                                return@labelData ""
+                            }
+
+                            val timeInMs = datePriceTocen[i]
+                            val date = Date(timeInMs)
+                            val formater = SimpleDateFormat("d MMM", Locale.getDefault())
+                            formater.format(date)
+
+
+                        }
+                        .labelAndAxisLinePadding(15.dp)
+                        .build()
+
+                    val yAxisData = AxisData.Builder()
+                        .axisLineColor(Color.Transparent)
+                        .steps(steps)
+                        .backgroundColor(Color.White)
+                        .labelAndAxisLinePadding(20.dp)
+                        .labelData { i ->
+                            val yScale = (maxPrice - minPrice) / steps
+                            ((i * yScale) + minPrice).formatToSinglePrecision() }.build()
+
+                    val lineChartData = LineChartData(
+                        linePlotData = LinePlotData(
+                            lines = listOf(
+                                Line(
+                                    dataPoints = points,
+                                    LineStyle(
+                                        color = if (priceChanged > 0) Color.Green else Color.Red,
+                                        width = 3.0f
+                                    ),
+                                    IntersectionPoint(radius = 0.dp),
+                                    SelectionHighlightPoint(color = Color.Black, 1.dp),
+                                    ShadowUnderLine(color = Color.White),
+                                    SelectionHighlightPopUp(backgroundColor = Color.White)
+                                )
+                            ),
                         ),
-                    ),
-                    xAxisData = xAxisData,
-                    yAxisData = yAxisData,
-                    gridLines = GridLines(
-                        enableHorizontalLines = false,
-                        enableVerticalLines = false
-                    ),
-                    backgroundColor = Color.White
-                )
-                LineChart(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(300.dp),
-                    lineChartData = lineChartData
-                )
-            }
-//                Box(
-//                    modifier = Modifier.padding(20.dp).fillM
-//                    axWidth(1f),
-//                    contentAlignment = Alignment.Center
-//                ) {
-//                    Text(
-//                        "${priceAltProsent.toInt()}%",
-//                        fontSize = 50.sp,
-//                        color = Color.Green,
-//                        fontStyle = FontStyle.Italic
-//                    )
-//                }
-            Row(
-                modifier = Modifier.fillMaxWidth(1f),
-                horizontalArrangement = Arrangement.SpaceAround
-            ) {
-                Button(
-                    onClick = {
-                        viewModel.loadTocensByTime(
-                            id = id,
-                            currency = "usd",
-                            "1"
-                        )
-                        viewModel.updateSelectB("1")
-                    },
-                    colors = ButtonDefaults.buttonColors(
-                        containerColor = if (selectedDay == "1") Color.LightGray else Color.White,
-                        contentColor = Color.Black
+                        xAxisData = xAxisData,
+                        yAxisData = yAxisData,
+                        gridLines = GridLines(
+                            enableHorizontalLines = false,
+                            enableVerticalLines = false
+                        ),
+                        backgroundColor = Color.White
                     )
-                ) {
-                    Text("1day")
-                }
-
-
-                Button(
-                    onClick = {
-                        viewModel.loadTocensByTime(
-                            id = id.toString(),
-                            currency = "usd",
-                            "7"
-                        )
-                        viewModel.updateSelectB("7")
-
-                    },
-                    colors = ButtonDefaults.buttonColors(
-                        containerColor = if (selectedDay == "7") Color.LightGray else Color.White,
-                        contentColor = Color.Black
+                    LineChart(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(300.dp),
+                        lineChartData = lineChartData
                     )
-                ) {
-                    Text("7day")
                 }
-
-                Button(
-                    onClick = {
-                        viewModel.loadTocensByTime(
-                            id = id.toString(),
-                            currency = "usd",
-                            "30"
+                Row(
+                    modifier = Modifier.fillMaxWidth(1f),
+                    horizontalArrangement = Arrangement.SpaceAround
+                ) {
+                    Button(
+                        onClick = {
+                            viewModel.loadTocensByTime(
+                                id = id,
+                                currency = "usd",
+                                "1"
+                            )
+                            viewModel.updateSelectB("1")
+                        },
+                        colors = ButtonDefaults.buttonColors(
+                            containerColor = if (selectedDay == "1") Color.LightGray else Color.White,
+                            contentColor = Color.Black
                         )
-                        viewModel.updateSelectB("30")
-                    },
-                    colors = ButtonDefaults.buttonColors(
-                        containerColor = if (selectedDay == "30") Color.LightGray else Color.White,
-                        contentColor = Color.Black
-                    )
-                ) {
-                    Text("30")
-                }
-
-                Button(
-                    onClick = {
-                        viewModel.loadTocensByTime(
-                            id = id.toString(),
-                            currency = "usd",
-                            "365"
-                        )
-                        viewModel.updateSelectB("365")
-                    },
-                    colors = ButtonDefaults.buttonColors(
-                        containerColor = if (selectedDay == "365") Color.LightGray else Color.White,
-                        contentColor = Color.Black
-                    )
-                ) {
-                    Text("1year")
-                }
-
-            }
-            Box(modifier = Modifier.fillMaxWidth().padding(10.dp).background(Color.White)) {
-                Column(modifier = Modifier.fillMaxSize()) {
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.SpaceAround
                     ) {
-                        Text(
-                            "Min price: $atlPrice$",
-                            style = TextStyle(fontStyle = FontStyle.Italic),
-                            fontSize = 14.sp,
-                            modifier = Modifier.padding(6.dp, bottom = 20.dp)
-                        )
-
-                        Text(
-                            "Max price: $athPrice$",
-                            style = TextStyle(fontStyle = FontStyle.Italic),
-                            fontSize = 14.sp,
-                            modifier = Modifier.padding(6.dp, bottom = 20.dp)
-                        )
+                        Text("1day")
                     }
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.SpaceAround
+
+
+                    Button(
+                        onClick = {
+                            viewModel.loadTocensByTime(
+                                id = id.toString(),
+                                currency = "usd",
+                                "7"
+                            )
+                            viewModel.updateSelectB("7")
+
+                        },
+                        colors = ButtonDefaults.buttonColors(
+                            containerColor = if (selectedDay == "7") Color.LightGray else Color.White,
+                            contentColor = Color.Black
+                        )
                     ) {
-                        Text(
-                            "High price 24h: $highPrice24h$",
-                            fontSize = 14.sp,
-                            style = TextStyle(fontStyle = FontStyle.Italic),
-                            modifier = Modifier.padding(6.dp, bottom = 20.dp)
-                        )
-
-                        Text(
-                            "low price 24h: ${lowPrice24h.toInt()}$",
-                            fontSize = 14.sp,
-                            modifier = Modifier.padding(6.dp, bottom = 20.dp),
-                            style = TextStyle(fontStyle = FontStyle.Italic)
-
-                        )
+                        Text("7day")
                     }
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.SpaceAround
+
+                    Button(
+                        onClick = {
+                            viewModel.loadTocensByTime(
+                                id = id.toString(),
+                                currency = "usd",
+                                "30"
+                            )
+                            viewModel.updateSelectB("30")
+                        },
+                        colors = ButtonDefaults.buttonColors(
+                            containerColor = if (selectedDay == "30") Color.LightGray else Color.White,
+                            contentColor = Color.Black
+                        )
                     ) {
-                        Text(
-                            "total Supply: ${totalSupply.toInt()}$",
-                            fontSize = 14.sp,
-                            style = TextStyle(fontStyle = FontStyle.Italic),
-                            modifier = Modifier.padding(6.dp, bottom = 20.dp)
-                        )
+                        Text("30")
+                    }
 
-                        Text(
-                            "max Supply: ${maxSypply.toInt()}$",
-                            fontSize = 14.sp,
-                            modifier = Modifier.padding(6.dp, bottom = 20.dp),
-                            style = TextStyle(fontStyle = FontStyle.Italic)
-
+                    Button(
+                        onClick = {
+                            viewModel.loadTocensByTime(
+                                id = id.toString(),
+                                currency = "usd",
+                                "365"
+                            )
+                            viewModel.updateSelectB("365")
+                        },
+                        colors = ButtonDefaults.buttonColors(
+                            containerColor = if (selectedDay == "365") Color.LightGray else Color.White,
+                            contentColor = Color.Black
                         )
+                    ) {
+                        Text("1year")
+                    }
+
+                }
+                Box(modifier = Modifier.fillMaxWidth().padding(10.dp).background(Color.White)) {
+                    Column(modifier = Modifier.fillMaxSize()) {
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            horizontalArrangement = Arrangement.SpaceAround
+                        ) {
+                            Text(
+                                "Min price: $atlPrice$",
+                                style = TextStyle(fontStyle = FontStyle.Italic),
+                                fontSize = 14.sp,
+                                modifier = Modifier.padding(6.dp, bottom = 20.dp)
+                            )
+
+                            Text(
+                                "Max price: $athPrice$",
+                                style = TextStyle(fontStyle = FontStyle.Italic),
+                                fontSize = 14.sp,
+                                modifier = Modifier.padding(6.dp, bottom = 20.dp)
+                            )
+                        }
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            horizontalArrangement = Arrangement.SpaceAround
+                        ) {
+                            Text(
+                                "High price 24h: $highPrice24h$",
+                                fontSize = 14.sp,
+                                style = TextStyle(fontStyle = FontStyle.Italic),
+                                modifier = Modifier.padding(6.dp, bottom = 20.dp)
+                            )
+
+                            Text(
+                                "low price 24h: ${lowPrice24h.toInt()}$",
+                                fontSize = 14.sp,
+                                modifier = Modifier.padding(6.dp, bottom = 20.dp),
+                                style = TextStyle(fontStyle = FontStyle.Italic)
+
+                            )
+                        }
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            horizontalArrangement = Arrangement.SpaceAround
+                        ) {
+                            Text(
+                                "total Supply: ${totalSupply.toInt()}$",
+                                fontSize = 14.sp,
+                                style = TextStyle(fontStyle = FontStyle.Italic),
+                                modifier = Modifier.padding(6.dp, bottom = 20.dp)
+                            )
+
+                            Text(
+                                "max Supply: ${maxSypply.toInt()}$",
+                                fontSize = 14.sp,
+                                modifier = Modifier.padding(6.dp, bottom = 20.dp),
+                                style = TextStyle(fontStyle = FontStyle.Italic)
+
+                            )
+                        }
                     }
                 }
             }
         }
     }
-}
-
-//data class Point(
-//    val x: Float,
-//    val y: Float,
-//)
-//
-//@Composable
-//fun PointData(): List<Point>{
-//    return
-//}
-
-//@Preview(showBackground = true)
-//@Composable
-//fun Preview(){
-//detailUITocen("BNB",700,"image",8.9,
-//   100000.0,0.001,95000.00)
-//}

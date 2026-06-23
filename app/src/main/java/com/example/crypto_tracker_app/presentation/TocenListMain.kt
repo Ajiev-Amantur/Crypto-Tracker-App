@@ -18,9 +18,13 @@ import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -35,6 +39,7 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import co.yml.charts.axis.AxisData
 import co.yml.charts.common.extensions.formatToSinglePrecision
+import co.yml.charts.common.model.Point
 import co.yml.charts.ui.linechart.LineChart
 import co.yml.charts.ui.linechart.model.GridLines
 import co.yml.charts.ui.linechart.model.IntersectionPoint
@@ -50,6 +55,8 @@ import com.example.crypto_tracker_app.R
 import com.example.crypto_tracker_app.domain.model.CryptoTocensModel
 import com.example.crypto_tracker_app.presentation.viewmodel.CryptoViewModel
 import com.example.crypto_tracker_app.presentation.viewmodel.TocenP_TimeViewModel
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.invoke
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
@@ -59,146 +66,144 @@ import kotlin.collections.get
 fun cryptoUI(name: String, price: Double, image: String, nav:
 NavHostController, tocenViewModel: CryptoViewModel,tocenPTviewModel: TocenP_TimeViewModel,
              tocen: CryptoTocensModel,
-             priceChange24hProsent: Double){
-    val priceByTime by tocenPTviewModel.graphPoints.collectAsState()
-    val timeTocen by tocenPTviewModel.dateGraph.observeAsState(emptyList())
+             priceChange24hProsent: Double) {
+
+    val progressBar by tocenViewModel.progressBar.observeAsState()
+    var myPoint by remember {
+        mutableStateOf<List<Point>>(emptyList())
+    }
     val context = LocalContext.current
-    Card(modifier = Modifier.fillMaxWidth()
-        .padding(horizontal = 16.dp, vertical = 8.dp)
-        .clickable(true, onClick = {
-            tocenViewModel.selectTocen(tocen)
-            nav.navigate("UI2")
-            Toast.makeText(context,"clicked!!! $name", Toast.LENGTH_LONG).show()
-        }
-        ),
-        colors = CardDefaults.cardColors(Color.White),
-        elevation = CardDefaults.cardElevation(defaultElevation = 6.dp)
-    ) {
-        Column(modifier = Modifier.fillMaxWidth()) {
-            AsyncImage(
-                model = image,
-                contentDescription = "image",
-                modifier = Modifier.size(60.dp).padding(12.dp)
+    Dispatchers.IO.apply {
+        LaunchedEffect(tocen.id) {
+            val result = tocenPTviewModel.loadPoints(
+                tocen.id.lowercase(),
+                currency = "usd",
+                day = "1"
             )
-            Row(
-                modifier = Modifier.fillMaxWidth().padding(end = 10.dp)
-                , Arrangement.SpaceBetween
-            ) {
-                Text(
-                    name, fontStyle = FontStyle.Italic,
-                    fontSize = 20.sp,
-                    fontWeight = FontWeight.Bold,
-                    color = Color(color = android.graphics.Color.BLACK),
-                    modifier = Modifier.padding(start = 12.dp)
-                )
-                if (priceByTime.size < 2){
-                    Box(modifier = Modifier.fillMaxSize()){
-                        CircularProgressIndicator()
-                    }
-                }else {
-
-//                    val configuration = LocalConfiguration.current
-//                    val screenWithDp = configuration.screenWidthDp
-                    val sizeScreen = 80f
-                    val steps = 5
-                    val screen = sizeScreen / priceByTime.size
-                    val points = priceByTime.takeLast(20)
-                    val stepSize = (sizeScreen / (points.size -1)).dp
-                    val xAxisData = AxisData.Builder()
-                        .axisLineColor(Color.Transparent)
-                        .axisStepSize(stepSize)
-                        .backgroundColor(Color.Transparent)
-                        .labelAndAxisLinePadding(0.dp)
-                        .steps(5)
-                        .labelData { ""
-//                            if (timeTocen.isEmpty() || i >= timeTocen.size) {
-//                                return@labelData ""
-                            }
-
-//                            val timeInMs = timeTocen[i]
-//                            val date = Date(timeInMs)
-//                            val formater = SimpleDateFormat("d MMM", Locale.getDefault())
-//                            formater.format(date)
-
-
-                        .labelAndAxisLinePadding(2.dp)
-                        .build()
-
-                    val yAxisData = AxisData.Builder()
-                        .axisLineColor(Color.Transparent)
-                        .steps(steps)
-                        .backgroundColor(Color.White)
-                        .labelAndAxisLinePadding(0.dp)
-                        .labelData { ""
-//                            val yScale = (maxPrice - minPrice) / steps
-//                            ((i * yScale) + minPrice).formatToSinglePrecision()
-
-//                    val yScale = 100 / steps
-//                    (i * yScale).formatToSinglePrecision()
-                        }.build()
-
-                    val lineChartData = LineChartData(
-                        linePlotData = LinePlotData(
-                            lines = listOf(
-                                Line(
-                                    dataPoints = points,
-                                    LineStyle(
-                                        color = if (priceChange24hProsent > 0) Color.Green else Color.Red,
-                                        width = 3.0f
-                                    ),
-                                    intersectionPoint = null,
-                                    selectionHighlightPoint = null,
-                                   shadowUnderLine = null,
-                                   selectionHighlightPopUp = null,
-                                )
-                            ),
-                        ),
-                        xAxisData = xAxisData,
-                        yAxisData = yAxisData,
-                        gridLines = GridLines(
-                            enableHorizontalLines = false,
-                            enableVerticalLines = false
-                        ),
-                        backgroundColor = Color.Transparent
-                    )
-                    LineChart(
-                        modifier = Modifier
-                            .width(80.dp)
-                            .height(30.dp),
-                        lineChartData = lineChartData
-                    )
-                }
-                val formatterPrice = "%.1f".format(priceChange24hProsent)
-                Card(
-                    colors = CardDefaults.cardColors(containerColor =
-                        if (priceChange24hProsent > 0) Color.Green else Color.Red)
-                ) {
-                    Row(
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        Image(
-                            modifier = Modifier.size(20.dp),
-                            painter = painterResource(id =
-                                if (priceChange24hProsent > 0)
-                                    R.drawable.arrow_up_right else R.drawable.arrow_up_right__1_),
-                            contentDescription = "image"
-                        )
-                        Text(
-                            color = if (priceChange24hProsent > 0) Color.Black else Color.White,
-                            modifier = Modifier.padding(5.dp),
-                            text = "$formatterPrice%",
-                            fontSize = 18.sp,
-                            style = TextStyle(fontStyle = FontStyle.Italic)
-                        )
-                    }
-                }
-            }
-            Text(
-                "$price$", fontStyle = FontStyle.Normal,
-                fontSize = 14.sp,
-                modifier = Modifier.padding(start = 12.dp, 4.dp)
-            )
-
+            myPoint = result
         }
     }
-}
+
+        Card(
+            modifier = Modifier.fillMaxWidth()
+            .padding(horizontal = 16.dp, vertical = 8.dp)
+            .clickable(true, onClick = {
+                tocenViewModel.selectTocen(tocen)
+                nav.navigate("UI2")
+                Toast.makeText(context, "clicked!!! $name", Toast.LENGTH_LONG).show()
+            }
+            ),
+            colors = CardDefaults.cardColors(Color.White),
+            elevation = CardDefaults.cardElevation(defaultElevation = 6.dp)
+        ) {
+            Column(modifier = Modifier.fillMaxWidth()) {
+                AsyncImage(
+                    model = image,
+                    contentDescription = "image",
+                    modifier = Modifier.size(60.dp).padding(12.dp)
+                )
+                Row(
+                    modifier = Modifier.fillMaxWidth().padding(end = 10.dp),
+                    Arrangement.SpaceBetween
+                ) {
+                    Text(
+                        name, fontStyle = FontStyle.Italic,
+                        fontSize = 20.sp,
+                        fontWeight = FontWeight.Bold,
+                        color = Color(color = android.graphics.Color.BLACK),
+                        modifier = Modifier.padding(start = 12.dp)
+                    )
+                    if (myPoint.size < 2) {
+                        Box(modifier = Modifier.fillMaxSize()) {
+                            CircularProgressIndicator()
+                        }
+                    } else {
+                        val sizeScreen = 80f
+                        val steps = 5
+                        val points = myPoint.takeLast(20)
+                        val stepSize = (sizeScreen / (points.size - 1)).dp
+                        val xAxisData = AxisData.Builder()
+                            .axisLineColor(Color.Transparent)
+                            .axisStepSize(stepSize)
+                            .backgroundColor(Color.Transparent)
+                            .labelAndAxisLinePadding(0.dp)
+                            .steps(5)
+                            .labelData { "" }
+                            .labelAndAxisLinePadding(2.dp)
+                            .build()
+
+                        val yAxisData = AxisData.Builder()
+                            .axisLineColor(Color.Transparent)
+                            .steps(steps)
+                            .backgroundColor(Color.White)
+                            .labelAndAxisLinePadding(0.dp)
+                            .labelData { "" }.build()
+
+                        val lineChartData = LineChartData(
+                            linePlotData = LinePlotData(
+                                lines = listOf(
+                                    Line(
+                                        dataPoints = points,
+                                        LineStyle(
+                                            color = if (priceChange24hProsent > 0) Color.Green else Color.Red,
+                                            width = 3.0f),
+                                        intersectionPoint = null,
+                                        selectionHighlightPoint = null,
+                                        shadowUnderLine = null,
+                                        selectionHighlightPopUp = null,
+                                    )
+                                ),
+                            ),
+                            xAxisData = xAxisData,
+                            yAxisData = yAxisData,
+                            gridLines = GridLines(
+                                enableHorizontalLines = false,
+                                enableVerticalLines = false
+                            ),
+                            backgroundColor = Color.White
+                        )
+                        LineChart(
+                            modifier = Modifier
+                                .width(100.dp)
+                                .height(40.dp),
+                            lineChartData = lineChartData
+                        )
+                    }
+                    val formatterPrice = "%.1f".format(priceChange24hProsent)
+                    Card(
+                        colors = CardDefaults.cardColors(
+                            containerColor =
+                                if (priceChange24hProsent > 0) Color.Green else Color.Red
+                        )
+                    ) {
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            Image(
+                                modifier = Modifier.size(20.dp),
+                                painter = painterResource(
+                                    id =
+                                        if (priceChange24hProsent > 0)
+                                            R.drawable.arrow_up_right else R.drawable.arrow_up_right__1_
+                                ),
+                                contentDescription = "image"
+                            )
+                            Text(
+                                color = if (priceChange24hProsent > 0) Color.Black else Color.White,
+                                modifier = Modifier.padding(5.dp),
+                                text = "$formatterPrice%",
+                                fontSize = 18.sp,
+                                style = TextStyle(fontStyle = FontStyle.Italic)
+                            )
+                        }
+                    }
+                }
+                Text(
+                    "$price$", fontStyle = FontStyle.Normal,
+                    fontSize = 14.sp,
+                    modifier = Modifier.padding(start = 12.dp, 4.dp)
+                )
+
+            }
+        }
+    }

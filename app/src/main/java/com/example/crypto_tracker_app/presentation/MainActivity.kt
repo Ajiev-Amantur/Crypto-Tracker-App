@@ -69,7 +69,7 @@ class MainActivity : ComponentActivity() {
                 NavHost(navController,"UI1") {
                 composable("UI1"){
                     val tocens by cryptoViewModel.tocen.observeAsState()
-                    val loading by cryptoViewModel.progressBar.observeAsState(false)
+                    val loading by cryptoViewModel.progressBar.observeAsState(true)
                     var searchText by remember {
                         mutableStateOf("")
                     }
