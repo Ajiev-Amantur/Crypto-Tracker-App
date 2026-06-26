@@ -19,4 +19,5 @@ data class CryptoTocensModel(
     val priceChange7dProsent: Double,
     val priceChange30dProsent: Double,
     val priceChange1yProsent: Double,
+    val sparkline: List<Double>
 )

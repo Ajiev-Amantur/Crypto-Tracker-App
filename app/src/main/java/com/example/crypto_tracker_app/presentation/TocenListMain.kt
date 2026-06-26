@@ -69,20 +69,20 @@ NavHostController, tocenViewModel: CryptoViewModel,tocenPTviewModel: TocenP_Time
              priceChange24hProsent: Double) {
 
     val progressBar by tocenViewModel.progressBar.observeAsState()
-    var myPoint by remember {
-        mutableStateOf<List<Point>>(emptyList())
+    var myPoint = remember(tocen.id){
+        tocenViewModel.prepareSparkline(tocen.sparkline)
     }
     val context = LocalContext.current
-    Dispatchers.IO.apply {
-        LaunchedEffect(tocen.id) {
-            val result = tocenPTviewModel.loadPoints(
-                tocen.id.lowercase(),
-                currency = "usd",
-                day = "1"
-            )
-            myPoint = result
-        }
-    }
+//    Dispatchers.IO.apply {
+//        LaunchedEffect(tocen.id) {
+//            val result = tocenPTviewModel.loadPoints(
+//                tocen.id.lowercase(),
+//                currency = "usd",
+//                day = "1"
+//            )
+//            myPoint = result
+//        }
+//    }
 
         Card(
             modifier = Modifier.fillMaxWidth()

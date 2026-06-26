@@ -10,6 +10,8 @@ interface CryptoApi {
 @GET("coins/markets")
     suspend fun getTocens(
     @Query("price_change_percentage") priceChange: String = "24h,7d,30d,1y",
-    @Query("vs_currency") currency: String): List<CryptoTocenDto>
+    @Query("vs_currency") currency: String,
+    @Query("sparkline") sparkline: Boolean = true
+    ): List<CryptoTocenDto>
 
 }

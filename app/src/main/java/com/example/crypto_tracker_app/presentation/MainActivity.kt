@@ -109,15 +109,18 @@ class MainActivity : ComponentActivity() {
                             {
                                 val filtredTOcens = tocens?.filter {
                                     it.name.contains(searchText, ignoreCase = true)
-                                }
-                                items(items = filtredTOcens ?: emptyList()) { token ->
+                                } ?: emptyList()
+                                items(
+                                    items = filtredTOcens,
+                                    key = { it.id }
+                                ){ token ->
                                     cryptoUI(
                                         token.name, token.currentPrice, image = token.image,
                                         navController,
                                         cryptoViewModel,
                                         tocenPriceViewModel,
                                         token,
-                                        priceChange24hProsent = token.priceChange24hProsent
+                                        priceChange24hProsent = token.priceChange24hProsent,
                                     )
                                 }
                             }

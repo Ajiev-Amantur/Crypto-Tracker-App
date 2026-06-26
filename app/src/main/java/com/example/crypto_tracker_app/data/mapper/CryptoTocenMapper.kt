@@ -1,6 +1,7 @@
 package com.example.crypto_tracker_app.data.mapper
 
 import com.example.crypto_tracker_app.data.modelDto.CryptoTocenDto
+import com.example.crypto_tracker_app.data.modelDto.SparklineDto
 import com.example.crypto_tracker_app.domain.model.CryptoTocensModel
 
 fun CryptoTocenDto.toDomain(): CryptoTocensModel {
@@ -20,7 +21,8 @@ fun CryptoTocenDto.toDomain(): CryptoTocensModel {
             priceChange24hProsent = priceChange24hProsent,
             priceChange7dProsent = priceChange7dProsent,
             priceChange30dProsent = priceChange30dProsent,
-            priceChange1yProsent = priceChange1yProsent
+            priceChange1yProsent = priceChange1yProsent,
+            sparkline = sparklineIn7d.price
         )
     }
     fun CryptoTocensModel.toDto(): CryptoTocenDto {
@@ -40,6 +42,7 @@ fun CryptoTocenDto.toDomain(): CryptoTocensModel {
             priceChange24hProsent = priceChange24hProsent,
             priceChange7dProsent = priceChange7dProsent,
             priceChange30dProsent = priceChange30dProsent,
-            priceChange1yProsent = priceChange1yProsent
+            priceChange1yProsent = priceChange1yProsent,
+            sparklineIn7d = SparklineDto(price = sparkline)
         )
     }

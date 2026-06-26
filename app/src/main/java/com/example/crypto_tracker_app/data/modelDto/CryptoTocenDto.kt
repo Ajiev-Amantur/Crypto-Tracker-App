@@ -19,4 +19,9 @@ data class CryptoTocenDto(
     @SerializedName("price_change_percentage_7d_in_currency") val priceChange7dProsent: Double,
     @SerializedName("price_change_percentage_30d_in_currency") val priceChange30dProsent: Double,
     @SerializedName("price_change_percentage_1y_in_currency") val priceChange1yProsent: Double,
+    @SerializedName("sparkline_in_7d") val sparklineIn7d: SparklineDto
+)
+
+data class SparklineDto(
+    val price : List<Double>
 )
