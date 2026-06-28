@@ -57,6 +57,7 @@ import com.example.crypto_tracker_app.presentation.viewmodel.CryptoViewModel
 import com.example.crypto_tracker_app.presentation.viewmodel.TocenP_TimeViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.invoke
+import kotlinx.coroutines.withContext
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
@@ -69,21 +70,15 @@ NavHostController, tocenViewModel: CryptoViewModel,tocenPTviewModel: TocenP_Time
              priceChange24hProsent: Double) {
 
     val progressBar by tocenViewModel.progressBar.observeAsState()
-    var myPoint = remember(tocen.id){
-        tocenViewModel.prepareSparkline(tocen.sparkline)
+    var myPoint by remember(tocen.id){ mutableStateOf<List<Point>>(emptyList())}
+    LaunchedEffect(tocen.id) {
+        withContext(Dispatchers.Default){
+            val result = tocenViewModel.prepareSparkline(tocen.sparkline)
+            myPoint = result
+        }
     }
-    val context = LocalContext.current
-//    Dispatchers.IO.apply {
-//        LaunchedEffect(tocen.id) {
-//            val result = tocenPTviewModel.loadPoints(
-//                tocen.id.lowercase(),
-//                currency = "usd",
-//                day = "1"
-//            )
-//            myPoint = result
-//        }
-//    }
 
+    val context = LocalContext.current
         Card(
             modifier = Modifier.fillMaxWidth()
             .padding(horizontal = 16.dp, vertical = 8.dp)
@@ -111,22 +106,29 @@ NavHostController, tocenViewModel: CryptoViewModel,tocenPTviewModel: TocenP_Time
                         fontSize = 20.sp,
                         fontWeight = FontWeight.Bold,
                         color = Color(color = android.graphics.Color.BLACK),
-                        modifier = Modifier.padding(start = 12.dp)
+                        modifier = Modifier.padding(start = 12.dp).weight(1f)
                     )
                     if (myPoint.size < 2) {
-                        Box(modifier = Modifier.fillMaxSize()) {
-                            CircularProgressIndicator()
+                        Box(
+                            modifier = Modifier.size(100.dp, 40.dp),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            CircularProgressIndicator(
+                                modifier = Modifier.size(20.dp),
+                                strokeWidth = 2.dp
+                            )
                         }
                     } else {
                         val sizeScreen = 80f
                         val steps = 5
-                        val points = myPoint.takeLast(20)
+                        val points = myPoint.takeLast(15)
                         val stepSize = (sizeScreen / (points.size - 1)).dp
                         val xAxisData = AxisData.Builder()
                             .axisLineColor(Color.Transparent)
                             .axisStepSize(stepSize)
                             .backgroundColor(Color.Transparent)
                             .labelAndAxisLinePadding(0.dp)
+                            .axisLabelFontSize(0.sp)
                             .steps(5)
                             .labelData { "" }
                             .labelAndAxisLinePadding(2.dp)
@@ -146,7 +148,7 @@ NavHostController, tocenViewModel: CryptoViewModel,tocenPTviewModel: TocenP_Time
                                         dataPoints = points,
                                         LineStyle(
                                             color = if (priceChange24hProsent > 0) Color.Green else Color.Red,
-                                            width = 3.0f),
+                                            width = 6.0f),
                                         intersectionPoint = null,
                                         selectionHighlightPoint = null,
                                         shadowUnderLine = null,
@@ -160,7 +162,9 @@ NavHostController, tocenViewModel: CryptoViewModel,tocenPTviewModel: TocenP_Time
                                 enableHorizontalLines = false,
                                 enableVerticalLines = false
                             ),
-                            backgroundColor = Color.White
+                            backgroundColor = Color.White,
+                            paddingRight = 0.dp,
+                            containerPaddingEnd = 0.dp
                         )
                         LineChart(
                             modifier = Modifier

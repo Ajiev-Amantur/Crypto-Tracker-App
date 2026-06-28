@@ -1,6 +1,5 @@
 package com.example.crypto_tracker_app.data.repository
 
-import android.util.Log
 import com.example.crypto_tracker_app.data.TocenAPI.CryptoApi
 import com.example.crypto_tracker_app.data.mapper.toDomain
 import com.example.crypto_tracker_app.domain.model.CryptoTocensModel
@@ -9,7 +8,6 @@ import com.example.crypto_tracker_app.domain.repository.GetTocensRepository
 class GetTocensRepositoryImpl(private val api: CryptoApi): GetTocensRepository {
     override suspend fun getAllTocens(priceBytime: String): List<CryptoTocensModel> {
          val result = api.getTocens(priceBytime,"usd").map { it.toDomain() }
-        Log.d("Ololo","$result")
         return result
     }
 }

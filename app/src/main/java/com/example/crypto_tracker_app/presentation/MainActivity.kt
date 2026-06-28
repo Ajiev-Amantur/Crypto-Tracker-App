@@ -13,6 +13,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.SearchBar
 import androidx.compose.material3.SearchBarDefaults
@@ -102,6 +103,11 @@ class MainActivity : ComponentActivity() {
                                 }
                             ) {
                             }
+//                            Button(modifier = Modifier.fillMaxWidth(), onClick = {
+//
+//                            }) {
+//                                Text("High price 24h")
+//                            }
                             LazyColumn(
                                 modifier = Modifier.fillMaxSize(
                                 ).statusBarsPadding().background(Color.LightGray)

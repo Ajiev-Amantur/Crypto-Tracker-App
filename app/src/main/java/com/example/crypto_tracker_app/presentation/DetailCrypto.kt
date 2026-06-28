@@ -154,6 +154,7 @@ fun detailUITocen(id: String,name: String,price: Int,image: String,priceChange24
                     val xAxisData = AxisData.Builder()
                         .axisLineColor(Color.White)
                         .axisStepSize(screen.dp)
+                        .axisLabelFontSize(0.sp)
                         .backgroundColor(Color.White)
                         .steps(5)
                         .labelData { i ->
@@ -202,7 +203,9 @@ fun detailUITocen(id: String,name: String,price: Int,image: String,priceChange24
                             enableHorizontalLines = false,
                             enableVerticalLines = false
                         ),
-                        backgroundColor = Color.White
+                        backgroundColor = Color.White,
+                        paddingRight = 0.dp,
+                        containerPaddingEnd = 0.dp
                     )
                     LineChart(
                         modifier = Modifier
