@@ -5,19 +5,26 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.viewModels
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.statusBarsPadding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.SearchBar
 import androidx.compose.material3.SearchBarDefaults
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
@@ -26,16 +33,22 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.ColorFilter
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import com.example.crypto_tracker_app.R
 import com.example.crypto_tracker_app.data.TocenAPI.RetrofitIntance
 import com.example.crypto_tracker_app.data.TocenByTimeApi.PriceTimeIntance
 import com.example.crypto_tracker_app.data.repository.GetTocensRepositoryImpl
 import com.example.crypto_tracker_app.data.repository.PriceTimeRepositoryImpl
+import com.example.crypto_tracker_app.domain.usecase.SortTocenHighPriceUseCase
+import com.example.crypto_tracker_app.domain.usecase.SortTocenLowPriceUseCase
 import com.example.crypto_tracker_app.presentation.viewmodel.CryptoViewModel
 import com.example.crypto_tracker_app.presentation.viewmodel.TocenP_TimeViewModel
 import com.example.crypto_tracker_app.ui.theme.CryptoTrackerAppTheme
@@ -56,7 +69,11 @@ class MainActivity : ComponentActivity() {
             override fun <T : ViewModel> create(modelClass: Class<T>): T {
                 val api = RetrofitIntance.api
                 val repository = GetTocensRepositoryImpl(api)
-                return CryptoViewModel(repository) as T
+                val highpriceusecase = SortTocenHighPriceUseCase(repository)
+                val lowpriceusecase = SortTocenLowPriceUseCase(repository)
+
+                return CryptoViewModel(repository,highpriceusecase,
+                    lowpriceusecase) as T
             }
         }
     }
@@ -71,19 +88,24 @@ class MainActivity : ComponentActivity() {
                 composable("UI1"){
                     val tocens by cryptoViewModel.tocen.observeAsState()
                     val loading by cryptoViewModel.progressBar.observeAsState(true)
+                    val selected by cryptoViewModel.selected.observeAsState(true)
                     var searchText by remember {
                         mutableStateOf("")
                     }
                     if (loading) {
                         Box(
-                            modifier = Modifier.padding(20.dp).fillMaxWidth(1f),
+                            modifier = Modifier
+                                .padding(20.dp)
+                                .fillMaxWidth(1f),
                             contentAlignment = Alignment.Center
                         ) {
 
                         }
                     } else  {
                         Column(
-                            modifier = Modifier.fillMaxSize().statusBarsPadding()
+                            modifier = Modifier
+                                .fillMaxSize()
+                                .statusBarsPadding()
                                 .background(Color.LightGray)
                         ) {
                             SearchBar(
@@ -103,14 +125,64 @@ class MainActivity : ComponentActivity() {
                                 }
                             ) {
                             }
-//                            Button(modifier = Modifier.fillMaxWidth(), onClick = {
-//
-//                            }) {
-//                                Text("High price 24h")
-//                            }
+                            Row(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(vertical = 8.dp),
+                                horizontalArrangement = Arrangement.Center,
+                                verticalAlignment = Alignment.CenterVertically // Выравниваем всё по центру по вертикали
+                            ) {
+                                TextButton(
+
+                                    onClick = {
+                                        if (selected) {
+                                            cryptoViewModel.TocenByHighPrice()
+                                        } else {
+                                            cryptoViewModel.TocenByLowPrice()
+                                        }
+                                    }
+                                ) {
+                                    Row(verticalAlignment = Alignment.CenterVertically) {
+                                        Text(
+                                            text = "Price",
+                                            color = Color.Black,
+                                            fontSize = 16.sp
+                                        )
+
+                                        Spacer(modifier = Modifier.width(4.dp))
+
+                                        Column(
+                                            horizontalAlignment = Alignment.CenterHorizontally,
+                                            verticalArrangement = Arrangement.Center
+                                        ) {
+                                            Image(
+                                                painter = painterResource(R.drawable.baseline_expand_more),
+                                                modifier = Modifier.size(16.dp),
+                                                colorFilter = ColorFilter.tint(
+                                                    if (selected) Color.Black else Color.Gray.copy(alpha = 0.5f)
+                                                ),
+                                                contentDescription = null
+                                            )
+                                            Image(
+                                                painter = painterResource(R.drawable.baseline_expand_less),
+                                                modifier = Modifier.size(16.dp),
+                                                colorFilter = ColorFilter.tint(
+                                                    if (!selected) Color.Black else Color.Gray.copy(alpha = 0.5f)
+                                                ),
+                                                contentDescription = null
+                                            )
+                                        }
+                                    }
+                                }
+                            }
+
+
                             LazyColumn(
-                                modifier = Modifier.fillMaxSize(
-                                ).statusBarsPadding().background(Color.LightGray)
+                                modifier = Modifier
+                                    .fillMaxSize(
+                                    )
+                                    .statusBarsPadding()
+                                    .background(Color.LightGray)
                             )
                             {
                                 val filtredTOcens = tocens?.filter {
