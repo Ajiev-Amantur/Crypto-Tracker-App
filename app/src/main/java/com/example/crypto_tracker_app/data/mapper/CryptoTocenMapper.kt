@@ -22,7 +22,9 @@ fun CryptoTocenDto.toDomain(): CryptoTocensModel {
             priceChange7dProsent = priceChange7dProsent,
             priceChange30dProsent = priceChange30dProsent,
             priceChange1yProsent = priceChange1yProsent,
-            sparkline = sparklineIn7d.price
+            sparkline = sparklineIn7d.price,
+            tocenRank = tocenRank,
+            marketCap = marketCap
         )
     }
     fun CryptoTocensModel.toDto(): CryptoTocenDto {
@@ -43,6 +45,8 @@ fun CryptoTocenDto.toDomain(): CryptoTocensModel {
             priceChange7dProsent = priceChange7dProsent,
             priceChange30dProsent = priceChange30dProsent,
             priceChange1yProsent = priceChange1yProsent,
-            sparklineIn7d = SparklineDto(price = sparkline)
+            sparklineIn7d = SparklineDto(price = sparkline),
+            tocenRank = tocenRank,
+            marketCap = marketCap
         )
     }

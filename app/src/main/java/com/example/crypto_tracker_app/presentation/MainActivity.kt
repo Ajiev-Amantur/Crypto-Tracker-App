@@ -12,14 +12,15 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.SearchBar
 import androidx.compose.material3.SearchBarDefaults
@@ -47,11 +48,16 @@ import com.example.crypto_tracker_app.data.TocenAPI.RetrofitIntance
 import com.example.crypto_tracker_app.data.TocenByTimeApi.PriceTimeIntance
 import com.example.crypto_tracker_app.data.repository.GetTocensRepositoryImpl
 import com.example.crypto_tracker_app.data.repository.PriceTimeRepositoryImpl
+import com.example.crypto_tracker_app.domain.usecase.SortHighMarketCapUseCase
+import com.example.crypto_tracker_app.domain.usecase.SortTocenByPriceDown24h
+import com.example.crypto_tracker_app.domain.usecase.SortTocenByRankUseCase
 import com.example.crypto_tracker_app.domain.usecase.SortTocenHighPriceUseCase
 import com.example.crypto_tracker_app.domain.usecase.SortTocenLowPriceUseCase
+import com.example.crypto_tracker_app.domain.usecase.SortTocensByPriceUp24h
 import com.example.crypto_tracker_app.presentation.viewmodel.CryptoViewModel
 import com.example.crypto_tracker_app.presentation.viewmodel.TocenP_TimeViewModel
 import com.example.crypto_tracker_app.ui.theme.CryptoTrackerAppTheme
+import kotlin.collections.emptyList
 
 
 class MainActivity : ComponentActivity() {
@@ -69,11 +75,20 @@ class MainActivity : ComponentActivity() {
             override fun <T : ViewModel> create(modelClass: Class<T>): T {
                 val api = RetrofitIntance.api
                 val repository = GetTocensRepositoryImpl(api)
-                val highpriceusecase = SortTocenHighPriceUseCase(repository)
-                val lowpriceusecase = SortTocenLowPriceUseCase(repository)
+                val highPriceUseCase = SortTocenHighPriceUseCase(repository)
+                val lowPriceUseCase = SortTocenLowPriceUseCase(repository)
+                val highMarketCapUseCase = SortHighMarketCapUseCase(repository)
+                val tocenByRankUseCase = SortTocenByRankUseCase(repository)
+                val tocenByPriceUp24h = SortTocensByPriceUp24h(repository)
+                val tocenByPriceDown = SortTocenByPriceDown24h(repository)
 
-                return CryptoViewModel(repository,highpriceusecase,
-                    lowpriceusecase) as T
+                return CryptoViewModel(repository,
+                    highPriceUseCase,
+                    lowPriceUseCase,
+                    highMarketCapUseCase,
+                    tocenByRankUseCase,
+                    tocenByPriceUp24h,
+                    tocenByPriceDown) as T
             }
         }
     }
@@ -88,7 +103,8 @@ class MainActivity : ComponentActivity() {
                 composable("UI1"){
                     val tocens by cryptoViewModel.tocen.observeAsState()
                     val loading by cryptoViewModel.progressBar.observeAsState(true)
-                    val selected by cryptoViewModel.selected.observeAsState(true)
+                    val selectedPrice by cryptoViewModel.selectedPrice.observeAsState(true)
+                    val selectedPrice24h by cryptoViewModel.selectedPrice24h.observeAsState(true)
                     var searchText by remember {
                         mutableStateOf("")
                     }
@@ -128,14 +144,31 @@ class MainActivity : ComponentActivity() {
                             Row(
                                 modifier = Modifier
                                     .fillMaxWidth()
+                                    .height(60.dp)
                                     .padding(vertical = 8.dp),
-                                horizontalArrangement = Arrangement.Center,
+                                horizontalArrangement = Arrangement.SpaceAround,
                                 verticalAlignment = Alignment.CenterVertically // Выравниваем всё по центру по вертикали
                             ) {
-                                TextButton(
+                                TextButton(onClick = {
+                                    cryptoViewModel.TocenByRank()
+                                }) {
+                                    Text("Default",
+                                        color = Color.Black,
+                                        fontSize = 14.sp)
+                                }
+                                TextButton(onClick = {
+                                    cryptoViewModel.TocenByHighMarketCap()
+                                }) {
+                                    Text(
+                                        "MarketCap",
+                                        color = Color.Black,
+                                        fontSize = 14.sp
+                                    )
+                                }
 
+                                TextButton(
                                     onClick = {
-                                        if (selected) {
+                                        if (selectedPrice) {
                                             cryptoViewModel.TocenByHighPrice()
                                         } else {
                                             cryptoViewModel.TocenByLowPrice()
@@ -146,7 +179,7 @@ class MainActivity : ComponentActivity() {
                                         Text(
                                             text = "Price",
                                             color = Color.Black,
-                                            fontSize = 16.sp
+                                            fontSize = 14.sp
                                         )
 
                                         Spacer(modifier = Modifier.width(4.dp))
@@ -157,22 +190,35 @@ class MainActivity : ComponentActivity() {
                                         ) {
                                             Image(
                                                 painter = painterResource(R.drawable.baseline_expand_more),
-                                                modifier = Modifier.size(16.dp),
+                                                modifier = Modifier.size(14.dp),
                                                 colorFilter = ColorFilter.tint(
-                                                    if (selected) Color.Black else Color.Gray.copy(alpha = 0.5f)
+                                                    if (selectedPrice) Color.Black else Color.White.copy(alpha = 0.5f)
                                                 ),
                                                 contentDescription = null
                                             )
                                             Image(
                                                 painter = painterResource(R.drawable.baseline_expand_less),
-                                                modifier = Modifier.size(16.dp),
+                                                modifier = Modifier.size(14.dp),
                                                 colorFilter = ColorFilter.tint(
-                                                    if (!selected) Color.Black else Color.Gray.copy(alpha = 0.5f)
+                                                    if (selectedPrice == false) Color.Black else Color.White.copy(alpha = 0.5f)
                                                 ),
                                                 contentDescription = null
                                             )
                                         }
                                     }
+                                }
+                                TextButton(onClick = {
+                                   if (selectedPrice24h){
+                                       cryptoViewModel.TocenByPriceUp()
+                                   } else{
+                                       cryptoViewModel.TocenByPriceDown()
+                                   }
+                                }) {
+                                    Text(
+                                        "Price Change 24h",
+                                        color = Color.Black,
+                                        fontSize = 14.sp
+                                    )
                                 }
                             }
 
