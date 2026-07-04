@@ -47,7 +47,7 @@ import co.yml.charts.ui.linechart.model.SelectionHighlightPopUp
 import co.yml.charts.ui.linechart.model.ShadowUnderLine
 import coil.compose.AsyncImage
 import com.example.crypto_tracker_app.R
-import com.example.crypto_tracker_app.presentation.viewmodel.TocenP_TimeViewModel
+import com.example.crypto_tracker_app.presentation.viewmodel.TokenP_TimeViewModel
 import com.example.crypto_tracker_app.ui.theme.GreenGradient
 import com.example.crypto_tracker_app.ui.theme.RedGradient
 import java.text.SimpleDateFormat
@@ -55,11 +55,11 @@ import java.util.Date
 import java.util.Locale
 
 @Composable
-fun detailUITocen(id: String,name: String,price: Int,image: String,priceChange24h: Double,
+fun detailUIToken(id: String,name: String,price: Int,image: String,priceChange24h: Double,
                   priceAltProsent: Double,atlPrice: Double,athPrice: Double,
                   totalSupply : Double,maxSypply: Double,
                   highPrice24h: Double,lowPrice24h: Double,
-                  viewModel: TocenP_TimeViewModel,
+                  viewModel: TokenP_TimeViewModel,
                   priceChange24hProsent: Double,
                   priceChange7dProsent: Double,
                   priceChange30dProsent: Double,
@@ -68,7 +68,7 @@ fun detailUITocen(id: String,name: String,price: Int,image: String,priceChange24
     val points by viewModel.graphPoints.collectAsState()
     val selectedDay by viewModel.selectedButton.collectAsState()
     val loadingProgress by viewModel.progressBar.observeAsState(false)
-    val datePriceTocen by viewModel.dateGraph.observeAsState(emptyList())
+    val datePriceToken by viewModel.dateGraph.observeAsState(emptyList())
     var priceChanged = when (selectedDay) {
         "1" -> priceChange24hProsent
         "7" -> priceChange7dProsent
@@ -86,8 +86,8 @@ fun detailUITocen(id: String,name: String,price: Int,image: String,priceChange24
                     horizontalArrangement = Arrangement.SpaceAround
                 ) {
                     LaunchedEffect(name) {
-                        viewModel.loadTocensByTime(
-                            id = name.lowercase(),
+                        viewModel.loadTokensByTime(
+                            id = id,
                             currency = "usd",
                             days = "1"
                         )
@@ -161,11 +161,11 @@ fun detailUITocen(id: String,name: String,price: Int,image: String,priceChange24
                         .backgroundColor(Color.White)
                         .steps(5)
                         .labelData { i ->
-                            if (datePriceTocen.isEmpty() || i >= datePriceTocen.size) {
+                            if (datePriceToken.isEmpty() || i >= datePriceToken.size) {
                                 return@labelData ""
                             }
 
-                            val timeInMs = datePriceTocen[i]
+                            val timeInMs = datePriceToken[i]
                             val date = Date(timeInMs)
                             val formater = SimpleDateFormat("d MMM", Locale.getDefault())
                             formater.format(date)
@@ -223,7 +223,7 @@ fun detailUITocen(id: String,name: String,price: Int,image: String,priceChange24
                 ) {
                     Button(
                         onClick = {
-                            viewModel.loadTocensByTime(
+                            viewModel.loadTokensByTime(
                                 id = id,
                                 currency = "usd",
                                 "1"
@@ -241,7 +241,7 @@ fun detailUITocen(id: String,name: String,price: Int,image: String,priceChange24
 
                     Button(
                         onClick = {
-                            viewModel.loadTocensByTime(
+                            viewModel.loadTokensByTime(
                                 id = id.toString(),
                                 currency = "usd",
                                 "7"
@@ -259,7 +259,7 @@ fun detailUITocen(id: String,name: String,price: Int,image: String,priceChange24
 
                     Button(
                         onClick = {
-                            viewModel.loadTocensByTime(
+                            viewModel.loadTokensByTime(
                                 id = id.toString(),
                                 currency = "usd",
                                 "30"
@@ -276,7 +276,7 @@ fun detailUITocen(id: String,name: String,price: Int,image: String,priceChange24
 
                     Button(
                         onClick = {
-                            viewModel.loadTocensByTime(
+                            viewModel.loadTokensByTime(
                                 id = id.toString(),
                                 currency = "usd",
                                 "365"

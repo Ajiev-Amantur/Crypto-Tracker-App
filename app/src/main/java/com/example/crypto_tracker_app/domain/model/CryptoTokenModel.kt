@@ -2,7 +2,7 @@ package com.example.crypto_tracker_app.domain.model
 
 import com.google.gson.annotations.SerializedName
 
-data class CryptoTocensModel(
+data class CryptoTokenModel(
     val id: String,
     val name: String,
     val image: String,
@@ -20,6 +20,6 @@ data class CryptoTocensModel(
     val priceChange30dProsent: Double,
     val priceChange1yProsent: Double,
     val sparkline: List<Double>,
-    val tocenRank: Int,
+    val tokenRank: Int,
     val marketCap: Double
 )

@@ -1,11 +1,11 @@
 package com.example.crypto_tracker_app.data.mapper
 
-import com.example.crypto_tracker_app.data.modelDto.CryptoTocenDto
+import com.example.crypto_tracker_app.data.modelDto.CryptoTokenDto
 import com.example.crypto_tracker_app.data.modelDto.SparklineDto
-import com.example.crypto_tracker_app.domain.model.CryptoTocensModel
+import com.example.crypto_tracker_app.domain.model.CryptoTokenModel
 
-fun CryptoTocenDto.toDomain(): CryptoTocensModel {
-        return CryptoTocensModel(
+fun CryptoTokenDto.toDomain(): CryptoTokenModel {
+        return CryptoTokenModel(
             id = id,
             name = name,
             image = image,
@@ -23,12 +23,12 @@ fun CryptoTocenDto.toDomain(): CryptoTocensModel {
             priceChange30dProsent = priceChange30dProsent,
             priceChange1yProsent = priceChange1yProsent,
             sparkline = sparklineIn7d.price,
-            tocenRank = tocenRank,
+            tokenRank = tokenRank,
             marketCap = marketCap
         )
     }
-    fun CryptoTocensModel.toDto(): CryptoTocenDto {
-        return CryptoTocenDto(
+    fun CryptoTokenModel.toDto(): CryptoTokenDto {
+        return CryptoTokenDto(
             id = id,
             name = name,
             image = image,
@@ -46,7 +46,7 @@ fun CryptoTocenDto.toDomain(): CryptoTocensModel {
             priceChange30dProsent = priceChange30dProsent,
             priceChange1yProsent = priceChange1yProsent,
             sparklineIn7d = SparklineDto(price = sparkline),
-            tocenRank = tocenRank,
+            tokenRank = tokenRank,
             marketCap = marketCap
         )
     }

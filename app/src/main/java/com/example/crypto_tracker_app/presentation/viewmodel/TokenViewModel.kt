@@ -5,31 +5,31 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import co.yml.charts.common.model.Point
-import com.example.crypto_tracker_app.domain.model.CryptoTocensModel
-import com.example.crypto_tracker_app.domain.repository.GetTocensRepository
-import com.example.crypto_tracker_app.domain.usecase.SortTocensByPriceUp24h
-import com.example.crypto_tracker_app.domain.usecase.SortTocenByPriceDown24h
-import com.example.crypto_tracker_app.domain.usecase.SortTocenByRankBottomUseCase
-import com.example.crypto_tracker_app.domain.usecase.SortTocenByRankTopUseCase
-import com.example.crypto_tracker_app.domain.usecase.SortTocenHighPriceUseCase
-import com.example.crypto_tracker_app.domain.usecase.SortTocenLowPriceUseCase
+import com.example.crypto_tracker_app.domain.model.CryptoTokenModel
+import com.example.crypto_tracker_app.domain.repository.GetTokensRepository
+import com.example.crypto_tracker_app.domain.usecase.SortTokensByPriceUp24h
+import com.example.crypto_tracker_app.domain.usecase.SortTokenByPriceDown24h
+import com.example.crypto_tracker_app.domain.usecase.SortTokenByRankBottomUseCase
+import com.example.crypto_tracker_app.domain.usecase.SortTokenByRankTopUseCase
+import com.example.crypto_tracker_app.domain.usecase.SortTokenHighPriceUseCase
+import com.example.crypto_tracker_app.domain.usecase.SortTokenLowPriceUseCase
 import kotlinx.coroutines.launch
 
-class CryptoViewModel(
-    private val getTocenRepo: GetTocensRepository,
-    private val sortTocenHighPriceUseCase: SortTocenHighPriceUseCase,
-    private val sortTocenLowPriceUseCase: SortTocenLowPriceUseCase,
-    private val sortTocenByRankTopUseCase: SortTocenByRankTopUseCase,
-    private val sortTocenByRankBottomUseCase: SortTocenByRankBottomUseCase,
-    private val sortTocenByPriceUp24h: SortTocensByPriceUp24h,
-    private val sortTocenByPriceDown24h: SortTocenByPriceDown24h,
+class TokenViewModel(
+    private val getTokenRepo: GetTokensRepository,
+    private val sortTokenHighPriceUseCase: SortTokenHighPriceUseCase,
+    private val sortTokenLowPriceUseCase: SortTokenLowPriceUseCase,
+    private val sortTokenByRankTopUseCase: SortTokenByRankTopUseCase,
+    private val sortTokenByRankBottomUseCase: SortTokenByRankBottomUseCase,
+    private val sortTokenByPriceUp24h: SortTokensByPriceUp24h,
+    private val sortTokenByPriceDown24h: SortTokenByPriceDown24h,
 ): ViewModel() {
 
-    private var _tocen = MutableLiveData<List<CryptoTocensModel>>()
-    val tocen : LiveData<List<CryptoTocensModel>> = _tocen
+    private var _tokenList = MutableLiveData<List<CryptoTokenModel>>()
+    val tokenList : LiveData<List<CryptoTokenModel>> = _tokenList
 
-    private var _selectedToken = MutableLiveData<CryptoTocensModel>()
-    val selectedTocen: LiveData<CryptoTocensModel?> = _selectedToken
+    private var _selectedToken = MutableLiveData<CryptoTokenModel>()
+    val selectedToken: LiveData<CryptoTokenModel?> = _selectedToken
 
     private var _progressBar = MutableLiveData(true)
     val progressBar: LiveData<Boolean> = _progressBar
@@ -52,22 +52,22 @@ class CryptoViewModel(
         }
     }
 
-    fun selectTocen(token: CryptoTocensModel){
+    fun selectToken(token: CryptoTokenModel){
         _selectedToken.value = token
     }
 
     init {
-        loadTocens()
+        loadTokens()
     }
 
     // Добавление сортировки списка по высокой цене
-    fun TocenByHighPrice(){
+    fun TokenByHighPrice(){
         _progressBar.value = true
         _selectedPrice.value = false
         viewModelScope.launch {
             try {
-                val tocen = sortTocenHighPriceUseCase.execute()
-                _tocen.value = tocen
+                val token = sortTokenHighPriceUseCase.execute()
+                _tokenList.value = token
             } catch (e: Exception){
                 println(e)
             } finally {
@@ -77,13 +77,13 @@ class CryptoViewModel(
     }
 
     // Добавление сортировки списка по низкой цене
-    fun TocenByLowPrice(){
+    fun TokenByLowPrice(){
         _progressBar.value = true
         _selectedPrice.value = true
         viewModelScope.launch {
             try {
-                val tocen = sortTocenLowPriceUseCase.execute()
-                _tocen.value = tocen
+                val token = sortTokenLowPriceUseCase.execute()
+                _tokenList.value = token
             } catch (e: Exception){
                 println(e)
             } finally {
@@ -91,13 +91,13 @@ class CryptoViewModel(
             }
         }
     }
-    fun TocenByRankTop(){
+    fun TokenByRankTop(){
         viewModelScope.launch {
             _progressBar.value = true
             _selectedRank.value = false
             try {
-                val tocens = sortTocenByRankTopUseCase.execute()
-                _tocen.value = tocens
+                val tokens = sortTokenByRankTopUseCase.execute()
+                _tokenList.value = tokens
             }catch (e: Exception){
                 println(e)
             }finally {
@@ -105,13 +105,13 @@ class CryptoViewModel(
             }
         }
     }
-    fun TocenByRankBottom(){
+    fun TokenByRankBottom(){
         viewModelScope.launch {
             _progressBar.value = true
             _selectedRank.value = true
             try {
-                val tocens = sortTocenByRankBottomUseCase.execute()
-                _tocen.value = tocens
+                val tokens = sortTokenByRankBottomUseCase.execute()
+                _tokenList.value = tokens
             }catch (e: Exception){
                 println(e)
             }finally {
@@ -119,13 +119,13 @@ class CryptoViewModel(
             }
         }
     }
-    fun TocenByPriceUp(){
+    fun TokenByPriceUp(){
         _progressBar.value = true
         _selectedPrice24h.value = false
         viewModelScope.launch {
             try {
-                val tocens = sortTocenByPriceUp24h.execute()
-                _tocen.value = tocens
+                val tokens = sortTokenByPriceUp24h.execute()
+                _tokenList.value = tokens
             }catch (e: Exception){
                 println(e)
             }finally {
@@ -133,13 +133,13 @@ class CryptoViewModel(
             }
         }
     }
-    fun TocenByPriceDown(){
+    fun TokenByPriceDown(){
         _progressBar.value = true
         _selectedPrice24h.value = true
         viewModelScope.launch {
             try {
-                val tocens = sortTocenByPriceDown24h.execute()
-                _tocen.value = tocens
+                val tokens = sortTokenByPriceDown24h.execute()
+                _tokenList.value = tokens
             }catch (e: Exception){
                 println(e)
             }finally {
@@ -147,12 +147,12 @@ class CryptoViewModel(
             }
         }
     }
-    fun loadTocens(){
+    fun loadTokens(){
         _progressBar.value = true
         viewModelScope.launch {
             try {
-                val tocens = getTocenRepo.getAllTocens()
-                _tocen.value = tocens
+                val tokens = getTokenRepo.getAllTokens()
+                _tokenList.value = tokens
             } catch (e: Exception){
                 println("ERROR:  $e")
             } finally {
@@ -161,5 +161,3 @@ class CryptoViewModel(
         }
     }
 }
-
-

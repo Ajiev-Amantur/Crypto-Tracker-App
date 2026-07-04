@@ -5,6 +5,7 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.viewModels
+import org.koin.androidx.viewmodel.ext.android.viewModel
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -36,64 +37,22 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.lifecycle.ViewModel
-import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.example.crypto_tracker_app.R
-import com.example.crypto_tracker_app.data.TocenAPI.RetrofitIntance
-import com.example.crypto_tracker_app.data.TocenByTimeApi.PriceTimeIntance
-import com.example.crypto_tracker_app.data.repository.GetTocensRepositoryImpl
-import com.example.crypto_tracker_app.data.repository.PriceTimeRepositoryImpl
-import com.example.crypto_tracker_app.domain.usecase.SortTocenByPriceDown24h
-import com.example.crypto_tracker_app.domain.usecase.SortTocenByRankBottomUseCase
-import com.example.crypto_tracker_app.domain.usecase.SortTocenByRankTopUseCase
-import com.example.crypto_tracker_app.domain.usecase.SortTocenHighPriceUseCase
-import com.example.crypto_tracker_app.domain.usecase.SortTocenLowPriceUseCase
-import com.example.crypto_tracker_app.domain.usecase.SortTocensByPriceUp24h
-import com.example.crypto_tracker_app.presentation.viewmodel.CryptoViewModel
-import com.example.crypto_tracker_app.presentation.viewmodel.TocenP_TimeViewModel
+import com.example.crypto_tracker_app.presentation.viewmodel.TokenViewModel
+import com.example.crypto_tracker_app.presentation.viewmodel.TokenP_TimeViewModel
 import com.example.crypto_tracker_app.ui.theme.CryptoTrackerAppTheme
 import kotlin.collections.emptyList
 
 
 class MainActivity : ComponentActivity() {
-    private val tocenPriceViewModel: TocenP_TimeViewModel by viewModels {
-        object: ViewModelProvider.Factory{
-            override fun <T : ViewModel> create(modelClass: Class<T>): T {
-                val api = PriceTimeIntance.api
-                val repository = PriceTimeRepositoryImpl(api)
-                return TocenP_TimeViewModel(repository) as T
-            }
-        }
-    }
-    private  val cryptoViewModel: CryptoViewModel by viewModels {
-        object : ViewModelProvider.Factory{
-            override fun <T : ViewModel> create(modelClass: Class<T>): T {
-                val api = RetrofitIntance.api
-                val repository = GetTocensRepositoryImpl(api)
-                val highPriceUseCase = SortTocenHighPriceUseCase(repository)
-                val lowPriceUseCase = SortTocenLowPriceUseCase(repository)
-                val tocenByRankUseCase = SortTocenByRankTopUseCase(repository)
-                val tocenByRankBottomUseCase = SortTocenByRankBottomUseCase(repository)
-                val tocenByPriceUp24h = SortTocensByPriceUp24h(repository)
-                val tocenByPriceDown = SortTocenByPriceDown24h(repository)
-
-                return CryptoViewModel(repository,
-                    highPriceUseCase,
-                    lowPriceUseCase,
-                    tocenByRankUseCase,
-                    tocenByRankBottomUseCase,
-                    tocenByPriceUp24h,
-                    tocenByPriceDown) as T
-            }
-        }
-    }
+    private val tokenPriceViewModel: TokenP_TimeViewModel by viewModel()
+    private val tokenViewModel: TokenViewModel by viewModel()
     @OptIn(ExperimentalMaterial3Api::class)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -103,11 +62,11 @@ class MainActivity : ComponentActivity() {
                 val navController = rememberNavController()
                 NavHost(navController,"UI1") {
                 composable("UI1"){
-                    val tocens by cryptoViewModel.tocen.observeAsState()
-                    val loading by cryptoViewModel.progressBar.observeAsState(true)
-                    val selectedPrice by cryptoViewModel.selectedPrice.observeAsState(true)
-                    val selectedPrice24h by cryptoViewModel.selectedPrice24h.observeAsState(true)
-                    val selectedRank by cryptoViewModel.selectedRank.observeAsState(true)
+                    val tokens by tokenViewModel.tokenList.observeAsState()
+                    val loading by tokenViewModel.progressBar.observeAsState(true)
+                    val selectedPrice by tokenViewModel.selectedPrice.observeAsState(true)
+                    val selectedPrice24h by tokenViewModel.selectedPrice24h.observeAsState(true)
+                    val selectedRank by tokenViewModel.selectedRank.observeAsState(true)
                     var searchText by remember {
                         mutableStateOf("")
                     }
@@ -160,9 +119,9 @@ class MainActivity : ComponentActivity() {
                                     ),
                                     onClick = {
                                     if (selectedRank) {
-                                        cryptoViewModel.TocenByRankTop()
+                                        tokenViewModel.TokenByRankTop()
                                     }else{
-                                        cryptoViewModel.TocenByPriceDown()
+                                        tokenViewModel.TokenByPriceDown()
                                     }
                                 }) {
                                     Text("Default",
@@ -179,9 +138,9 @@ class MainActivity : ComponentActivity() {
                                     ),
                                     onClick = {
                                         if (selectedPrice) {
-                                            cryptoViewModel.TocenByHighPrice()
+                                            tokenViewModel.TokenByHighPrice()
                                         } else {
-                                            cryptoViewModel.TocenByLowPrice()
+                                            tokenViewModel.TokenByLowPrice()
                                         }
                                     }
                                 ) {
@@ -226,9 +185,9 @@ class MainActivity : ComponentActivity() {
                                     ),
                                     onClick = {
                                    if (selectedPrice24h){
-                                       cryptoViewModel.TocenByPriceUp()
+                                       tokenViewModel.TokenByPriceUp()
                                    } else{
-                                       cryptoViewModel.TocenByPriceDown()
+                                       tokenViewModel.TokenByPriceDown()
                                    }
                                 }) {
                                     Text(
@@ -249,18 +208,18 @@ class MainActivity : ComponentActivity() {
                                     .background(Color.LightGray)
                             )
                             {
-                                val filtredTOcens = tocens?.filter {
+                                val filteredTokens = tokens?.filter {
                                     it.name.contains(searchText, ignoreCase = true)
                                 } ?: emptyList()
                                 items(
-                                    items = filtredTOcens,
+                                    items = filteredTokens,
                                     key = { it.id }
                                 ){ token ->
-                                    cryptoUI(
+                                    tokenUI(
                                         token.name, token.currentPrice, image = token.image,
                                         navController,
-                                        cryptoViewModel,
-                                        tocenPriceViewModel,
+                                        tokenViewModel,
+                                        tokenPriceViewModel,
                                         token,
                                         priceChange24hProsent = token.priceChange24hProsent,
                                     )
@@ -270,26 +229,26 @@ class MainActivity : ComponentActivity() {
                     }
                     }
                     composable("UI2"){
-                        val selectedTocen by cryptoViewModel.selectedTocen.observeAsState()
-                        selectedTocen?.let { tocen->
-                            detailUITocen(
-                                id = tocen.id,
-                                name = tocen.name,
-                                price = tocen.currentPrice.toInt(),
-                                image = tocen.image,
-                                priceChange24h = tocen.priceChange24h,
-                                priceAltProsent = tocen.atlChangePercentage,
-                                atlPrice = tocen.atl,
-                                athPrice = tocen.ath,
-                                totalSupply = tocen.totalSupply,
-                                maxSypply = tocen.maxSupply,
-                                highPrice24h = tocen.high24h,
-                                lowPrice24h = tocen.low24h,
-                                viewModel= tocenPriceViewModel,
-                                priceChange24hProsent = tocen.priceChange24hProsent,
-                                priceChange7dProsent = tocen.priceChange7dProsent,
-                                priceChange30dProsent = tocen.priceChange30dProsent,
-                                priceChange1yProsent = tocen.priceChange1yProsent
+                        val selectedToken by tokenViewModel.selectedToken.observeAsState()
+                        selectedToken?.let { token ->
+                            detailUIToken(
+                                id = token.id,
+                                name = token.name,
+                                price = token.currentPrice.toInt(),
+                                image = token.image,
+                                priceChange24h = token.priceChange24h,
+                                priceAltProsent = token.atlChangePercentage,
+                                atlPrice = token.atl,
+                                athPrice = token.ath,
+                                totalSupply = token.totalSupply,
+                                maxSypply = token.maxSupply,
+                                highPrice24h = token.high24h,
+                                lowPrice24h = token.low24h,
+                                viewModel= tokenPriceViewModel,
+                                priceChange24hProsent = token.priceChange24hProsent,
+                                priceChange7dProsent = token.priceChange7dProsent,
+                                priceChange30dProsent = token.priceChange30dProsent,
+                                priceChange1yProsent = token.priceChange1yProsent
                                 )
                         }
                     }

@@ -13,7 +13,7 @@ android {
 
     defaultConfig {
         applicationId = "com.example.crypto_tracker_app"
-        minSdk = 24
+        minSdk = 26
         targetSdk = 36
         versionCode = 1
         versionName = "1.0"
@@ -68,4 +68,5 @@ dependencies {
     implementation(libs.logging.interceptor)
     implementation("co.yml:ycharts:2.1.0")
 
+    implementation("io.insert-koin:koin-androidx-compose:4.2.2")
 }

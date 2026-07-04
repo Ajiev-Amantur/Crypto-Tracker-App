@@ -8,7 +8,6 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -20,7 +19,6 @@ import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
@@ -28,13 +26,9 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.paint
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontStyle
@@ -43,44 +37,34 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import co.yml.charts.axis.AxisData
-import co.yml.charts.common.extensions.formatToSinglePrecision
 import co.yml.charts.common.model.Point
 import co.yml.charts.ui.linechart.LineChart
 import co.yml.charts.ui.linechart.model.GridLines
-import co.yml.charts.ui.linechart.model.IntersectionPoint
 import co.yml.charts.ui.linechart.model.Line
 import co.yml.charts.ui.linechart.model.LineChartData
 import co.yml.charts.ui.linechart.model.LinePlotData
 import co.yml.charts.ui.linechart.model.LineStyle
-import co.yml.charts.ui.linechart.model.SelectionHighlightPoint
-import co.yml.charts.ui.linechart.model.SelectionHighlightPopUp
-import co.yml.charts.ui.linechart.model.ShadowUnderLine
 import coil.compose.AsyncImage
 import com.example.crypto_tracker_app.R
-import com.example.crypto_tracker_app.domain.model.CryptoTocensModel
-import com.example.crypto_tracker_app.presentation.viewmodel.CryptoViewModel
-import com.example.crypto_tracker_app.presentation.viewmodel.TocenP_TimeViewModel
+import com.example.crypto_tracker_app.domain.model.CryptoTokenModel
+import com.example.crypto_tracker_app.presentation.viewmodel.TokenViewModel
+import com.example.crypto_tracker_app.presentation.viewmodel.TokenP_TimeViewModel
 import com.example.crypto_tracker_app.ui.theme.GreenGradient
 import com.example.crypto_tracker_app.ui.theme.RedGradient
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.invoke
 import kotlinx.coroutines.withContext
-import java.text.SimpleDateFormat
-import java.util.Date
-import java.util.Locale
-import kotlin.collections.get
 
 @Composable
-fun cryptoUI(name: String, price: Double, image: String, nav:
-NavHostController, tocenViewModel: CryptoViewModel,tocenPTviewModel: TocenP_TimeViewModel,
-             tocen: CryptoTocensModel,
+fun tokenUI(name: String, price: Double, image: String, nav:
+NavHostController, tokenViewModel: TokenViewModel, tokenPTviewModel: TokenP_TimeViewModel,
+             token: CryptoTokenModel,
              priceChange24hProsent: Double) {
 
-    val progressBar by tocenViewModel.progressBar.observeAsState()
-    var myPoint by remember(tocen.id){ mutableStateOf<List<Point>>(emptyList())}
-    LaunchedEffect(tocen.id) {
+    val progressBar by tokenViewModel.progressBar.observeAsState()
+    var myPoint by remember(token.id){ mutableStateOf<List<Point>>(emptyList())}
+    LaunchedEffect(token.id) {
         withContext(Dispatchers.Default){
-            val result = tocenViewModel.prepareSparkline(tocen.sparkline)
+            val result = tokenViewModel.prepareSparkline(token.sparkline)
             myPoint = result
         }
     }
@@ -91,7 +75,7 @@ NavHostController, tocenViewModel: CryptoViewModel,tocenPTviewModel: TocenP_Time
                 .fillMaxWidth()
                 .padding(horizontal = 16.dp, vertical = 8.dp)
                 .clickable(true, onClick = {
-                    tocenViewModel.selectTocen(tocen)
+                    tokenViewModel.selectToken(token)
                     nav.navigate("UI2")
                     Toast.makeText(context, "clicked!!! $name", Toast.LENGTH_LONG).show()
                 }
@@ -206,8 +190,8 @@ NavHostController, tocenViewModel: CryptoViewModel,tocenPTviewModel: TocenP_Time
                                 modifier = Modifier.size(14.dp),
                                 painter = painterResource(
                                     id =
-                                        if (priceChange24hProsent > 0)
-                                            R.drawable.arrow_up_right else R.drawable.arrow_up_right__1_
+                                    if (priceChange24hProsent > 0)
+                                        R.drawable.arrow_up_right else R.drawable.arrow_up_right__1_
                                 ),
                                 contentDescription = "image"
                             )
@@ -215,7 +199,7 @@ NavHostController, tocenViewModel: CryptoViewModel,tocenPTviewModel: TocenP_Time
                                 color = if (priceChange24hProsent > 0) Color.Black else Color.White,
                                 modifier = Modifier.padding(5.dp),
                                 text = "$formatterPrice%",
-                                fontSize = 14.sp,
+                                fontSize = 18.sp,
                                 style = TextStyle(fontStyle = FontStyle.Italic)
                             )
                         }
