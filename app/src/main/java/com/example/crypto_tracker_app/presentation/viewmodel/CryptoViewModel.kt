@@ -8,9 +8,9 @@ import co.yml.charts.common.model.Point
 import com.example.crypto_tracker_app.domain.model.CryptoTocensModel
 import com.example.crypto_tracker_app.domain.repository.GetTocensRepository
 import com.example.crypto_tracker_app.domain.usecase.SortTocensByPriceUp24h
-import com.example.crypto_tracker_app.domain.usecase.SortHighMarketCapUseCase
 import com.example.crypto_tracker_app.domain.usecase.SortTocenByPriceDown24h
-import com.example.crypto_tracker_app.domain.usecase.SortTocenByRankUseCase
+import com.example.crypto_tracker_app.domain.usecase.SortTocenByRankBottomUseCase
+import com.example.crypto_tracker_app.domain.usecase.SortTocenByRankTopUseCase
 import com.example.crypto_tracker_app.domain.usecase.SortTocenHighPriceUseCase
 import com.example.crypto_tracker_app.domain.usecase.SortTocenLowPriceUseCase
 import kotlinx.coroutines.launch
@@ -19,10 +19,10 @@ class CryptoViewModel(
     private val getTocenRepo: GetTocensRepository,
     private val sortTocenHighPriceUseCase: SortTocenHighPriceUseCase,
     private val sortTocenLowPriceUseCase: SortTocenLowPriceUseCase,
-    private val sortTocenByMarketCapUseCase: SortHighMarketCapUseCase,
-    private val sortTocenByRankUseCase: SortTocenByRankUseCase,
+    private val sortTocenByRankTopUseCase: SortTocenByRankTopUseCase,
+    private val sortTocenByRankBottomUseCase: SortTocenByRankBottomUseCase,
     private val sortTocenByPriceUp24h: SortTocensByPriceUp24h,
-    private val sortTocenByPriceDown24h: SortTocenByPriceDown24h
+    private val sortTocenByPriceDown24h: SortTocenByPriceDown24h,
 ): ViewModel() {
 
     private var _tocen = MutableLiveData<List<CryptoTocensModel>>()
@@ -39,6 +39,9 @@ class CryptoViewModel(
     val selectedPrice: LiveData<Boolean> = _selectedPrice
     private var _selectedPrice24h = MutableLiveData<Boolean>()
     val selectedPrice24h: LiveData<Boolean> = _selectedPrice24h
+
+    private var _selectedRank = MutableLiveData<Boolean>()
+    val selectedRank: LiveData<Boolean> = _selectedRank
 
     fun prepareSparkline(prices: List<Double>): List<Point>{
         return prices.mapIndexed { index, price ->
@@ -88,11 +91,12 @@ class CryptoViewModel(
             }
         }
     }
-    fun TocenByHighMarketCap(){
+    fun TocenByRankTop(){
         viewModelScope.launch {
             _progressBar.value = true
+            _selectedRank.value = false
             try {
-                val tocens = sortTocenByMarketCapUseCase.execute()
+                val tocens = sortTocenByRankTopUseCase.execute()
                 _tocen.value = tocens
             }catch (e: Exception){
                 println(e)
@@ -101,11 +105,12 @@ class CryptoViewModel(
             }
         }
     }
-    fun TocenByRank(){
+    fun TocenByRankBottom(){
         viewModelScope.launch {
             _progressBar.value = true
+            _selectedRank.value = true
             try {
-                val tocens = sortTocenByRankUseCase.execute()
+                val tocens = sortTocenByRankBottomUseCase.execute()
                 _tocen.value = tocens
             }catch (e: Exception){
                 println(e)

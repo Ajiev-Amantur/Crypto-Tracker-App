@@ -12,7 +12,6 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -21,6 +20,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.SearchBar
 import androidx.compose.material3.SearchBarDefaults
@@ -36,6 +36,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.ViewModel
@@ -48,9 +50,9 @@ import com.example.crypto_tracker_app.data.TocenAPI.RetrofitIntance
 import com.example.crypto_tracker_app.data.TocenByTimeApi.PriceTimeIntance
 import com.example.crypto_tracker_app.data.repository.GetTocensRepositoryImpl
 import com.example.crypto_tracker_app.data.repository.PriceTimeRepositoryImpl
-import com.example.crypto_tracker_app.domain.usecase.SortHighMarketCapUseCase
 import com.example.crypto_tracker_app.domain.usecase.SortTocenByPriceDown24h
-import com.example.crypto_tracker_app.domain.usecase.SortTocenByRankUseCase
+import com.example.crypto_tracker_app.domain.usecase.SortTocenByRankBottomUseCase
+import com.example.crypto_tracker_app.domain.usecase.SortTocenByRankTopUseCase
 import com.example.crypto_tracker_app.domain.usecase.SortTocenHighPriceUseCase
 import com.example.crypto_tracker_app.domain.usecase.SortTocenLowPriceUseCase
 import com.example.crypto_tracker_app.domain.usecase.SortTocensByPriceUp24h
@@ -77,16 +79,16 @@ class MainActivity : ComponentActivity() {
                 val repository = GetTocensRepositoryImpl(api)
                 val highPriceUseCase = SortTocenHighPriceUseCase(repository)
                 val lowPriceUseCase = SortTocenLowPriceUseCase(repository)
-                val highMarketCapUseCase = SortHighMarketCapUseCase(repository)
-                val tocenByRankUseCase = SortTocenByRankUseCase(repository)
+                val tocenByRankUseCase = SortTocenByRankTopUseCase(repository)
+                val tocenByRankBottomUseCase = SortTocenByRankBottomUseCase(repository)
                 val tocenByPriceUp24h = SortTocensByPriceUp24h(repository)
                 val tocenByPriceDown = SortTocenByPriceDown24h(repository)
 
                 return CryptoViewModel(repository,
                     highPriceUseCase,
                     lowPriceUseCase,
-                    highMarketCapUseCase,
                     tocenByRankUseCase,
+                    tocenByRankBottomUseCase,
                     tocenByPriceUp24h,
                     tocenByPriceDown) as T
             }
@@ -105,6 +107,7 @@ class MainActivity : ComponentActivity() {
                     val loading by cryptoViewModel.progressBar.observeAsState(true)
                     val selectedPrice by cryptoViewModel.selectedPrice.observeAsState(true)
                     val selectedPrice24h by cryptoViewModel.selectedPrice24h.observeAsState(true)
+                    val selectedRank by cryptoViewModel.selectedRank.observeAsState(true)
                     var searchText by remember {
                         mutableStateOf("")
                     }
@@ -144,29 +147,36 @@ class MainActivity : ComponentActivity() {
                             Row(
                                 modifier = Modifier
                                     .fillMaxWidth()
-                                    .height(60.dp)
+                                    .height(50.dp)
                                     .padding(vertical = 8.dp),
                                 horizontalArrangement = Arrangement.SpaceAround,
                                 verticalAlignment = Alignment.CenterVertically // Выравниваем всё по центру по вертикали
                             ) {
-                                TextButton(onClick = {
-                                    cryptoViewModel.TocenByRank()
+                                TextButton(
+                                    colors = ButtonDefaults.textButtonColors(
+                                        containerColor = Color.White,
+                                        contentColor = Color.Black,
+                                        disabledContentColor = Color.Gray
+                                    ),
+                                    onClick = {
+                                    if (selectedRank) {
+                                        cryptoViewModel.TocenByRankTop()
+                                    }else{
+                                        cryptoViewModel.TocenByPriceDown()
+                                    }
                                 }) {
                                     Text("Default",
-                                        color = Color.Black,
-                                        fontSize = 14.sp)
-                                }
-                                TextButton(onClick = {
-                                    cryptoViewModel.TocenByHighMarketCap()
-                                }) {
-                                    Text(
-                                        "MarketCap",
-                                        color = Color.Black,
-                                        fontSize = 14.sp
+                                        fontSize = 12.sp ,
+                                        fontFamily = FontFamily.Serif
                                     )
                                 }
 
                                 TextButton(
+                                    colors = ButtonDefaults.textButtonColors(
+                                        contentColor = Color.Black,
+                                        containerColor = Color.White,
+                                        disabledContentColor = Color.Transparent
+                                    ),
                                     onClick = {
                                         if (selectedPrice) {
                                             cryptoViewModel.TocenByHighPrice()
@@ -179,7 +189,8 @@ class MainActivity : ComponentActivity() {
                                         Text(
                                             text = "Price",
                                             color = Color.Black,
-                                            fontSize = 14.sp
+                                            fontSize = 12.sp,
+                                            fontFamily = FontFamily.Serif
                                         )
 
                                         Spacer(modifier = Modifier.width(4.dp))
@@ -207,7 +218,13 @@ class MainActivity : ComponentActivity() {
                                         }
                                     }
                                 }
-                                TextButton(onClick = {
+                                TextButton(
+                                    colors = ButtonDefaults.textButtonColors(
+                                        contentColor = Color.Black,
+                                        containerColor = Color.White,
+                                        disabledContentColor = Color.Transparent
+                                    ),
+                                    onClick = {
                                    if (selectedPrice24h){
                                        cryptoViewModel.TocenByPriceUp()
                                    } else{
@@ -215,9 +232,10 @@ class MainActivity : ComponentActivity() {
                                    }
                                 }) {
                                     Text(
-                                        "Price Change 24h",
+                                        "24h change",
                                         color = Color.Black,
-                                        fontSize = 14.sp
+                                        fontSize = 12.sp,
+                                        fontFamily = FontFamily.Serif
                                     )
                                 }
                             }

@@ -2,6 +2,7 @@ package com.example.crypto_tracker_app.presentation
 
 import android.widget.Toast
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -27,9 +28,13 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.paint
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontStyle
@@ -55,6 +60,8 @@ import com.example.crypto_tracker_app.R
 import com.example.crypto_tracker_app.domain.model.CryptoTocensModel
 import com.example.crypto_tracker_app.presentation.viewmodel.CryptoViewModel
 import com.example.crypto_tracker_app.presentation.viewmodel.TocenP_TimeViewModel
+import com.example.crypto_tracker_app.ui.theme.GreenGradient
+import com.example.crypto_tracker_app.ui.theme.RedGradient
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.invoke
 import kotlinx.coroutines.withContext
@@ -80,14 +87,15 @@ NavHostController, tocenViewModel: CryptoViewModel,tocenPTviewModel: TocenP_Time
 
     val context = LocalContext.current
         Card(
-            modifier = Modifier.fillMaxWidth()
-            .padding(horizontal = 16.dp, vertical = 8.dp)
-            .clickable(true, onClick = {
-                tocenViewModel.selectTocen(tocen)
-                nav.navigate("UI2")
-                Toast.makeText(context, "clicked!!! $name", Toast.LENGTH_LONG).show()
-            }
-            ),
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 16.dp, vertical = 8.dp)
+                .clickable(true, onClick = {
+                    tocenViewModel.selectTocen(tocen)
+                    nav.navigate("UI2")
+                    Toast.makeText(context, "clicked!!! $name", Toast.LENGTH_LONG).show()
+                }
+                ),
             colors = CardDefaults.cardColors(Color.White),
             elevation = CardDefaults.cardElevation(defaultElevation = 6.dp)
         ) {
@@ -95,18 +103,24 @@ NavHostController, tocenViewModel: CryptoViewModel,tocenPTviewModel: TocenP_Time
                 AsyncImage(
                     model = image,
                     contentDescription = "image",
-                    modifier = Modifier.size(60.dp).padding(12.dp)
+                    modifier = Modifier
+                        .size(50.dp)
+                        .padding(12.dp)
                 )
                 Row(
-                    modifier = Modifier.fillMaxWidth().padding(end = 10.dp),
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(end = 10.dp),
                     Arrangement.SpaceBetween
                 ) {
                     Text(
                         name, fontStyle = FontStyle.Italic,
-                        fontSize = 20.sp,
+                        fontSize = 14.sp,
                         fontWeight = FontWeight.Bold,
                         color = Color(color = android.graphics.Color.BLACK),
-                        modifier = Modifier.padding(start = 12.dp).weight(1f)
+                        modifier = Modifier
+                            .padding(start = 12.dp)
+                            .weight(1f)
                     )
                     if (myPoint.size < 2) {
                         Box(
@@ -147,7 +161,7 @@ NavHostController, tocenViewModel: CryptoViewModel,tocenPTviewModel: TocenP_Time
                                     Line(
                                         dataPoints = points,
                                         LineStyle(
-                                            color = if (priceChange24hProsent > 0) Color.Green else Color.Red,
+                                            color = if (priceChange24hProsent > 0) Color(0xFF0AFE47) else Color.Red,
                                             width = 6.0f),
                                         intersectionPoint = null,
                                         selectionHighlightPoint = null,
@@ -173,18 +187,23 @@ NavHostController, tocenViewModel: CryptoViewModel,tocenPTviewModel: TocenP_Time
                             lineChartData = lineChartData
                         )
                     }
+
                     val formatterPrice = "%.1f".format(priceChange24hProsent)
                     Card(
-                        colors = CardDefaults.cardColors(
-                            containerColor =
-                                if (priceChange24hProsent > 0) Color.Green else Color.Red
-                        )
+                        modifier = Modifier
+                            .padding(start = 10.dp)
+                            .background(
+                                brush = if (priceChange24hProsent > 0) GreenGradient else RedGradient,
+                                shape = CardDefaults.shape
+                            ),
+                        colors = CardDefaults.cardColors(containerColor = Color.Transparent)
                     ) {
                         Row(
-                            verticalAlignment = Alignment.CenterVertically
+                            verticalAlignment = Alignment.CenterVertically,
+                            modifier = Modifier.padding(horizontal = 8.dp, vertical = 2.dp)
                         ) {
                             Image(
-                                modifier = Modifier.size(20.dp),
+                                modifier = Modifier.size(14.dp),
                                 painter = painterResource(
                                     id =
                                         if (priceChange24hProsent > 0)
@@ -196,7 +215,7 @@ NavHostController, tocenViewModel: CryptoViewModel,tocenPTviewModel: TocenP_Time
                                 color = if (priceChange24hProsent > 0) Color.Black else Color.White,
                                 modifier = Modifier.padding(5.dp),
                                 text = "$formatterPrice%",
-                                fontSize = 18.sp,
+                                fontSize = 14.sp,
                                 style = TextStyle(fontStyle = FontStyle.Italic)
                             )
                         }
@@ -204,7 +223,7 @@ NavHostController, tocenViewModel: CryptoViewModel,tocenPTviewModel: TocenP_Time
                 }
                 Text(
                     "$price$", fontStyle = FontStyle.Normal,
-                    fontSize = 14.sp,
+                    fontSize = 12.sp,
                     modifier = Modifier.padding(start = 12.dp, 4.dp)
                 )
 

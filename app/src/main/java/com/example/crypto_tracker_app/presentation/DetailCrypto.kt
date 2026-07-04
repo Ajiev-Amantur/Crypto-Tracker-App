@@ -48,6 +48,8 @@ import co.yml.charts.ui.linechart.model.ShadowUnderLine
 import coil.compose.AsyncImage
 import com.example.crypto_tracker_app.R
 import com.example.crypto_tracker_app.presentation.viewmodel.TocenP_TimeViewModel
+import com.example.crypto_tracker_app.ui.theme.GreenGradient
+import com.example.crypto_tracker_app.ui.theme.RedGradient
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
@@ -81,7 +83,7 @@ fun detailUITocen(id: String,name: String,price: Int,image: String,priceChange24
             Column(modifier = Modifier.fillMaxWidth().background(Color.Unspecified)) {
                 Row(
                     verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.SpaceBetween
+                    horizontalArrangement = Arrangement.SpaceAround
                 ) {
                     LaunchedEffect(name) {
                         viewModel.loadTocensByTime(
@@ -107,10 +109,11 @@ fun detailUITocen(id: String,name: String,price: Int,image: String,priceChange24
 
                     val formatterPrice = "%.1f".format(priceChanged)
                     Card(
-                        colors = CardDefaults.cardColors(
-                            containerColor =
-                                if (priceChanged > 0) Color.Green else Color.Red
-                        )
+                        modifier = Modifier.background(
+                            brush = if (priceChange24hProsent > 0) GreenGradient else RedGradient,
+                            shape = CardDefaults.shape
+                        ),
+                        colors = CardDefaults.cardColors(containerColor = Color.Transparent)
                     ) {
                         Row(
                             verticalAlignment = Alignment.CenterVertically
@@ -187,7 +190,7 @@ fun detailUITocen(id: String,name: String,price: Int,image: String,priceChange24
                                 Line(
                                     dataPoints = points,
                                     LineStyle(
-                                        color = if (priceChanged > 0) Color.Green else Color.Red,
+                                        color = if (priceChanged > 0) Color(0xFF0AFE47) else Color.Red,
                                         width = 3.0f
                                     ),
                                     IntersectionPoint(radius = 0.dp),
