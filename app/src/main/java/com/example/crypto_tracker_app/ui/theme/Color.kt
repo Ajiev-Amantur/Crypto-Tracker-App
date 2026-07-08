@@ -26,3 +26,13 @@ val RedGradient = Brush.linearGradient(
         Color(0xFFFF0000)
     )
 )
+val GradientForCardBalance = Brush.linearGradient(
+    colors = listOf(
+        Color(0xFFD568FD),
+        Color(0xFF24E0FB),
+        Color(0xFFDBDBFF),
+        Color(0xFFA41CC6),
+        Color(0xFFFF5353),
+        Color(0xFFFFFF99),
+    )
+)

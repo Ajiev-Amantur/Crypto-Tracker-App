@@ -199,7 +199,7 @@ NavHostController, tokenViewModel: TokenViewModel, tokenPTviewModel: TokenP_Time
                                 color = if (priceChange24hProsent > 0) Color.Black else Color.White,
                                 modifier = Modifier.padding(5.dp),
                                 text = "$formatterPrice%",
-                                fontSize = 18.sp,
+                                fontSize = 16.sp,
                                 style = TextStyle(fontStyle = FontStyle.Italic)
                             )
                         }
