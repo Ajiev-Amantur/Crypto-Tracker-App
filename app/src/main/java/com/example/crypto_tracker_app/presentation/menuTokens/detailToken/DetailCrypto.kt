@@ -1,4 +1,4 @@
-package com.example.crypto_tracker_app.presentation
+package com.example.crypto_tracker_app.presentation.menuTokens.detailToken
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -18,6 +18,7 @@ import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -33,6 +34,7 @@ import androidx.compose.ui.text.font.FontStyle
 
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavHostController
 import co.yml.charts.axis.AxisData
 import co.yml.charts.common.extensions.formatToSinglePrecision
 import co.yml.charts.ui.linechart.LineChart
@@ -64,6 +66,7 @@ fun detailUIToken(id: String,name: String,price: Int,image: String,priceChange24
                   priceChange7dProsent: Double,
                   priceChange30dProsent: Double,
                   priceChange1yProsent: Double,
+                  nav : NavHostController
 ) {
     val points by viewModel.graphPoints.collectAsState()
     val selectedDay by viewModel.selectedButton.collectAsState()
@@ -351,6 +354,39 @@ fun detailUIToken(id: String,name: String,price: Int,image: String,priceChange24
                             )
                         }
                     }
+                }
+            }
+            Row (
+                modifier = Modifier.fillMaxWidth().padding(20.dp).align(Alignment.BottomCenter),
+                horizontalArrangement = Arrangement.SpaceAround
+            ) {
+                TextButton(
+                    modifier = Modifier.weight(1f).padding(5.dp),
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = Color.Red,
+                        contentColor = Color.White,
+                    ),
+                    onClick = {
+                        nav.navigate("sellScreen")
+                    }
+                ) {
+                   Text(
+                       "Sell"
+                   )
+                }
+                TextButton(
+                    modifier = Modifier.weight(1f).padding(5.dp),
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = Color.Green,
+                        contentColor = Color.White,
+                    ),
+                    onClick = {
+                        nav.navigate("buyScreen")
+                    }
+                ) {
+                    Text(
+                        "Buy"
+                    )
                 }
             }
         }
