@@ -1,5 +1,6 @@
 package com.example.crypto_tracker_app.presentation.viewmodel
 
+import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -24,7 +25,7 @@ class TokenViewModel(
     private val sortTokenByPriceUp24h: SortTokensByPriceUp24h,
     private val sortTokenByPriceDown24h: SortTokenByPriceDown24h,
 ): ViewModel() {
-
+    val balance = mutableStateOf(70000)
     private var _tokenList = MutableLiveData<List<CryptoTokenModel>>()
     val tokenList : LiveData<List<CryptoTokenModel>> = _tokenList
 

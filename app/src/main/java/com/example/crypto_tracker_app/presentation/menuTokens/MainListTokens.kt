@@ -48,6 +48,7 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import com.example.crypto_tracker_app.domain.model.BalanceDataModel
 import com.example.crypto_tracker_app.presentation.menuTokens.detailToken.detailUIToken
 import com.example.crypto_tracker_app.presentation.viewmodel.TokenViewModel
 import com.example.crypto_tracker_app.presentation.viewmodel.TokenP_TimeViewModel
@@ -67,6 +68,9 @@ fun MainListTokens(
             val selectedPrice by tokenViewModel.selectedPrice.observeAsState(true)
             val selectedPrice24h by tokenViewModel.selectedPrice24h.observeAsState(true)
             val selectedRank by tokenViewModel.selectedRank.observeAsState(true)
+            var balance = tokenViewModel.balance
+
+
             var searchText by remember {
                 mutableStateOf("")
             }
@@ -100,7 +104,7 @@ fun MainListTokens(
                             ) {
                                 Column(modifier = Modifier.fillMaxWidth()) {
                                     Text(
-                                        "70,580$",
+                                        "${balance.value}$",
                                         fontSize = 30.sp,
                                         color = Color.White,
                                         fontFamily = FontFamily.Cursive,
@@ -330,11 +334,12 @@ fun MainListTokens(
             }
         composable("sellScreen"){
             val token by tokenViewModel.selectedToken.observeAsState()
-            SellScreen(image = token?.image?: "",navController)
+            SellScreen(image = token?.image?: "",token?.name?: "",navController,tokenViewModel)
         }
         composable("buyScreen"){
             val token by tokenViewModel.selectedToken.observeAsState()
-            BuyScreen(image = token?.image?: "",navController)
+
+            BuyScreen(token?.name?: "",navController,tokenViewModel)
         }
         }
 }
