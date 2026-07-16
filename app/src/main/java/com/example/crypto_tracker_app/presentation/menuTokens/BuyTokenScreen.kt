@@ -36,12 +36,17 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import com.example.crypto_tracker_app.R
+import com.example.crypto_tracker_app.domain.model.BalanceTokenModel
 import com.example.crypto_tracker_app.presentation.viewmodel.TokenViewModel
 import com.example.crypto_tracker_app.ui.theme.GradientForCardBalance
 import kotlinx.coroutines.delay
 
 @Composable
-fun BuyScreen(name: String,navController: NavHostController,tokenViewModel: TokenViewModel) {
+fun BuyScreen(
+    name: String, image: String,
+    price: Double,
+    navController: NavHostController, tokenViewModel: TokenViewModel
+) {
     var balance = tokenViewModel.balance
     val token by tokenViewModel.selectedToken.observeAsState()
     var visibility by remember { mutableStateOf(false) }
@@ -78,7 +83,8 @@ fun BuyScreen(name: String,navController: NavHostController,tokenViewModel: Toke
 
                             TextButton(
                                 colors = ButtonDefaults.textButtonColors(containerColor = Color.Transparent),
-                                onClick = { },
+                                onClick = {
+                                },
                             ) {
                                 Text(
                                     "Deposit",
@@ -96,8 +102,8 @@ fun BuyScreen(name: String,navController: NavHostController,tokenViewModel: Toke
 
                     )
                     OutlinedTextField(
-                        value = quantityTextState,
-                        onValueChange = { text -> quantityTextState = text },
+                        value = priceTextState,
+                        onValueChange = { text -> priceTextState = text },
                         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
                         label = { Text("10$") },
                         modifier = Modifier.fillMaxWidth().padding(vertical = 10.dp)
@@ -118,8 +124,8 @@ fun BuyScreen(name: String,navController: NavHostController,tokenViewModel: Toke
 
                     )
                     OutlinedTextField(
-                        value = priceTextState,
-                        onValueChange = { text -> priceTextState = text },
+                        value = quantityTextState,
+                        onValueChange = { text -> quantityTextState = text },
                         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal),
                         label = { Text("Ekvivalent: $result") },
                         modifier = Modifier.fillMaxWidth().padding(vertical = 10.dp)
@@ -139,6 +145,15 @@ fun BuyScreen(name: String,navController: NavHostController,tokenViewModel: Toke
                 modifier = Modifier.fillMaxWidth().padding(10.dp),
                 onClick = {
                     visibility = true
+                    val data = BalanceTokenModel(
+                        name,
+                        image,
+                        price,
+                        quantityTextState.toDouble(),
+                        priceTextState.toDouble()
+
+                    )
+                    tokenViewModel.addTokenToBalance(data)
                 },
                 colors = ButtonDefaults.textButtonColors(
                     containerColor = Color.Green,

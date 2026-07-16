@@ -1,11 +1,14 @@
 package com.example.crypto_tracker_app.presentation.viewmodel
 
+import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import co.yml.charts.common.model.Point
+import com.example.crypto_tracker_app.domain.model.BalanceDataModel
+import com.example.crypto_tracker_app.domain.model.BalanceTokenModel
 import com.example.crypto_tracker_app.domain.model.CryptoTokenModel
 import com.example.crypto_tracker_app.domain.repository.GetTokensRepository
 import com.example.crypto_tracker_app.domain.usecase.SortTokensByPriceUp24h
@@ -59,6 +62,11 @@ class TokenViewModel(
 
     init {
         loadTokens()
+    }
+    val balanceToken = mutableStateListOf<BalanceTokenModel>()
+
+    fun addTokenToBalance(token: BalanceTokenModel){
+        balanceToken.add(token)
     }
 
     // Добавление сортировки списка по высокой цене

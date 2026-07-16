@@ -8,6 +8,7 @@ package com.example.crypto_tracker_app.presentation.menuTokens
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -48,8 +49,8 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import com.example.crypto_tracker_app.domain.model.BalanceDataModel
 import com.example.crypto_tracker_app.presentation.menuTokens.detailToken.detailUIToken
+import com.example.crypto_tracker_app.presentation.menuTokens.priofile.ProfileScreen
 import com.example.crypto_tracker_app.presentation.viewmodel.TokenViewModel
 import com.example.crypto_tracker_app.presentation.viewmodel.TokenP_TimeViewModel
 import com.example.crypto_tracker_app.ui.theme.GradientForCardBalance
@@ -287,7 +288,9 @@ fun MainListTokens(
                             )
                         }
 
-                        Column(modifier = Modifier.weight(1f),
+                        Column(modifier = Modifier.weight(1f).clickable{
+                            navController.navigate("profileScreen")
+                        },
                             horizontalAlignment = Alignment.CenterHorizontally) {
                             Image(modifier = Modifier.size(26.dp),
                                 painter = painterResource(R.drawable.profile_ic),
@@ -339,7 +342,11 @@ fun MainListTokens(
         composable("buyScreen"){
             val token by tokenViewModel.selectedToken.observeAsState()
 
-            BuyScreen(token?.name?: "",navController,tokenViewModel)
+            BuyScreen(token?.name?: "",token?.image?: "",
+                token?.currentPrice?: 0.0 ,navController,tokenViewModel)
+        }
+        composable("profileScreen"){
+            ProfileScreen(tokenViewModel)
         }
         }
 }
