@@ -1,5 +1,6 @@
 package com.example.crypto_tracker_app.ui.theme
 
+import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 
@@ -13,25 +14,32 @@ val Pink40 = Color(0xFF7D5260)
 
 val GreenGradient = Brush.linearGradient(
     colors = listOf(
-        Color(0xFFBAFEA3),
-        Color(0xFF24E0FB),
-        Color(0xFF0AFE47)
-    )
+        Color(0xFF00FA9A),
+        Color(0xFF7FFF00),
+        Color(0xFF00FFFF),
+        Color(0xFF0AFE47),
+    ),
+    start = Offset.Zero,
+    end = Offset.Infinite
 )
 
 val RedGradient = Brush.linearGradient(
     colors = listOf(
         Color(0xFFFF5F6D),
-        Color(0xFFFFC371),
+        Color(0xFFDC143C),
         Color(0xFFFF0000)
-    )
+    ),
+    start = Offset.Zero,
+    end = Offset.Infinite
 )
+val White = Color(0xFFF8F8FF)
+
 val GradientForCardBalance = Brush.linearGradient(
     colors = listOf(
-        Color(0xFFD568FD),
-        Color(0xFF24E0FB),
-        Color(0xFFDBDBFF),
-        Color(0xFFFF5353),
-        Color(0xFFFFFF99),
-    )
+        Color(0xFF6A31FF), // Насыщенный фиолетовый
+        Color(0xFFAD31FF), // Пурпурный
+        Color(0xFF00D1FF)  // Циан
+    ),
+    start = Offset.Zero,
+    end = Offset.Infinite
 )

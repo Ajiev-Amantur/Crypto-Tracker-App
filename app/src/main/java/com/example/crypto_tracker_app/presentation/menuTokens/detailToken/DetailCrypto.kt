@@ -12,6 +12,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.statusBarsPadding
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
@@ -26,10 +27,13 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalConfiguration
+import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontStyle
 
 import androidx.compose.ui.unit.dp
@@ -50,6 +54,7 @@ import co.yml.charts.ui.linechart.model.ShadowUnderLine
 import coil.compose.AsyncImage
 import com.example.crypto_tracker_app.R
 import com.example.crypto_tracker_app.presentation.viewmodel.TokenP_TimeViewModel
+import com.example.crypto_tracker_app.presentation.viewmodel.TokenViewModel
 import com.example.crypto_tracker_app.ui.theme.GreenGradient
 import com.example.crypto_tracker_app.ui.theme.RedGradient
 import java.text.SimpleDateFormat
@@ -61,6 +66,7 @@ fun detailUIToken(id: String,name: String,price: Int,image: String,priceChange24
                   priceAltProsent: Double,atlPrice: Double,athPrice: Double,
                   totalSupply : Double,maxSypply: Double,
                   highPrice24h: Double,lowPrice24h: Double,
+                  tokenViewModel: TokenViewModel,
                   viewModel: TokenP_TimeViewModel,
                   priceChange24hProsent: Double,
                   priceChange7dProsent: Double,
@@ -80,7 +86,7 @@ fun detailUIToken(id: String,name: String,price: Int,image: String,priceChange24
         else -> priceChange24hProsent
     }
         Box(
-            modifier = Modifier.fillMaxWidth().padding(10.dp)
+            modifier = Modifier.fillMaxSize().padding(10.dp)
                 .statusBarsPadding()
         ) {
             Column(modifier = Modifier.fillMaxWidth().background(Color.Unspecified)) {
@@ -185,7 +191,8 @@ fun detailUIToken(id: String,name: String,price: Int,image: String,priceChange24
                         .labelAndAxisLinePadding(20.dp)
                         .labelData { i ->
                             val yScale = (maxPrice - minPrice) / steps
-                            ((i * yScale) + minPrice).formatToSinglePrecision() }.build()
+                            ((i * yScale) + minPrice).formatToSinglePrecision()
+                        }.build()
 
                     val lineChartData = LineChartData(
                         linePlotData = LinePlotData(
@@ -193,7 +200,7 @@ fun detailUIToken(id: String,name: String,price: Int,image: String,priceChange24
                                 Line(
                                     dataPoints = points,
                                     LineStyle(
-                                        color = if (priceChanged > 0) Color(0xFF0AFE47) else Color.Red,
+                                        color = if (priceChanged > 0) Color(0xFF90EE90) else Color.Red,
                                         width = 3.0f
                                     ),
                                     IntersectionPoint(radius = 0.dp),
@@ -296,7 +303,7 @@ fun detailUIToken(id: String,name: String,price: Int,image: String,priceChange24
 
                 }
                 Box(modifier = Modifier.fillMaxWidth().padding(10.dp).background(Color.White)) {
-                    Column(modifier = Modifier.fillMaxSize()) {
+                    Column(modifier = Modifier.fillMaxWidth()) {
                         Row(
                             modifier = Modifier.fillMaxWidth(),
                             horizontalArrangement = Arrangement.SpaceAround
@@ -355,15 +362,60 @@ fun detailUIToken(id: String,name: String,price: Int,image: String,priceChange24
                         }
                     }
                 }
+
+                val token = tokenViewModel.balanceToken.find { it.name == name }
+
+                if (token != null) {
+                    Box(modifier = Modifier.fillMaxWidth().background(Color.White)
+                        .padding(10.dp).clip(RoundedCornerShape(20.dp))) {
+                        Column(modifier = Modifier.fillMaxWidth().padding(10.dp)) {
+                            Row(
+                                modifier = Modifier.fillMaxWidth(),
+                                horizontalArrangement = Arrangement.SpaceBetween
+                            ) {
+                                AsyncImage(
+                                    image, contentDescription = "",
+                                    modifier = Modifier.size(30.dp),
+                                )
+
+                                Text(
+                                    "${token.amount} $name",
+                                    fontSize = 14.sp,
+                                    fontFamily = FontFamily.Monospace,
+                                    color = Color.Black
+                                )
+                            }
+                            Row(
+                                modifier = Modifier.fillMaxWidth(),
+                                horizontalArrangement = Arrangement.SpaceAround
+                            ) {
+                                Text(
+                                    "${token.totalValue}$",
+                                    fontSize = 14.sp,
+                                    fontFamily = FontFamily.Monospace,
+                                    color = Color.Black
+                                )
+                                Text(
+                                    "",
+                                    fontSize = 14.sp,
+                                    fontFamily = FontFamily.Monospace,
+                                    color = Color.Black
+                                )
+                            }
+                        }
+                    }
+                }
             }
             Row (
                 modifier = Modifier.fillMaxWidth().padding(20.dp).align(Alignment.BottomCenter),
                 horizontalArrangement = Arrangement.SpaceAround
             ) {
                 TextButton(
-                    modifier = Modifier.weight(1f).padding(5.dp),
+                    modifier = Modifier.weight(1f)
+                        .padding(5.dp)
+                        .background(brush = RedGradient, shape = RoundedCornerShape(20.dp)),
                     colors = ButtonDefaults.buttonColors(
-                        containerColor = Color.Red,
+                        containerColor = Color.Transparent,
                         contentColor = Color.White,
                     ),
                     onClick = {
@@ -375,9 +427,10 @@ fun detailUIToken(id: String,name: String,price: Int,image: String,priceChange24
                    )
                 }
                 TextButton(
-                    modifier = Modifier.weight(1f).padding(5.dp),
+                    modifier = Modifier.weight(1f).padding(5.dp)
+                        .background(brush = GreenGradient, shape = RoundedCornerShape(20.dp)),
                     colors = ButtonDefaults.buttonColors(
-                        containerColor = Color.Green,
+                        containerColor = Color.Transparent,
                         contentColor = Color.White,
                     ),
                     onClick = {
@@ -390,4 +443,4 @@ fun detailUIToken(id: String,name: String,price: Int,image: String,priceChange24
                 }
             }
         }
-    }
+}

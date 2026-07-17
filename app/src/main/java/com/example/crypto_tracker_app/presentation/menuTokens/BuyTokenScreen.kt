@@ -39,6 +39,7 @@ import com.example.crypto_tracker_app.R
 import com.example.crypto_tracker_app.domain.model.BalanceTokenModel
 import com.example.crypto_tracker_app.presentation.viewmodel.TokenViewModel
 import com.example.crypto_tracker_app.ui.theme.GradientForCardBalance
+import com.example.crypto_tracker_app.ui.theme.GreenGradient
 import kotlinx.coroutines.delay
 
 @Composable
@@ -51,7 +52,7 @@ fun BuyScreen(
     val token by tokenViewModel.selectedToken.observeAsState()
     var visibility by remember { mutableStateOf(false) }
     var quantityTextState by remember { mutableStateOf("") }
-    var priceTextState by remember { mutableStateOf("") }
+    var priceText by remember { mutableStateOf("") }
 
 
     Box(modifier = Modifier.fillMaxSize()) {
@@ -102,32 +103,31 @@ fun BuyScreen(
 
                     )
                     OutlinedTextField(
-                        value = priceTextState,
-                        onValueChange = { text -> priceTextState = text },
+                        value = priceText,
+                        onValueChange = { text -> priceText = text },
                         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
-                        label = { Text("10$") },
+                        label = { Text("Write Here Price") },
                         modifier = Modifier.fillMaxWidth().padding(vertical = 10.dp)
                     )
-                    val textFiledResult = quantityTextState.toFloatOrNull()?: 0.0f
+                    val inputPrice = priceText.toFloatOrNull()?: 0.0f
                     val tokenPrice = token?.currentPrice?.toFloat()?: 0.0f
 
                     val result = if(tokenPrice > 0){
-                        textFiledResult / tokenPrice
+                        inputPrice / tokenPrice
                     } else{
                         0.0
                     }
-
+                    quantityTextState = if (priceText.isEmpty()) "" else result.toString()
                     Text(
                         "Quantity",
                         fontSize = 14.sp,
                         modifier = Modifier.padding(horizontal = 20.dp)
-
                     )
                     OutlinedTextField(
                         value = quantityTextState,
-                        onValueChange = { text -> quantityTextState = text },
+                        onValueChange = { },
                         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal),
-                        label = { Text("Ekvivalent: $result") },
+                        label = { Text("amount 0.001BTC") },
                         modifier = Modifier.fillMaxWidth().padding(vertical = 10.dp)
                     )
                 }
@@ -142,15 +142,17 @@ fun BuyScreen(
             horizontalArrangement = Arrangement.SpaceAround
         ) {
             TextButton(
-                modifier = Modifier.fillMaxWidth().padding(10.dp),
+                modifier = Modifier.fillMaxWidth().padding(10.dp)
+                    .background(brush = GreenGradient,RoundedCornerShape(20.dp)),
                 onClick = {
+                    balance.value = balance.value - priceText.toDouble()
                     visibility = true
                     val data = BalanceTokenModel(
                         name,
                         image,
                         price,
                         quantityTextState.toDouble(),
-                        priceTextState.toDouble()
+                        priceText.toDouble()
 
                     )
                     tokenViewModel.addTokenToBalance(data)
@@ -168,7 +170,7 @@ fun BuyScreen(
         }
         LaunchedEffect(visibility) {
             if (visibility){
-                val sum = priceTextState.toIntOrNull()?: 0
+                val sum = priceText.toIntOrNull()?: 0
                 balance.value - sum
                 delay(2000)
                 visibility = false

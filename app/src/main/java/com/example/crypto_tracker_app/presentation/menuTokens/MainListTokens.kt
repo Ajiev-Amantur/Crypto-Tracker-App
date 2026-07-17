@@ -42,6 +42,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
+import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.unit.dp
@@ -87,12 +88,12 @@ fun MainListTokens(
                     // Прогресс бар тут
                 }
             } else {
-                Box(modifier = Modifier.fillMaxSize()) {
+                Box(modifier = Modifier.fillMaxSize().background(Color.White)) {
                     LazyColumn(
                         modifier = Modifier
                             .fillMaxSize()
                             .statusBarsPadding()
-                            .background(Color.LightGray)
+                            .background(Color.Transparent)
                     ) {
                         // Карточка баланса
                         item {
@@ -136,7 +137,7 @@ fun MainListTokens(
                         stickyHeader {
                             Column(
                                 modifier = Modifier.fillMaxWidth()
-                                    .background(Color.LightGray)
+                                    .background(colorResource(R.color.white))
                             ) {
                                 SearchBar(
                                     modifier = Modifier.padding(
@@ -326,6 +327,7 @@ fun MainListTokens(
                         maxSypply = token.maxSupply,
                         highPrice24h = token.high24h,
                         lowPrice24h = token.low24h,
+                        tokenViewModel = tokenViewModel,
                         viewModel = tokenPriceViewModel,
                         priceChange24hProsent = token.priceChange24hProsent,
                         priceChange7dProsent = token.priceChange7dProsent,

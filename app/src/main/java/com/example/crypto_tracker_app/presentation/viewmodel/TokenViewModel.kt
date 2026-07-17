@@ -28,7 +28,7 @@ class TokenViewModel(
     private val sortTokenByPriceUp24h: SortTokensByPriceUp24h,
     private val sortTokenByPriceDown24h: SortTokenByPriceDown24h,
 ): ViewModel() {
-    val balance = mutableStateOf(70000)
+    val balance = mutableStateOf(70000.0)
     private var _tokenList = MutableLiveData<List<CryptoTokenModel>>()
     val tokenList : LiveData<List<CryptoTokenModel>> = _tokenList
 

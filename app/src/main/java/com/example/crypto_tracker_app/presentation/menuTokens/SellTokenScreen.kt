@@ -45,6 +45,7 @@ import androidx.navigation.NavHostController
 import coil.compose.AsyncImage
 import com.example.crypto_tracker_app.R
 import com.example.crypto_tracker_app.presentation.viewmodel.TokenViewModel
+import com.example.crypto_tracker_app.ui.theme.RedGradient
 import kotlinx.coroutines.delay
 
 @Composable
@@ -136,7 +137,8 @@ fun SellScreen(image: String,name: String,nav: NavHostController,tokenViewModel:
                     horizontalArrangement = Arrangement.SpaceAround
                 ) {
                     TextButton(
-                        modifier = Modifier.fillMaxWidth().padding(20.dp),
+                        modifier = Modifier.fillMaxWidth().padding(20.dp)
+                            .background(brush = RedGradient),
                         onClick = {
                             visibility = true
                         },
