@@ -6,10 +6,12 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import androidx.room.Dao
 import co.yml.charts.common.model.Point
-import com.example.crypto_tracker_app.domain.model.BalanceDataModel
+import com.example.crypto_tracker_app.domain.model.room.BalanceDataModel
 import com.example.crypto_tracker_app.domain.model.BalanceTokenModel
 import com.example.crypto_tracker_app.domain.model.CryptoTokenModel
+import com.example.crypto_tracker_app.domain.model.room.BalanceDao
 import com.example.crypto_tracker_app.domain.repository.GetTokensRepository
 import com.example.crypto_tracker_app.domain.usecase.SortTokensByPriceUp24h
 import com.example.crypto_tracker_app.domain.usecase.SortTokenByPriceDown24h
@@ -27,6 +29,7 @@ class TokenViewModel(
     private val sortTokenByRankBottomUseCase: SortTokenByRankBottomUseCase,
     private val sortTokenByPriceUp24h: SortTokensByPriceUp24h,
     private val sortTokenByPriceDown24h: SortTokenByPriceDown24h,
+    private val dao: BalanceDao
 ): ViewModel() {
     val balance = mutableStateOf(70000.0)
     private var _tokenList = MutableLiveData<List<CryptoTokenModel>>()
@@ -46,6 +49,23 @@ class TokenViewModel(
 
     private var _selectedRank = MutableLiveData<Boolean>()
     val selectedRank: LiveData<Boolean> = _selectedRank
+
+init {
+    viewModelScope.launch {
+        val totalValue = dao.getBalance()?.balance
+        if (totalValue != null){
+            balance.value = totalValue.toDouble()
+        }
+    }
+}
+
+    fun updateBalane(newSum: Double) {
+        viewModelScope.launch {
+            balance.value = newSum
+            dao.insertBalance(BalanceDataModel(0,newSum.toInt()))
+            }
+        }
+
 
     fun prepareSparkline(prices: List<Double>): List<Point>{
         return prices.mapIndexed { index, price ->

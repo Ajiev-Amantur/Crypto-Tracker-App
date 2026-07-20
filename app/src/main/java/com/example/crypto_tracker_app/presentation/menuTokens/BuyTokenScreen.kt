@@ -1,4 +1,5 @@
 package com.example.crypto_tracker_app.presentation.menuTokens
+import android.widget.Toast
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
@@ -29,6 +30,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.input.KeyboardType
@@ -133,6 +135,7 @@ fun BuyScreen(
                 }
             }
         }
+        val context = LocalContext.current
 
         Row(
             modifier = Modifier
@@ -145,17 +148,21 @@ fun BuyScreen(
                 modifier = Modifier.fillMaxWidth().padding(10.dp)
                     .background(brush = GreenGradient,RoundedCornerShape(20.dp)),
                 onClick = {
-                    balance.value = balance.value - priceText.toDouble()
-                    visibility = true
-                    val data = BalanceTokenModel(
-                        name,
-                        image,
-                        price,
-                        quantityTextState.toDouble(),
-                        priceText.toDouble()
+                    if (quantityTextState.isEmpty()) {
+                        Toast.makeText(context, "ERROR!", Toast.LENGTH_SHORT).show()
+                    } else {
+                        balance.value = balance.value - priceText.toDouble()
+                        visibility = true
+                        val data = BalanceTokenModel(
+                            name,
+                            image,
+                            price,
+                            quantityTextState.toDouble(),
+                            priceText.toDouble()
 
-                    )
-                    tokenViewModel.addTokenToBalance(data)
+                        )
+                        tokenViewModel.addTokenToBalance(data)
+                    }
                 },
                 colors = ButtonDefaults.textButtonColors(
                     containerColor = Color.Green,
@@ -169,7 +176,7 @@ fun BuyScreen(
             }
         }
         LaunchedEffect(visibility) {
-            if (visibility){
+            if (visibility && quantityTextState.isNotEmpty()){
                 val sum = priceText.toIntOrNull()?: 0
                 balance.value - sum
                 delay(2000)

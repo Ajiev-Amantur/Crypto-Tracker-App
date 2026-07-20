@@ -144,7 +144,7 @@ fun MainListTokens(
                                         horizontal = 12.dp,
                                         vertical = 8.dp
                                     ),
-                                    colors = SearchBarDefaults.colors(containerColor = Color.White),
+                                    colors = SearchBarDefaults.colors(containerColor = Color(0xFFF0F8FF)),
                                     query = searchText,
                                     onQueryChange = { text -> searchText = text },
                                     onSearch = { },
@@ -163,7 +163,7 @@ fun MainListTokens(
                                 ) {
                                     TextButton(
                                         colors = ButtonDefaults.textButtonColors(
-                                            containerColor = Color.White,
+                                            containerColor = Color(0xFFF0FFFF),
                                             contentColor = Color.Black,
                                             disabledContentColor = Color.Gray
                                         ),
@@ -184,7 +184,7 @@ fun MainListTokens(
                                     TextButton(
                                         colors = ButtonDefaults.textButtonColors(
                                             contentColor = Color.Black,
-                                            containerColor = Color.White
+                                            containerColor = Color(0xFFF0FFFF)
                                         ),
                                         onClick = {
                                             if (selectedPrice) {
@@ -233,7 +233,7 @@ fun MainListTokens(
                                     TextButton(
                                         colors = ButtonDefaults.textButtonColors(
                                             contentColor = Color.Black,
-                                            containerColor = Color.White
+                                            containerColor = Color(0xFFF0FFFF)
                                         ),
                                         onClick = {
                                             if (selectedPrice24h) {
@@ -269,8 +269,10 @@ fun MainListTokens(
 
                     }
 
-                Box(modifier = Modifier.fillMaxWidth().height(80.dp).align(Alignment.BottomCenter)
-                    .background(Color.White).padding(vertical = 10.dp),
+                Box(modifier = Modifier.fillMaxWidth()
+                    .height(80.dp).align(Alignment.BottomCenter)
+                    .background(Color(0xFFF5FFFA))
+                    .padding(vertical = 10.dp).clip(RoundedCornerShape(20.dp)),
                     contentAlignment = Alignment.Center){
                     Row(modifier = Modifier.fillMaxWidth(),
                         horizontalArrangement = Arrangement.SpaceBetween,

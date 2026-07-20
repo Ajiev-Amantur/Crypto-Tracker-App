@@ -1,5 +1,6 @@
 package com.example.crypto_tracker_app.presentation.menuTokens.detailToken
 
+import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -30,6 +31,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalConfiguration
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
@@ -41,6 +43,7 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import co.yml.charts.axis.AxisData
 import co.yml.charts.common.extensions.formatToSinglePrecision
+import co.yml.charts.common.extensions.isNotNull
 import co.yml.charts.ui.linechart.LineChart
 import co.yml.charts.ui.linechart.model.GridLines
 import co.yml.charts.ui.linechart.model.IntersectionPoint
@@ -78,6 +81,8 @@ fun detailUIToken(id: String,name: String,price: Int,image: String,priceChange24
     val selectedDay by viewModel.selectedButton.collectAsState()
     val loadingProgress by viewModel.progressBar.observeAsState(false)
     val datePriceToken by viewModel.dateGraph.observeAsState(emptyList())
+    val token = tokenViewModel.balanceToken.find { it.name == name }
+    val context = LocalContext.current
     var priceChanged = when (selectedDay) {
         "1" -> priceChange24hProsent
         "7" -> priceChange7dProsent
@@ -363,11 +368,11 @@ fun detailUIToken(id: String,name: String,price: Int,image: String,priceChange24
                     }
                 }
 
-                val token = tokenViewModel.balanceToken.find { it.name == name }
-
                 if (token != null) {
-                    Box(modifier = Modifier.fillMaxWidth().background(Color.White)
-                        .padding(10.dp).clip(RoundedCornerShape(20.dp))) {
+                    Box(
+                        modifier = Modifier.fillMaxWidth().background(Color.White)
+                            .padding(10.dp).clip(RoundedCornerShape(20.dp))
+                    ) {
                         Column(modifier = Modifier.fillMaxWidth().padding(10.dp)) {
                             Row(
                                 modifier = Modifier.fillMaxWidth(),
@@ -419,7 +424,13 @@ fun detailUIToken(id: String,name: String,price: Int,image: String,priceChange24
                         contentColor = Color.White,
                     ),
                     onClick = {
-                        nav.navigate("sellScreen")
+                        if (token.isNotNull()) {
+                            nav.navigate("sellScreen")
+
+                        }else{
+                            Toast.makeText(context,"You dont have token", Toast.LENGTH_LONG).show()
+
+                        }
                     }
                 ) {
                    Text(

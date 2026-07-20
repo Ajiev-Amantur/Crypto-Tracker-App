@@ -34,6 +34,7 @@ import kotlin.text.uppercase
 
 @Composable
 fun ProfileScreen(tokenViewModel: TokenViewModel) {
+    val price = tokenViewModel.balance
     LazyColumn {
         item {
             Box(
@@ -45,7 +46,7 @@ fun ProfileScreen(tokenViewModel: TokenViewModel) {
             ) {
                 Column(modifier = Modifier.fillMaxWidth()) {
                     Text(
-                        "70,580$",
+                        "${price.value}$",
                         fontSize = 30.sp,
                         color = Color.White,
                         fontFamily = FontFamily.Cursive,
