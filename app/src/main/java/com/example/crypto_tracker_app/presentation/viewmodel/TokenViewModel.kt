@@ -8,10 +8,11 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.room.Dao
 import co.yml.charts.common.model.Point
-import com.example.crypto_tracker_app.domain.model.room.BalanceDataModel
-import com.example.crypto_tracker_app.domain.model.BalanceTokenModel
+import com.example.crypto_tracker_app.domain.model.room.BalanceUser.BalanceDataModel
+import com.example.crypto_tracker_app.domain.model.room.TokenUserBalance.BalanceTokenModel
 import com.example.crypto_tracker_app.domain.model.CryptoTokenModel
-import com.example.crypto_tracker_app.domain.model.room.BalanceDao
+import com.example.crypto_tracker_app.domain.model.room.BalanceUser.BalanceDao
+import com.example.crypto_tracker_app.domain.model.room.TokenUserBalance.TokenUserDao
 import com.example.crypto_tracker_app.domain.repository.GetTokensRepository
 import com.example.crypto_tracker_app.domain.usecase.SortTokensByPriceUp24h
 import com.example.crypto_tracker_app.domain.usecase.SortTokenByPriceDown24h
@@ -29,7 +30,8 @@ class TokenViewModel(
     private val sortTokenByRankBottomUseCase: SortTokenByRankBottomUseCase,
     private val sortTokenByPriceUp24h: SortTokensByPriceUp24h,
     private val sortTokenByPriceDown24h: SortTokenByPriceDown24h,
-    private val dao: BalanceDao
+    private val dao: BalanceDao,
+    private val TokenDao: TokenUserDao
 ): ViewModel() {
     val balance = mutableStateOf(70000.0)
     private var _tokenList = MutableLiveData<List<CryptoTokenModel>>()
@@ -50,6 +52,14 @@ class TokenViewModel(
     private var _selectedRank = MutableLiveData<Boolean>()
     val selectedRank: LiveData<Boolean> = _selectedRank
 
+    val balanceToken = mutableStateListOf<BalanceTokenModel>()
+
+
+    init {
+        viewModelScope.launch {
+            val tokens = TokenDao.getTokenBalance()
+        }
+    }
 init {
     viewModelScope.launch {
         val totalValue = dao.getBalance()?.balance
@@ -58,6 +68,7 @@ init {
         }
     }
 }
+
 
     fun updateBalane(newSum: Double) {
         viewModelScope.launch {
@@ -83,7 +94,6 @@ init {
     init {
         loadTokens()
     }
-    val balanceToken = mutableStateListOf<BalanceTokenModel>()
 
     fun addTokenToBalance(token: BalanceTokenModel){
         balanceToken.add(token)

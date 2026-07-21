@@ -1,4 +1,4 @@
-package com.example.crypto_tracker_app.presentation.menuTokens
+package com.example.crypto_tracker_app.presentation.menuTokens.detailToken
 import android.widget.Toast
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.fadeIn
@@ -38,7 +38,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import com.example.crypto_tracker_app.R
-import com.example.crypto_tracker_app.domain.model.BalanceTokenModel
+import com.example.crypto_tracker_app.domain.model.room.TokenUserBalance.BalanceTokenModel
 import com.example.crypto_tracker_app.presentation.viewmodel.TokenViewModel
 import com.example.crypto_tracker_app.ui.theme.GradientForCardBalance
 import com.example.crypto_tracker_app.ui.theme.GreenGradient
@@ -154,6 +154,7 @@ fun BuyScreen(
                         balance.value = balance.value - priceText.toDouble()
                         visibility = true
                         val data = BalanceTokenModel(
+                            id = 0,
                             name,
                             image,
                             price,

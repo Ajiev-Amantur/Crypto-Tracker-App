@@ -4,8 +4,10 @@ import com.example.crypto_tracker_app.data.TokenAPI.RetrofitInstance
 import com.example.crypto_tracker_app.data.TokenByTimeApi.PriceTimeInstance
 import com.example.crypto_tracker_app.data.repository.GetTokensRepositoryImpl
 import com.example.crypto_tracker_app.data.repository.PriceTimeRepositoryImpl
-import com.example.crypto_tracker_app.domain.model.room.BalanceDao
-import com.example.crypto_tracker_app.domain.model.room.BalanceDataBase
+import com.example.crypto_tracker_app.domain.model.room.BalanceUser.BalanceDao
+import com.example.crypto_tracker_app.domain.model.room.BalanceUser.BalanceDataBase
+import com.example.crypto_tracker_app.domain.model.room.TokenUserBalance.TokenUserBalanceDataBase
+import com.example.crypto_tracker_app.domain.model.room.TokenUserBalance.TokenUserDao
 import com.example.crypto_tracker_app.domain.repository.GetTokensRepository
 import com.example.crypto_tracker_app.domain.repository.PriceTimeRepository
 import com.example.crypto_tracker_app.domain.usecase.*
@@ -28,8 +30,12 @@ val tokenModule = module {
 
     single { BalanceDataBase.createBalanceDataBase(get()) }
     single<BalanceDao> { get<BalanceDataBase>().dao}
+
+    single { TokenUserBalanceDataBase.createTokenUserBDataBase(get()) }
+    single<TokenUserDao> {get<TokenUserBalanceDataBase>().dao}
     viewModel {
         TokenViewModel(
+            get(),
             get(),
             get(),
             get(),

@@ -1,4 +1,4 @@
-package com.example.crypto_tracker_app.domain.model.room
+package com.example.crypto_tracker_app.domain.model.room.BalanceUser
 
 import androidx.room.Entity
 import androidx.room.PrimaryKey

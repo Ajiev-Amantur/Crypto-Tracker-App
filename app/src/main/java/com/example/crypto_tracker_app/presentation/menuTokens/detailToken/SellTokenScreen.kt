@@ -1,5 +1,4 @@
-package com.example.crypto_tracker_app.presentation.menuTokens
-import android.widget.Toast
+package com.example.crypto_tracker_app.presentation.menuTokens.detailToken
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
@@ -71,13 +70,15 @@ fun SellScreen(image: String,name: String,nav: NavHostController,tokenViewModel:
                             modifier = Modifier.size(30.dp)
                         )
                         Text(
-                            "${tokenBalance?.totalValue}",
+                            "${tokenBalance?.amount}",
                             fontSize = 14.sp,
                             fontFamily = FontFamily.SansSerif,
 
                             )
                         TextButton(
-                            onClick = {},
+                            onClick = {
+                                quantiryTextState = tokenBalance?.totalValue.toString()
+                            },
                             colors = ButtonDefaults.textButtonColors(
                                 containerColor = Color.White,
                                 contentColor = Color.Black
@@ -112,7 +113,7 @@ fun SellScreen(image: String,name: String,nav: NavHostController,tokenViewModel:
                 val textField = quantiryTextState.toDoubleOrNull() ?: 0.0
 
                 val result = if (price > 0) {
-                    price * textField
+                    price / textField
                 } else {
                     0.0
                 }
@@ -147,6 +148,18 @@ fun SellScreen(image: String,name: String,nav: NavHostController,tokenViewModel:
                         .background(brush = RedGradient),
                     onClick = {
                         visibility = true
+                        if (tokenBalance != null) {
+                            val amount = quantiryTextState.toDoubleOrNull() ?: 0.0
+                            val balanceAmount = tokenBalance?.amount ?: 0.0
+                            val newAmount = balanceAmount - amount
+                            if (newAmount >= 0) {
+                                tokenBalance.amount = newAmount
+                                val totalValue = newAmount * tokenBalance.price
+                                tokenBalance.totalValue = totalValue
+                            }else{
+                                tokenViewModel.balanceToken.remove(tokenBalance)
+                            }
+                        }
                     },
                     colors = ButtonDefaults.textButtonColors(
                         containerColor = Color.Red,

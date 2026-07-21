@@ -1,4 +1,4 @@
-package com.example.crypto_tracker_app.domain.model.room
+package com.example.crypto_tracker_app.domain.model.room.BalanceUser
 
 import android.content.Context
 import androidx.room.Database

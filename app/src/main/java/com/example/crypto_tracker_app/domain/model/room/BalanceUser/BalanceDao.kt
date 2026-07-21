@@ -1,9 +1,9 @@
-package com.example.crypto_tracker_app.domain.model.room
+package com.example.crypto_tracker_app.domain.model.room.BalanceUser
 
 import androidx.room.Dao
-import androidx.room.Insert
 import androidx.room.Query
 import androidx.room.Upsert
+import com.example.crypto_tracker_app.domain.model.room.BalanceUser.BalanceDataModel
 
 @Dao
 interface BalanceDao {

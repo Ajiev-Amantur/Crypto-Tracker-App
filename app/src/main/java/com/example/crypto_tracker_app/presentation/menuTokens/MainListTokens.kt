@@ -50,6 +50,8 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import com.example.crypto_tracker_app.presentation.menuTokens.detailToken.BuyScreen
+import com.example.crypto_tracker_app.presentation.menuTokens.detailToken.SellScreen
 import com.example.crypto_tracker_app.presentation.menuTokens.detailToken.detailUIToken
 import com.example.crypto_tracker_app.presentation.menuTokens.priofile.ProfileScreen
 import com.example.crypto_tracker_app.presentation.viewmodel.TokenViewModel
@@ -341,13 +343,15 @@ fun MainListTokens(
             }
         composable("sellScreen"){
             val token by tokenViewModel.selectedToken.observeAsState()
-            SellScreen(image = token?.image?: "",token?.name?: "",navController,tokenViewModel)
+            SellScreen(image = token?.image ?: "", token?.name ?: "", navController, tokenViewModel)
         }
         composable("buyScreen"){
             val token by tokenViewModel.selectedToken.observeAsState()
 
-            BuyScreen(token?.name?: "",token?.image?: "",
-                token?.currentPrice?: 0.0 ,navController,tokenViewModel)
+            BuyScreen(
+                token?.name ?: "", token?.image ?: "",
+                token?.currentPrice ?: 0.0, navController, tokenViewModel
+            )
         }
         composable("profileScreen"){
             ProfileScreen(tokenViewModel)
