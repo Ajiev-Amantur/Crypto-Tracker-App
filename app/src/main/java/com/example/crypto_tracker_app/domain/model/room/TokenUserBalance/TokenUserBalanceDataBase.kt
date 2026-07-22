@@ -5,7 +5,7 @@ import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
 
-@Database(entities = [BalanceTokenModel::class], version = 1)
+@Database(entities = [UserTokenModel::class], version = 1)
 abstract class TokenUserBalanceDataBase(): RoomDatabase() {
 
     abstract val dao: TokenUserDao

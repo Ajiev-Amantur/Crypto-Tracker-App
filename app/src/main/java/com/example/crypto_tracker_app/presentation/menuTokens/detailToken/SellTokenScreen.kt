@@ -49,130 +49,135 @@ fun SellScreen(image: String,name: String,nav: NavHostController,tokenViewModel:
     var quantiryTextState by remember { mutableStateOf("") }
     var priceTextState by remember { mutableStateOf("") }
     var visibility by remember { mutableStateOf(false) }
+    val balance = tokenViewModel.balance
     val context = LocalContext.current
 
     val tokenBalance = tokenViewModel.balanceToken.find { it.name == name }
+    Box(modifier = Modifier.fillMaxSize()) {
     if (tokenBalance.isNotNull()) {
-        Box(modifier = Modifier.fillMaxSize()) {
-            Column(modifier = Modifier.fillMaxWidth().padding(top = 20.dp)) {
-                Box(
-                    modifier = Modifier.fillMaxWidth().padding(20.dp, top = 50.dp)
-                        .background(Color.White)
-                ) {
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.SpaceAround
-                    ) {
-                        AsyncImage(
-                            model = image,
-                            contentDescription = "image",
-                            modifier = Modifier.size(30.dp)
-                        )
-                        Text(
-                            "${tokenBalance?.amount}",
-                            fontSize = 14.sp,
-                            fontFamily = FontFamily.SansSerif,
-
-                            )
-                        TextButton(
-                            onClick = {
-                                quantiryTextState = tokenBalance?.totalValue.toString()
-                            },
-                            colors = ButtonDefaults.textButtonColors(
-                                containerColor = Color.White,
-                                contentColor = Color.Black
-                            )
-                        ) {
-                            Text(
-                                "Sell All",
-                                fontFamily = FontFamily.SansSerif,
-                                fontSize = 14.sp,
-                            )
-                        }
-                    }
-                }
-                Text(
-                    "Price",
-                    fontSize = 14.sp,
-                    modifier = Modifier.padding(horizontal = 20.dp)
-
-                )
-                Box(modifier = Modifier.fillMaxWidth().padding(20.dp)) {
-                    Row(modifier = Modifier.fillMaxWidth()) {
-                        OutlinedTextField(
-                            value = quantiryTextState,
-                            onValueChange = { text -> quantiryTextState = text },
-                            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal),
-                            label = { Text("1Btc") },
-                            modifier = Modifier.fillMaxWidth()
-                        )
-                    }
-                }
-                val price = token?.currentPrice ?: 0.0
-                val textField = quantiryTextState.toDoubleOrNull() ?: 0.0
-
-                val result = if (price > 0) {
-                    price / textField
-                } else {
-                    0.0
-                }
-                val totalPrice = if (quantiryTextState.isEmpty()) "" else  result.toString()
-                Text(
-                    "quentity",
-                    fontSize = 14.sp,
-                    modifier = Modifier.padding(horizontal = 20.dp)
-                )
-                Box(modifier = Modifier.fillMaxWidth().padding(20.dp)) {
-                    Row(modifier = Modifier.fillMaxWidth()) {
-                        OutlinedTextField(
-                            value = totalPrice,
-                            onValueChange = {},
-                            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
-                            label = { Text("$result$") },
-                            modifier = Modifier.fillMaxWidth()
-                        )
-                    }
-                }
-            }
-
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(20.dp)
-                    .align(alignment = Alignment.BottomCenter),
-                horizontalArrangement = Arrangement.SpaceAround
+        Column(modifier = Modifier.fillMaxWidth().padding(top = 20.dp)) {
+            Box(
+                modifier = Modifier.fillMaxWidth().padding(20.dp, top = 50.dp)
+                    .background(Color.White)
             ) {
-                TextButton(
-                    modifier = Modifier.fillMaxWidth().padding(20.dp)
-                        .background(brush = RedGradient),
-                    onClick = {
-                        visibility = true
-                        if (tokenBalance != null) {
-                            val amount = quantiryTextState.toDoubleOrNull() ?: 0.0
-                            val balanceAmount = tokenBalance?.amount ?: 0.0
-                            val newAmount = balanceAmount - amount
-                            if (newAmount >= 0) {
-                                tokenBalance.amount = newAmount
-                                val totalValue = newAmount * tokenBalance.price
-                                tokenBalance.totalValue = totalValue
-                            }else{
-                                tokenViewModel.balanceToken.remove(tokenBalance)
-                            }
-                        }
-                    },
-                    colors = ButtonDefaults.textButtonColors(
-                        containerColor = Color.Red,
-                        contentColor = Color.White
-                    )
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.SpaceAround
                 ) {
+                    AsyncImage(
+                        model = image,
+                        contentDescription = "image",
+                        modifier = Modifier.size(30.dp)
+                    )
                     Text(
-                        "Sell",
-                        fontSize = 14.sp
+                        "${tokenBalance?.amount}",
+                        fontSize = 14.sp,
+                        fontFamily = FontFamily.SansSerif,
+
+                        )
+                    TextButton(
+                        onClick = {
+                            quantiryTextState = tokenBalance?.amount.toString()
+                        },
+                        colors = ButtonDefaults.textButtonColors(
+                            containerColor = Color.White,
+                            contentColor = Color.Black
+                        )
+                    ) {
+                        Text(
+                            "Sell All",
+                            fontFamily = FontFamily.SansSerif,
+                            fontSize = 14.sp,
+                        )
+                    }
+                }
+            }
+            Text(
+                "Write here amount",
+                fontSize = 14.sp,
+                modifier = Modifier.padding(horizontal = 20.dp)
+
+            )
+            Box(modifier = Modifier.fillMaxWidth().padding(20.dp)) {
+                Row(modifier = Modifier.fillMaxWidth()) {
+                    OutlinedTextField(
+                        value = quantiryTextState,
+                        onValueChange = { text -> quantiryTextState = text },
+                        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal),
+                        label = { Text("0.001?") },
+                        suffix = {Text("$name")},
+                        modifier = Modifier.fillMaxWidth()
                     )
                 }
-
             }
+            val price = token?.currentPrice ?: 0.0
+            val textField = quantiryTextState.toDoubleOrNull() ?: 0.0
+
+            val result = if (price > 0) {
+                price * textField
+            } else {
+                0.0
+            }
+            val totalPrice = if (quantiryTextState.isEmpty()) "" else result.toString()
+            Text(
+                "quentity",
+                fontSize = 14.sp,
+                modifier = Modifier.padding(horizontal = 20.dp)
+            )
+            Box(modifier = Modifier.fillMaxWidth().padding(20.dp)) {
+                Row(modifier = Modifier.fillMaxWidth()) {
+                    OutlinedTextField(
+                        value = totalPrice,
+                        onValueChange = {},
+                        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+                        label = { Text("$result$") },
+                        suffix = {Text("$")},
+                        modifier = Modifier.fillMaxWidth()
+                    )
+                }
+            }
+        }
+
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(20.dp)
+                .align(alignment = Alignment.BottomCenter),
+            horizontalArrangement = Arrangement.SpaceAround
+        ) {
+            TextButton(
+                modifier = Modifier.fillMaxWidth().padding(20.dp)
+                    .background(brush = RedGradient),
+                onClick = {
+                    visibility = true
+                    if (tokenBalance != null) {
+                        val amount = quantiryTextState.toDoubleOrNull() ?: 0.0
+                        val balanceAmount = tokenBalance?.amount ?: 0.0
+                        val newAmount = balanceAmount - amount
+                        if (newAmount >= 0) {
+                            tokenBalance.amount = newAmount
+                            val totalValue = newAmount * tokenBalance.price
+                            tokenBalance.totalValue = totalValue
+                            balance.value = balance.value - totalValue
+                        } else {
+                            tokenViewModel.balanceToken.remove(tokenBalance)
+                        }
+                    }
+                },
+                colors = ButtonDefaults.textButtonColors(
+                    containerColor = Color.Red,
+                    contentColor = Color.White
+                )
+            ) {
+                Text(
+                    "Sell",
+                    fontSize = 14.sp
+                )
+            }
+
+        }
+    }
             LaunchedEffect(visibility) {
                 if (visibility) {
                     delay(2000)
@@ -224,6 +229,7 @@ fun SellScreen(image: String,name: String,nav: NavHostController,tokenViewModel:
                     }
                 }
             }
-        }
+
     }
+
 }

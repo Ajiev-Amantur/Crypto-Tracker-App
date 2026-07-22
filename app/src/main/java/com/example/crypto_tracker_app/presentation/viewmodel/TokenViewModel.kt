@@ -6,10 +6,9 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import androidx.room.Dao
 import co.yml.charts.common.model.Point
 import com.example.crypto_tracker_app.domain.model.room.BalanceUser.BalanceDataModel
-import com.example.crypto_tracker_app.domain.model.room.TokenUserBalance.BalanceTokenModel
+import com.example.crypto_tracker_app.domain.model.room.TokenUserBalance.UserTokenModel
 import com.example.crypto_tracker_app.domain.model.CryptoTokenModel
 import com.example.crypto_tracker_app.domain.model.room.BalanceUser.BalanceDao
 import com.example.crypto_tracker_app.domain.model.room.TokenUserBalance.TokenUserDao
@@ -52,12 +51,19 @@ class TokenViewModel(
     private var _selectedRank = MutableLiveData<Boolean>()
     val selectedRank: LiveData<Boolean> = _selectedRank
 
-    val balanceToken = mutableStateListOf<BalanceTokenModel>()
+    val balanceToken = mutableStateListOf<UserTokenModel>()
 
 
     init {
         viewModelScope.launch {
             val tokens = TokenDao.getTokenBalance()
+            balanceToken.addAll(tokens)
+        }
+    }
+    fun addUserToken(newBalance: UserTokenModel){
+        viewModelScope.launch {
+            TokenDao.addToken(newBalance)
+            balanceToken.add(newBalance)
         }
     }
 init {
@@ -95,9 +101,7 @@ init {
         loadTokens()
     }
 
-    fun addTokenToBalance(token: BalanceTokenModel){
-        balanceToken.add(token)
-    }
+
 
     // Добавление сортировки списка по высокой цене
     fun TokenByHighPrice(){

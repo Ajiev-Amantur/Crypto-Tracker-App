@@ -8,8 +8,8 @@ import androidx.room.Query
 @Dao
 interface TokenUserDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun addToken(token: BalanceTokenModel)
+    suspend fun addToken(token: UserTokenModel)
 
-    @Query("SELECT * FROM BalanceTokenModel")
-    suspend fun getTokenBalance(): List<BalanceTokenModel>
+    @Query("SELECT * FROM UserTokenModel")
+    suspend fun getTokenBalance(): List<UserTokenModel>
 }

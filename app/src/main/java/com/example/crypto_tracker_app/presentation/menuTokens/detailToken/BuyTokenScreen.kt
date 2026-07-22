@@ -38,7 +38,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import com.example.crypto_tracker_app.R
-import com.example.crypto_tracker_app.domain.model.room.TokenUserBalance.BalanceTokenModel
+import com.example.crypto_tracker_app.domain.model.room.TokenUserBalance.UserTokenModel
 import com.example.crypto_tracker_app.presentation.viewmodel.TokenViewModel
 import com.example.crypto_tracker_app.ui.theme.GradientForCardBalance
 import com.example.crypto_tracker_app.ui.theme.GreenGradient
@@ -109,7 +109,8 @@ fun BuyScreen(
                         onValueChange = { text -> priceText = text },
                         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
                         label = { Text("Write Here Price") },
-                        modifier = Modifier.fillMaxWidth().padding(vertical = 10.dp)
+                        suffix = { Text("$")},
+                        modifier = Modifier.fillMaxWidth().padding(vertical = 10.dp),
                     )
                     val inputPrice = priceText.toFloatOrNull()?: 0.0f
                     val tokenPrice = token?.currentPrice?.toFloat()?: 0.0f
@@ -129,7 +130,8 @@ fun BuyScreen(
                         value = quantityTextState,
                         onValueChange = { },
                         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal),
-                        label = { Text("amount 0.001BTC") },
+                        label = { Text("amount 0.001${token?.name}") },
+                        suffix = {Text("$name")},
                         modifier = Modifier.fillMaxWidth().padding(vertical = 10.dp)
                     )
                 }
@@ -153,7 +155,7 @@ fun BuyScreen(
                     } else {
                         balance.value = balance.value - priceText.toDouble()
                         visibility = true
-                        val data = BalanceTokenModel(
+                        val data = UserTokenModel(
                             id = 0,
                             name,
                             image,
@@ -162,7 +164,8 @@ fun BuyScreen(
                             priceText.toDouble()
 
                         )
-                        tokenViewModel.addTokenToBalance(data)
+                        tokenViewModel.updateBalane(balance.value)
+                        tokenViewModel.addUserToken(data)
                     }
                 },
                 colors = ButtonDefaults.textButtonColors(

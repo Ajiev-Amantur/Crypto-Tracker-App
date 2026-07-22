@@ -28,6 +28,7 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import coil.compose.AsyncImage
 import com.example.crypto_tracker_app.presentation.viewmodel.TokenViewModel
+import com.example.crypto_tracker_app.ui.theme.CryptoTrackerAppTheme
 import com.example.crypto_tracker_app.ui.theme.GradientForCardBalance
 import kotlin.text.take
 import kotlin.text.uppercase
@@ -35,45 +36,46 @@ import kotlin.text.uppercase
 @Composable
 fun ProfileScreen(tokenViewModel: TokenViewModel) {
     val price = tokenViewModel.balance
-    LazyColumn {
-        item {
-            Box(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 16.dp, vertical = 6.dp)
-                    .clip(RoundedCornerShape(16.dp))
-                    .background(GradientForCardBalance),
-            ) {
-                Column(modifier = Modifier.fillMaxWidth()) {
-                    Text(
-                        "${price.value}$",
-                        fontSize = 30.sp,
-                        color = Color.White,
-                        fontFamily = FontFamily.Cursive,
-                        modifier = Modifier.padding(10.dp),
-                    )
-                    Text(
-                        "your balance is equivalent",
-                        fontSize = 14.sp,
-                        color = Color.Gray,
-                        fontFamily = FontFamily.Monospace,
-                        modifier = Modifier.padding(8.dp, bottom = 30.dp)
-                    )
-
-                    TextButton(
-                        colors = ButtonDefaults.textButtonColors(containerColor = Color.Transparent),
-                        onClick = { },
-                    ) {
+    CryptoTrackerAppTheme {
+        LazyColumn {
+            item {
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 16.dp, vertical = 6.dp)
+                        .clip(RoundedCornerShape(16.dp))
+                        .background(GradientForCardBalance),
+                ) {
+                    Column(modifier = Modifier.fillMaxWidth()) {
                         Text(
-                            "Deposit",
+                            "${price.value}$",
+                            fontSize = 30.sp,
                             color = Color.White,
-                            fontSize = 18.sp,
-                            fontFamily = FontFamily.Monospace
+                            fontFamily = FontFamily.Cursive,
+                            modifier = Modifier.padding(10.dp),
                         )
+                        Text(
+                            "your balance is equivalent",
+                            fontSize = 14.sp,
+                            color = Color.Gray,
+                            fontFamily = FontFamily.Monospace,
+                            modifier = Modifier.padding(8.dp, bottom = 30.dp)
+                        )
+
+                        TextButton(
+                            colors = ButtonDefaults.textButtonColors(containerColor = Color.Transparent),
+                            onClick = { },
+                        ) {
+                            Text(
+                                "Deposit",
+                                color = Color.White,
+                                fontSize = 18.sp,
+                                fontFamily = FontFamily.Monospace
+                            )
+                        }
                     }
                 }
             }
-        }
             items(items = tokenViewModel.balanceToken) { token ->
                 Card(
                     modifier = Modifier
@@ -137,4 +139,5 @@ fun ProfileScreen(tokenViewModel: TokenViewModel) {
         }
 
     }
+}
 
