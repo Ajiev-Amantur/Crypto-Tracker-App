@@ -150,22 +150,26 @@ fun BuyScreen(
                 modifier = Modifier.fillMaxWidth().padding(10.dp)
                     .background(brush = GreenGradient,RoundedCornerShape(20.dp)),
                 onClick = {
-                    if (quantityTextState.isEmpty()) {
-                        Toast.makeText(context, "ERROR!", Toast.LENGTH_SHORT).show()
-                    } else {
-                        balance.value = balance.value - priceText.toDouble()
-                        visibility = true
-                        val data = UserTokenModel(
-                            id = 0,
-                            name,
-                            image,
-                            price,
-                            quantityTextState.toDouble(),
-                            priceText.toDouble()
+                    if (priceText.toDouble() > balance.value){
+                        Toast.makeText(context,"not enough balance", Toast.LENGTH_SHORT).show()
+                    }else {
+                        if (quantityTextState.isEmpty()) {
+                            Toast.makeText(context, "ERROR!", Toast.LENGTH_SHORT).show()
+                        } else {
+                            balance.value = balance.value - priceText.toDouble()
+                            visibility = true
+                            val data = UserTokenModel(
+                                id = 0,
+                                name,
+                                image,
+                                price,
+                                quantityTextState.toDouble(),
+                                priceText.toDouble()
 
-                        )
-                        tokenViewModel.updateBalane(balance.value)
-                        tokenViewModel.addUserToken(data)
+                            )
+                            tokenViewModel.updateBalane(balance.value)
+                            tokenViewModel.addUserToken(data)
+                        }
                     }
                 },
                 colors = ButtonDefaults.textButtonColors(

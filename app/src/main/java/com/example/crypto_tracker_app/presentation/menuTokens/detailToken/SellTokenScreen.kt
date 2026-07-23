@@ -1,4 +1,5 @@
 package com.example.crypto_tracker_app.presentation.menuTokens.detailToken
+import android.widget.Toast
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
@@ -150,8 +151,11 @@ fun SellScreen(image: String,name: String,nav: NavHostController,tokenViewModel:
                 modifier = Modifier.fillMaxWidth().padding(20.dp)
                     .background(brush = RedGradient),
                 onClick = {
-                    visibility = true
+                    if (quantiryTextState.toDouble() > tokenBalance?.amount?: 0.0){
+                        Toast.makeText(context,"Error",Toast.LENGTH_SHORT).show()
+                    }else{
                     if (tokenBalance != null) {
+                        visibility = true
                         val amount = quantiryTextState.toDoubleOrNull() ?: 0.0
                         val balanceAmount = tokenBalance?.amount ?: 0.0
                         val newAmount = balanceAmount - amount
@@ -159,10 +163,12 @@ fun SellScreen(image: String,name: String,nav: NavHostController,tokenViewModel:
                             tokenBalance.amount = newAmount
                             val totalValue = newAmount * tokenBalance.price
                             tokenBalance.totalValue = totalValue
-                            balance.value = balance.value - totalValue
+                            balance.value += totalValue
+                            tokenViewModel.updateBalane(totalValue)
                         } else {
                             tokenViewModel.balanceToken.remove(tokenBalance)
                         }
+                    }
                     }
                 },
                 colors = ButtonDefaults.textButtonColors(

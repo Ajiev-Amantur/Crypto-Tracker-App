@@ -13,12 +13,15 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.statusBarsPadding
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
@@ -90,11 +93,12 @@ fun detailUIToken(id: String,name: String,price: Int,image: String,priceChange24
         "365" -> priceChange1yProsent
         else -> priceChange24hProsent
     }
+    val scrollState = rememberScrollState()
         Box(
             modifier = Modifier.fillMaxSize().padding(10.dp)
                 .statusBarsPadding()
         ) {
-            Column(modifier = Modifier.fillMaxWidth().background(Color.Unspecified)) {
+            Column(modifier = Modifier.fillMaxWidth().background(Color.Unspecified).verticalScroll(scrollState)) {
                 Row(
                     verticalAlignment = Alignment.CenterVertically,
                     horizontalArrangement = Arrangement.SpaceAround
@@ -115,6 +119,11 @@ fun detailUIToken(id: String,name: String,price: Int,image: String,priceChange24
                         Modifier.padding(10.dp),
                         fontSize = 20.sp
                     )
+                }
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.SpaceEvenly
+                ) {
                     Text(
                         "${price}$",
                         modifier = Modifier.padding(10.dp),
@@ -151,6 +160,7 @@ fun detailUIToken(id: String,name: String,price: Int,image: String,priceChange24
                         }
                     }
                 }
+
 
                 if (points.size < 2) {
                     Box(
@@ -194,10 +204,10 @@ fun detailUIToken(id: String,name: String,price: Int,image: String,priceChange24
                         .steps(steps)
                         .backgroundColor(Color.White)
                         .labelAndAxisLinePadding(20.dp)
-                        .labelData { i ->
-                            val yScale = (maxPrice - minPrice) / steps
-                            ((i * yScale) + minPrice).formatToSinglePrecision()
-                        }.build()
+                        .labelData { " " }
+                        .labelAndAxisLinePadding(0.dp)
+                        .build()
+
 
                     val lineChartData = LineChartData(
                         linePlotData = LinePlotData(
@@ -205,8 +215,8 @@ fun detailUIToken(id: String,name: String,price: Int,image: String,priceChange24
                                 Line(
                                     dataPoints = points,
                                     LineStyle(
-                                        color = if (priceChanged > 0) Color(0xFF90EE90) else Color.Red,
-                                        width = 3.0f
+                                        color = if (priceChanged > 0) Color(0xFF1E90FF) else Color.Red,
+                                        width = 5.0f
                                     ),
                                     IntersectionPoint(radius = 0.dp),
                                     SelectionHighlightPoint(color = Color.Black, 1.dp),
@@ -227,8 +237,8 @@ fun detailUIToken(id: String,name: String,price: Int,image: String,priceChange24
                     )
                     LineChart(
                         modifier = Modifier
-                            .fillMaxWidth()
-                            .height(300.dp),
+                            .fillMaxWidth().clip(RoundedCornerShape(20.dp))
+                            .height(250.dp),
                         lineChartData = lineChartData
                     )
                 }
@@ -246,8 +256,12 @@ fun detailUIToken(id: String,name: String,price: Int,image: String,priceChange24
                             viewModel.updateSelectB("1")
                         },
                         colors = ButtonDefaults.buttonColors(
-                            containerColor = if (selectedDay == "1") Color.LightGray else Color.White,
-                            contentColor = Color.Black
+                            containerColor = if (selectedDay == "1") Color(0xFFE0FFFF) else Color(
+                                0xFFF0FFFF
+                            ),
+                            contentColor = if (selectedDay == "1") Color(0xFF1E90FF) else Color(
+                                0xFF4B0082
+                            ),
                         )
                     ) {
                         Text("1day")
@@ -255,6 +269,8 @@ fun detailUIToken(id: String,name: String,price: Int,image: String,priceChange24
 
 
                     Button(
+                        modifier = Modifier.background(Color(0xFFF0FFFF)),
+
                         onClick = {
                             viewModel.loadTokensByTime(
                                 id = id.toString(),
@@ -265,14 +281,20 @@ fun detailUIToken(id: String,name: String,price: Int,image: String,priceChange24
 
                         },
                         colors = ButtonDefaults.buttonColors(
-                            containerColor = if (selectedDay == "7") Color.LightGray else Color.White,
-                            contentColor = Color.Black
+                            containerColor = if (selectedDay == "7") Color(0xFFE0FFFF) else Color(
+                                0xFFF0FFFF
+                            ),
+                            contentColor = if (selectedDay == "7") Color(0xFF1E90FF) else Color(
+                                0xFF4B0082
+                            ),
                         )
                     ) {
                         Text("7day")
                     }
 
                     Button(
+                        modifier = Modifier.background(Color(0xFFF0FFFF)),
+
                         onClick = {
                             viewModel.loadTokensByTime(
                                 id = id.toString(),
@@ -282,14 +304,20 @@ fun detailUIToken(id: String,name: String,price: Int,image: String,priceChange24
                             viewModel.updateSelectB("30")
                         },
                         colors = ButtonDefaults.buttonColors(
-                            containerColor = if (selectedDay == "30") Color.LightGray else Color.White,
-                            contentColor = Color.Black
+                            containerColor = if (selectedDay == "30") Color(0xFFE0FFFF) else Color(
+                                0xFFF0FFFF
+                            ),
+                            contentColor = if (selectedDay == "30") Color(0xFF1E90FF) else Color(
+                                0xFF4B0082
+                            ),
                         )
                     ) {
                         Text("30")
                     }
 
                     Button(
+                        modifier = Modifier.background(Color(0xFFF0FFFF)),
+
                         onClick = {
                             viewModel.loadTokensByTime(
                                 id = id.toString(),
@@ -299,67 +327,166 @@ fun detailUIToken(id: String,name: String,price: Int,image: String,priceChange24
                             viewModel.updateSelectB("365")
                         },
                         colors = ButtonDefaults.buttonColors(
-                            containerColor = if (selectedDay == "365") Color.LightGray else Color.White,
-                            contentColor = Color.Black
+                            containerColor = if (selectedDay == "365") Color(0xFFE0FFFF) else Color(
+                                0xFFF0FFFF
+                            ),
+                            contentColor = if (selectedDay == "365") Color(0xFF1E90FF) else Color(
+                                0xFF4B0082
+                            ),
                         )
                     ) {
                         Text("1year")
                     }
 
                 }
-                Box(modifier = Modifier.fillMaxWidth().padding(10.dp).background(Color.White)) {
+                Box(
+                    modifier = Modifier.fillMaxWidth().padding(10.dp).background(Color.Transparent)
+                ) {
                     Column(modifier = Modifier.fillMaxWidth()) {
                         Row(
                             modifier = Modifier.fillMaxWidth(),
-                            horizontalArrangement = Arrangement.SpaceAround
+                            horizontalArrangement = Arrangement.SpaceEvenly
                         ) {
                             Text(
-                                "Min price: $atlPrice$",
+                                "Min price",
                                 style = TextStyle(fontStyle = FontStyle.Italic),
                                 fontSize = 14.sp,
+                                modifier = Modifier.padding(6.dp, bottom = 20.dp)
+                            )
+                            Text(
+                                "$atlPrice$",
+                                style = TextStyle(fontStyle = FontStyle.Italic),
+                                fontSize = 14.sp,
+                                color = Color(0xFFB0C4DE),
                                 modifier = Modifier.padding(6.dp, bottom = 20.dp)
                             )
 
-                            Text(
-                                "Max price: $athPrice$",
-                                style = TextStyle(fontStyle = FontStyle.Italic),
-                                fontSize = 14.sp,
-                                modifier = Modifier.padding(6.dp, bottom = 20.dp)
-                            )
                         }
+                        HorizontalDivider(
+                            modifier = Modifier.fillMaxWidth()
+                                .padding(horizontal = 10.dp, vertical = 4.dp),
+                            thickness = 1.dp,
+                            color = Color.Black
+                        )
                         Row(
                             modifier = Modifier.fillMaxWidth(),
                             horizontalArrangement = Arrangement.SpaceAround
                         ) {
                             Text(
-                                "High price 24h: $highPrice24h$",
+                                "Max price",
+                                style = TextStyle(fontStyle = FontStyle.Italic),
+                                fontSize = 14.sp,
+                                modifier = Modifier.padding(6.dp, bottom = 20.dp)
+                            )
+                            Text(
+                                "$athPrice$",
+                                style = TextStyle(fontStyle = FontStyle.Italic),
+                                fontSize = 14.sp,
+                                color = Color(0xFFB0C4DE),
+
+                                modifier = Modifier.padding(6.dp, bottom = 20.dp)
+                            )
+
+                        }
+                        HorizontalDivider(
+                            modifier = Modifier.fillMaxWidth()
+                                .padding(horizontal = 10.dp, vertical = 4.dp),
+                            thickness = 1.dp,
+                            color = Color.Black
+                        )
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            horizontalArrangement = Arrangement.SpaceAround
+                        ) {
+                            Text(
+                                "High price 24h",
                                 fontSize = 14.sp,
                                 style = TextStyle(fontStyle = FontStyle.Italic),
                                 modifier = Modifier.padding(6.dp, bottom = 20.dp)
                             )
 
                             Text(
-                                "low price 24h: ${lowPrice24h.toInt()}$",
+                                "$highPrice24h$",
+                                fontSize = 14.sp,
+                                style = TextStyle(fontStyle = FontStyle.Italic),
+                                color = Color(0xFFB0C4DE),
+                                modifier = Modifier.padding(6.dp, bottom = 20.dp)
+                            )
+
+                        }
+                        HorizontalDivider(
+                            modifier = Modifier.fillMaxWidth()
+                                .padding(horizontal = 10.dp, vertical = 4.dp),
+                            thickness = 1.dp,
+                            color = Color.Black
+                        )
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            horizontalArrangement = Arrangement.SpaceAround
+                        ) {
+                            Text(
+                                "Low price 24h",
                                 fontSize = 14.sp,
                                 modifier = Modifier.padding(6.dp, bottom = 20.dp),
                                 style = TextStyle(fontStyle = FontStyle.Italic)
 
                             )
+                            Text(
+                                "${lowPrice24h.toInt()}$",
+                                fontSize = 14.sp,
+                                color = Color(0xFFB0C4DE),
+                                modifier = Modifier.padding(6.dp, bottom = 20.dp),
+                                style = TextStyle(fontStyle = FontStyle.Italic)
+
+                            )
+
                         }
+                        HorizontalDivider(
+                            modifier = Modifier.fillMaxWidth()
+                                .padding(horizontal = 10.dp, vertical = 4.dp),
+                            thickness = 1.dp,
+                            color = Color.Black
+                        )
                         Row(
                             modifier = Modifier.fillMaxWidth(),
                             horizontalArrangement = Arrangement.SpaceAround
                         ) {
                             Text(
-                                "total Supply: ${totalSupply.toInt()}$",
+                                "Total Supply",
                                 fontSize = 14.sp,
                                 style = TextStyle(fontStyle = FontStyle.Italic),
                                 modifier = Modifier.padding(6.dp, bottom = 20.dp)
                             )
-
                             Text(
-                                "max Supply: ${maxSypply.toInt()}$",
+                                "${totalSupply.toInt()}$",
                                 fontSize = 14.sp,
+                                color = Color(0xFFB0C4DE),
+                                style = TextStyle(fontStyle = FontStyle.Italic),
+                                modifier = Modifier.padding(6.dp, bottom = 20.dp)
+                            )
+
+                        }
+                        HorizontalDivider(
+                            modifier = Modifier.fillMaxWidth()
+                                .padding(horizontal = 10.dp, vertical = 4.dp),
+                            thickness = 1.dp,
+                            color = Color.Black
+                        )
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            horizontalArrangement = Arrangement.SpaceAround
+                        ) {
+                            Text(
+                                "Max Supply",
+                                fontSize = 14.sp,
+                                modifier = Modifier.padding(6.dp, bottom = 20.dp),
+                                style = TextStyle(fontStyle = FontStyle.Italic)
+
+                            )
+                            Text(
+                                "${maxSypply.toInt()}$",
+                                fontSize = 14.sp,
+                                color = Color(0xFFB0C4DE),
                                 modifier = Modifier.padding(6.dp, bottom = 20.dp),
                                 style = TextStyle(fontStyle = FontStyle.Italic)
 
@@ -367,6 +494,7 @@ fun detailUIToken(id: String,name: String,price: Int,image: String,priceChange24
                         }
                     }
                 }
+
 
                 if (token != null) {
                     Box(
@@ -453,5 +581,6 @@ fun detailUIToken(id: String,name: String,price: Int,image: String,priceChange24
                     )
                 }
             }
-        }
+
+            }
 }
