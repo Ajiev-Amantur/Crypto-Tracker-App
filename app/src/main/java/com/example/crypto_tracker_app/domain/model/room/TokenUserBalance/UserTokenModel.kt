@@ -10,6 +10,7 @@ data class UserTokenModel(
     val name: String,
     val image: String,
     val price: Double,
+    val buyPrice: Double,
     var amount: Double,
     var totalValue: Double,
 )

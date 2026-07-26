@@ -1,21 +1,12 @@
 package com.example.crypto_tracker_app.presentation.menuTokens.priofile
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.Card
-import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
+import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -25,111 +16,114 @@ import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.navigation.NavController
 import coil.compose.AsyncImage
 import com.example.crypto_tracker_app.presentation.viewmodel.TokenViewModel
 import com.example.crypto_tracker_app.ui.theme.CryptoTrackerAppTheme
 import com.example.crypto_tracker_app.ui.theme.GradientForCardBalance
-import kotlin.text.take
-import kotlin.text.uppercase
 
 @Composable
 fun ProfileScreen(tokenViewModel: TokenViewModel) {
-    val price = tokenViewModel.balance
+    // 1. Берем общие данные из ViewModel
+    val totalBalance = tokenViewModel.totalPriceToken // Общий капитал
+    val totalProfit = tokenViewModel.tokenPriceUpOrDown // Общий плюс/минус
+
     CryptoTrackerAppTheme {
-        LazyColumn {
+        LazyColumn(modifier = Modifier.fillMaxSize()) {
+
+            // --- ШАПКА: ОБЩИЙ БАЛАНС ---
             item {
                 Box(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(horizontal = 16.dp, vertical = 6.dp)
-                        .clip(RoundedCornerShape(16.dp))
-                        .background(GradientForCardBalance),
+                        .padding(16.dp)
+                        .clip(RoundedCornerShape(20.dp))
+                        .background(GradientForCardBalance)
+                        .padding(20.dp)
                 ) {
-                    Column(modifier = Modifier.fillMaxWidth()) {
+                    Column {
                         Text(
-                            "${price.value}$",
-                            fontSize = 30.sp,
+                            text = "${"%.2f".format(totalBalance)}$",
+                            fontSize = 32.sp,
                             color = Color.White,
-                            fontFamily = FontFamily.Cursive,
-                            modifier = Modifier.padding(10.dp),
-                        )
-                        Text(
-                            "your balance is equivalent",
-                            fontSize = 14.sp,
-                            color = Color.Gray,
-                            fontFamily = FontFamily.Monospace,
-                            modifier = Modifier.padding(8.dp, bottom = 30.dp)
+                            fontWeight = FontWeight.Bold,
+                            fontFamily = FontFamily.Monospace
                         )
 
-                        TextButton(
-                            colors = ButtonDefaults.textButtonColors(containerColor = Color.Transparent),
-                            onClick = { },
+                        // Общий профит всего кошелька
+                        val color = if (totalProfit >= 0) Color(0xFF00FF00) else Color.Red
+                        val sign = if (totalProfit >= 0) "+" else ""
+                        Text(
+                            text = "$sign${"%.2f".format(totalProfit)}$ profit today",
+                            color = color,
+                            fontSize = 16.sp,
+                            fontWeight = FontWeight.Bold
+                        )
+
+                        Text(
+                            text = "your total balance equivalent",
+                            color = Color.LightGray,
+                            fontSize = 12.sp,
+                            modifier = Modifier.padding(top = 8.dp, bottom = 16.dp)
+                        )
+
+                        Button(
+                            onClick = { /* Deposit */ },
+                            colors = ButtonDefaults.buttonColors(containerColor = Color.White.copy(alpha = 0.2f)),
+                            shape = RoundedCornerShape(10.dp)
                         ) {
-                            Text(
-                                "Deposit",
-                                color = Color.White,
-                                fontSize = 18.sp,
-                                fontFamily = FontFamily.Monospace
-                            )
+                            Text("Deposit", color = Color.White)
                         }
                     }
                 }
             }
-            items(items = tokenViewModel.balanceToken) { token ->
+
+            // --- СПИСОК МОНЕТ В КОШЕЛЬКЕ ---
+            items(tokenViewModel.balanceToken) { token ->
                 Card(
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(horizontal = 16.dp, vertical = 6.dp),
                     colors = CardDefaults.cardColors(containerColor = Color.White),
-                    elevation = CardDefaults.cardElevation(4.dp)
+                    elevation = CardDefaults.cardElevation(2.dp)
                 ) {
-                    Row(
-                        modifier = Modifier
-                            .padding(12.dp)
-                            .fillMaxWidth(),
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        // 1. Иконка монеты
-                        AsyncImage(
-                            model = token.image,
-                            contentDescription = null,
-                            modifier = Modifier
-                                .size(40.dp)
-                                .clip(CircleShape)
-                        )
+                    Column(modifier = Modifier.padding(16.dp)) {
+                        Row(verticalAlignment = Alignment.CenterVertically) {
+                            AsyncImage(
+                                model = token.image,
+                                contentDescription = null,
+                                modifier = Modifier.size(40.dp).clip(CircleShape)
+                            )
 
-                        Column(
-                            modifier = Modifier
-                                .padding(start = 12.dp)
-                                .weight(1f) // Занимает всё свободное место
-                        ) {
-                            // 2. Название монеты
-                            Text(
-                                text = token.name,
-                                fontWeight = FontWeight.Bold,
-                                fontSize = 16.sp
-                            )
-                            // 3. Цена за 1 токен
-                            Text(
-                                text = "$${token.price}",
-                                color = Color.Gray,
-                                fontSize = 12.sp
-                            )
+                            Column(modifier = Modifier.padding(start = 12.dp).weight(1f)) {
+                                Text(token.name, fontWeight = FontWeight.Bold, fontSize = 16.sp)
+                                Text("Price: $${token.price}", color = Color.Gray, fontSize = 12.sp)
+                            }
+
+                            Column(horizontalAlignment = Alignment.End) {
+                                // Текущая стоимость этого актива (сколько стоит сейчас)
+                                val currentVal = token.amount * token.price
+                                Text(
+                                    text = "$${"%.2f".format(currentVal)}",
+                                    fontWeight = FontWeight.Bold,
+                                    fontSize = 16.sp
+                                )
+                                Text("${token.amount} ${token.name.take(3).uppercase()}", fontSize = 12.sp)
+                            }
                         }
 
-                        Column(horizontalAlignment = Alignment.End) {
-                            // 4. Общая сумма в долларах (красиво жирным)
+                        // Линия разграничения
+                        HorizontalDivider(modifier = Modifier.padding(vertical = 8.dp), thickness = 0.5.dp)
+
+                        // ПРОФИТ КОНКРЕТНОЙ МОНЕТЫ
+                        val tokenProfit = (token.amount * token.price) - token.totalValue
+                        val tColor = if (tokenProfit >= 0) Color(0xFF4CAF50) else Color.Red
+
+                        Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
+                            Text("Profit / Loss", fontSize = 12.sp, color = Color.Gray)
                             Text(
-                                text = "$${"%.2f".format(token.totalValue)}",
-                                fontWeight = FontWeight.ExtraBold,
-                                fontSize = 16.sp,
-                                color = Color(0xFF4CAF50) // Зеленый цвет денег
-                            )
-                            // 5. Количество монет
-                            Text(
-                                text = "${token.amount} ${token.name.take(3).uppercase()}",
-                                color = Color.DarkGray,
+                                text = "${if(tokenProfit >= 0) "+" else ""}${"%.2f".format(tokenProfit)}$",
+                                color = tColor,
+                                fontWeight = FontWeight.Bold,
                                 fontSize = 12.sp
                             )
                         }
@@ -137,7 +131,5 @@ fun ProfileScreen(tokenViewModel: TokenViewModel) {
                 }
             }
         }
-
     }
 }
-

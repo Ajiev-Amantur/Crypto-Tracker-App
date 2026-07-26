@@ -93,12 +93,11 @@ fun detailUIToken(id: String,name: String,price: Int,image: String,priceChange24
         "365" -> priceChange1yProsent
         else -> priceChange24hProsent
     }
-    val scrollState = rememberScrollState()
         Box(
             modifier = Modifier.fillMaxSize().padding(10.dp)
                 .statusBarsPadding()
         ) {
-            Column(modifier = Modifier.fillMaxWidth().background(Color.Unspecified).verticalScroll(scrollState)) {
+            Column(modifier = Modifier.fillMaxWidth().background(Color.Unspecified)) {
                 Row(
                     verticalAlignment = Alignment.CenterVertically,
                     horizontalArrangement = Arrangement.SpaceAround
@@ -269,7 +268,6 @@ fun detailUIToken(id: String,name: String,price: Int,image: String,priceChange24
 
 
                     Button(
-                        modifier = Modifier.background(Color(0xFFF0FFFF)),
 
                         onClick = {
                             viewModel.loadTokensByTime(
@@ -293,8 +291,6 @@ fun detailUIToken(id: String,name: String,price: Int,image: String,priceChange24
                     }
 
                     Button(
-                        modifier = Modifier.background(Color(0xFFF0FFFF)),
-
                         onClick = {
                             viewModel.loadTokensByTime(
                                 id = id.toString(),
@@ -316,8 +312,6 @@ fun detailUIToken(id: String,name: String,price: Int,image: String,priceChange24
                     }
 
                     Button(
-                        modifier = Modifier.background(Color(0xFFF0FFFF)),
-
                         onClick = {
                             viewModel.loadTokensByTime(
                                 id = id.toString(),
@@ -340,12 +334,12 @@ fun detailUIToken(id: String,name: String,price: Int,image: String,priceChange24
 
                 }
                 Box(
-                    modifier = Modifier.fillMaxWidth().padding(10.dp).background(Color.Transparent)
+                    modifier = Modifier.fillMaxWidth().background(Color.White).padding(10.dp)
                 ) {
                     Column(modifier = Modifier.fillMaxWidth()) {
                         Row(
                             modifier = Modifier.fillMaxWidth(),
-                            horizontalArrangement = Arrangement.SpaceEvenly
+                            horizontalArrangement = Arrangement.SpaceBetween
                         ) {
                             Text(
                                 "Min price",
@@ -357,7 +351,7 @@ fun detailUIToken(id: String,name: String,price: Int,image: String,priceChange24
                                 "$atlPrice$",
                                 style = TextStyle(fontStyle = FontStyle.Italic),
                                 fontSize = 14.sp,
-                                color = Color(0xFFB0C4DE),
+                                color = Color(0xFF696969),
                                 modifier = Modifier.padding(6.dp, bottom = 20.dp)
                             )
 
@@ -382,7 +376,7 @@ fun detailUIToken(id: String,name: String,price: Int,image: String,priceChange24
                                 "$athPrice$",
                                 style = TextStyle(fontStyle = FontStyle.Italic),
                                 fontSize = 14.sp,
-                                color = Color(0xFFB0C4DE),
+                                color = Color(0xFF696969),
 
                                 modifier = Modifier.padding(6.dp, bottom = 20.dp)
                             )
@@ -409,7 +403,7 @@ fun detailUIToken(id: String,name: String,price: Int,image: String,priceChange24
                                 "$highPrice24h$",
                                 fontSize = 14.sp,
                                 style = TextStyle(fontStyle = FontStyle.Italic),
-                                color = Color(0xFFB0C4DE),
+                                color = Color(0xFF696969),
                                 modifier = Modifier.padding(6.dp, bottom = 20.dp)
                             )
 
@@ -434,7 +428,7 @@ fun detailUIToken(id: String,name: String,price: Int,image: String,priceChange24
                             Text(
                                 "${lowPrice24h.toInt()}$",
                                 fontSize = 14.sp,
-                                color = Color(0xFFB0C4DE),
+                                color = Color(0xFF696969),
                                 modifier = Modifier.padding(6.dp, bottom = 20.dp),
                                 style = TextStyle(fontStyle = FontStyle.Italic)
 
@@ -460,7 +454,7 @@ fun detailUIToken(id: String,name: String,price: Int,image: String,priceChange24
                             Text(
                                 "${totalSupply.toInt()}$",
                                 fontSize = 14.sp,
-                                color = Color(0xFFB0C4DE),
+                                color = Color(0xFF696969),
                                 style = TextStyle(fontStyle = FontStyle.Italic),
                                 modifier = Modifier.padding(6.dp, bottom = 20.dp)
                             )
@@ -486,7 +480,7 @@ fun detailUIToken(id: String,name: String,price: Int,image: String,priceChange24
                             Text(
                                 "${maxSypply.toInt()}$",
                                 fontSize = 14.sp,
-                                color = Color(0xFFB0C4DE),
+                                color = Color(0xFF696969),
                                 modifier = Modifier.padding(6.dp, bottom = 20.dp),
                                 style = TextStyle(fontStyle = FontStyle.Italic)
 

@@ -54,16 +54,41 @@ class TokenViewModel(
     val balanceToken = mutableStateListOf<UserTokenModel>()
 
 
+    // know actual price token
+    val totalPriceToken: Double
+        get(){
+            val tokenPrice = balanceToken.sumOf { it.amount * it.buyPrice }
+            return balance.value + tokenPrice
+        }
+
+    val tokenPriceUpOrDown: Double
+        get(){
+            val priceBoughtToken = balanceToken.sumOf { it.amount * it.price }
+            val money = balanceToken.sumOf { it.totalValue }
+            return priceBoughtToken - money
+
+        }
+
     init {
         viewModelScope.launch {
             val tokens = TokenDao.getTokenBalance()
             balanceToken.addAll(tokens)
         }
     }
-    fun addUserToken(newBalance: UserTokenModel){
-        viewModelScope.launch {
-            TokenDao.addToken(newBalance)
-            balanceToken.add(newBalance)
+    fun addUserToken(newToken: UserTokenModel){
+        val token = balanceToken.find { newToken.name == it.name }
+
+        if (token != null){
+            token.amount += newToken.amount
+            token.totalValue += newToken.totalValue
+            viewModelScope.launch {
+                TokenDao.addToken(token)
+            }
+        }else {
+            viewModelScope.launch {
+                TokenDao.addToken(newToken)
+                balanceToken.add(newToken)
+            }
         }
     }
 init {
@@ -196,6 +221,13 @@ init {
             try {
                 val tokens = getTokenRepo.getAllTokens()
                 _tokenList.value = tokens
+
+                balanceToken.forEachIndexed { index, tokenUser ->
+                    val searchedToken = tokens.find { it.name == tokenUser.name }
+                    if (searchedToken != null){
+                        balanceToken[index] = tokenUser.copy(price = searchedToken.currentPrice)
+                    }
+                }
             } catch (e: Exception){
                 println("ERROR:  $e")
             } finally {

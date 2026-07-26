@@ -163,9 +163,9 @@ fun BuyScreen(
                                 name,
                                 image,
                                 price,
+                                price,
                                 quantityTextState.toDouble(),
-                                priceText.toDouble()
-
+                                priceText.toDouble(),
                             )
                             tokenViewModel.updateBalane(balance.value)
                             tokenViewModel.addUserToken(data)
