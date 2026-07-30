@@ -19,6 +19,9 @@ import com.example.crypto_tracker_app.domain.usecase.SortTokenByRankBottomUseCas
 import com.example.crypto_tracker_app.domain.usecase.SortTokenByRankTopUseCase
 import com.example.crypto_tracker_app.domain.usecase.SortTokenHighPriceUseCase
 import com.example.crypto_tracker_app.domain.usecase.SortTokenLowPriceUseCase
+import com.example.crypto_tracker_app.presentation.TokenUiState
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 
 class TokenViewModel(
@@ -51,7 +54,11 @@ class TokenViewModel(
     private var _selectedRank = MutableLiveData<Boolean>()
     val selectedRank: LiveData<Boolean> = _selectedRank
 
+    // user tokens
     val balanceToken = mutableStateListOf<UserTokenModel>()
+
+    private val _uiState = MutableStateFlow<TokenUiState>(TokenUiState.loading)
+    val uiState : StateFlow<TokenUiState> = _uiState
 
 
     // know actual price token
@@ -220,7 +227,6 @@ init {
         viewModelScope.launch {
             try {
                 val tokens = getTokenRepo.getAllTokens()
-                _tokenList.value = tokens
 
                 balanceToken.forEachIndexed { index, tokenUser ->
                     val searchedToken = tokens.find { it.name == tokenUser.name }
@@ -228,8 +234,11 @@ init {
                         balanceToken[index] = tokenUser.copy(price = searchedToken.currentPrice)
                     }
                 }
+                _tokenList.value = tokens
+                _uiState.value = TokenUiState.Sucsess(tokens)
             } catch (e: Exception){
                 println("ERROR:  $e")
+                _uiState.value = TokenUiState.Error(e.message?: "Error")
             } finally {
                 _progressBar.value = false
             }
