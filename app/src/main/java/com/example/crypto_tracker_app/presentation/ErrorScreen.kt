@@ -22,9 +22,11 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.room.util.TableInfo
 import com.example.crypto_tracker_app.R
-@Preview(showBackground = true, showSystemUi = true)
+import com.example.crypto_tracker_app.domain.model.CryptoTokenModel
+import com.example.crypto_tracker_app.presentation.viewmodel.TokenViewModel
+
 @Composable
-fun ErrorScreen(){
+fun ErrorScreen(tokenViewModel: TokenViewModel){
 
     Column(modifier = Modifier.fillMaxSize(), verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally) {
@@ -45,7 +47,9 @@ fun ErrorScreen(){
             Modifier.fillMaxWidth().
             padding(horizontal = 30.dp),
             colors = ButtonDefaults.textButtonColors(containerColor = Color.LightGray),
-            onClick = {}) {
+            onClick = {
+                tokenViewModel.loadTokens()
+            }) {
             Text("Retry",
                 fontSize = 30.sp,
                 color = Color.Black)        }

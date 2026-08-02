@@ -35,7 +35,8 @@ class TokenViewModel(
     private val dao: BalanceDao,
     private val TokenDao: TokenUserDao
 ): ViewModel() {
-    val balance = mutableStateOf(70000.0)
+    val balance = mutableStateOf(500.0)
+
     private var _tokenList = MutableLiveData<List<CryptoTokenModel>>()
     val tokenList : LiveData<List<CryptoTokenModel>> = _tokenList
 
@@ -64,7 +65,7 @@ class TokenViewModel(
     // know actual price token
     val totalPriceToken: Double
         get(){
-            val tokenPrice = balanceToken.sumOf { it.amount * it.buyPrice }
+            val tokenPrice = balanceToken.sumOf { it.amount * it.price }
             return balance.value + tokenPrice
         }
 
@@ -83,11 +84,16 @@ class TokenViewModel(
         }
     }
     fun addUserToken(newToken: UserTokenModel){
-        val token = balanceToken.find { newToken.name == it.name }
+        val index = balanceToken.indexOfFirst { newToken.name == it.name }
+        if (index != -1){
+            val token = balanceToken[index]
 
-        if (token != null){
-            token.amount += newToken.amount
-            token.totalValue += newToken.totalValue
+            val updatedToken = token.copy(
+                amount = token.amount + newToken.amount,
+                totalValue = token.totalValue + newToken.totalValue
+            )
+
+            balanceToken[index] = updatedToken
             viewModelScope.launch {
                 TokenDao.addToken(token)
             }
@@ -95,7 +101,7 @@ class TokenViewModel(
             viewModelScope.launch {
                 TokenDao.addToken(newToken)
                 balanceToken.add(newToken)
-            }
+          }
         }
     }
 init {

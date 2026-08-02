@@ -72,7 +72,6 @@ fun MainListTokens(
     NavHost(navController, "UI1") {
         composable("UI1") {
             val tokens by tokenViewModel.tokenList.observeAsState()
-            val loading by tokenViewModel.progressBar.observeAsState(true)
             val selectedPrice by tokenViewModel.selectedPrice.observeAsState(true)
             val selectedPrice24h by tokenViewModel.selectedPrice24h.observeAsState(true)
             val selectedRank by tokenViewModel.selectedRank.observeAsState(true)
@@ -282,7 +281,7 @@ fun MainListTokens(
 
                         is TokenUiState.Error -> {
                             item {
-                                ErrorScreen()
+                                ErrorScreen(tokenViewModel)
                             }
                         }
                     }
@@ -382,7 +381,7 @@ fun MainListTokens(
             )
         }
         composable("profileScreen"){
-            ProfileScreen(tokenViewModel)
+            ProfileScreen(tokenViewModel,navController)
         }
         }
 }
