@@ -151,24 +151,15 @@ fun SellScreen(image: String,name: String,nav: NavHostController,tokenViewModel:
                 modifier = Modifier.fillMaxWidth().padding(20.dp)
                     .background(brush = RedGradient),
                 onClick = {
-                    if (quantiryTextState.toDouble() > tokenBalance?.amount?: 0.0){
-                        Toast.makeText(context,"Error",Toast.LENGTH_SHORT).show()
+                    val sellAmount = quantiryTextState.toDoubleOrNull()?: 0.0
+                    val userAmount = tokenBalance?.amount?: 0.0
+
+                    if (sellAmount > userAmount){
+                        Toast.makeText(context,"Недостаточно монет!", Toast.LENGTH_LONG)
+
                     }else{
-                    if (tokenBalance != null) {
-                        visibility = true
-                        val amount = quantiryTextState.toDoubleOrNull() ?: 0.0
-                        val balanceAmount = tokenBalance?.amount ?: 0.0
-                        val newAmount = balanceAmount - amount
-                        if (newAmount >= 0) {
-                            tokenBalance.amount = newAmount
-                            val totalValue = newAmount * tokenBalance.price
-                            tokenBalance.totalValue = totalValue
-                            balance.value += totalValue
-                            tokenViewModel.updateBalane(totalValue)
-                        } else {
-                            tokenViewModel.balanceToken.remove(tokenBalance)
-                        }
-                    }
+                        tokenViewModel.sellUserToken(name,sellAmount
+                            ,token?.currentPrice?: 0.0)
                     }
                 },
                 colors = ButtonDefaults.textButtonColors(

@@ -83,6 +83,34 @@ class TokenViewModel(
             balanceToken.addAll(tokens)
         }
     }
+    fun sellUserToken(nameToken: String, sellAmount: Double, currentPrice: Double){
+        val index = balanceToken.indexOfFirst { it.name == nameToken }
+        if (index == -1) return
+
+        val token = balanceToken[index]
+        val actualAmountSell = if (sellAmount > token.amount)token.amount else sellAmount
+        val money = actualAmountSell * currentPrice
+        if (actualAmountSell > token.amount){
+
+            balanceToken.removeAt(index)
+            updateBalane(money)
+            balance.value += money
+            viewModelScope.launch {
+                TokenDao.addToken(token.copy(amount = 0.0, totalValue = 0.0))
+            }
+        }else{
+            val newAmount = token.amount - actualAmountSell
+            val value = (newAmount / token.amount * token.totalValue)
+            val updatedToken = token.copy(amount = newAmount, totalValue = value)
+
+            balanceToken[index] = updatedToken
+            updateBalane(money)
+
+            viewModelScope.launch {
+                TokenDao.addToken(updatedToken)
+            }
+        }
+    }
     fun addUserToken(newToken: UserTokenModel){
         val index = balanceToken.indexOfFirst { newToken.name == it.name }
         if (index != -1){
