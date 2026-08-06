@@ -144,16 +144,30 @@ fun ProfileScreen(tokenViewModel: TokenViewModel,navController: NavHostControlle
                                 horizontalArrangement = Arrangement.SpaceBetween
                             ) {
                                 Text("Profit / Loss", fontSize = 12.sp, color = Color.Gray)
-                                Text(
-                                    text = "${if (tokenProfit >= 0) "+" else ""}${
-                                        "%.2f".format(
-                                            tokenProfit
-                                        )
-                                    }$",
-                                    color = tColor,
-                                    fontWeight = FontWeight.Bold,
-                                    fontSize = 12.sp
-                                )
+                                Row(horizontalArrangement = Arrangement.spacedBy(4.dp),
+                                    verticalAlignment = Alignment.CenterVertically) {
+                                    Text(
+                                        text = "${if (tokenProfit >= 0) "+" else ""}${
+                                            "%.2f".format(
+                                                tokenProfit
+                                            )
+                                        }$",
+                                        color = tColor,
+                                        fontWeight = FontWeight.Bold,
+                                        fontSize = 14.sp
+                                    )
+                                    val profitPresent = tokenProfit / token.totalValue * 100
+                                    Text(
+                                        text = "${if (tokenProfit >= 0) "+" else ""}${
+                                            "%.2f".format(
+                                                "($profitPresent%)"
+                                            )
+                                        }",
+                                        color = tColor,
+                                        fontWeight = FontWeight.Bold,
+                                        fontSize = 10.sp
+                                    )
+                                }
                             }
                         }
                     }

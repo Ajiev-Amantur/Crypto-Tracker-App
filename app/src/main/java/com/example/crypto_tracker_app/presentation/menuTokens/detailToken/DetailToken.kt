@@ -7,12 +7,14 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.statusBarsPadding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
@@ -29,14 +31,12 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontFamily
@@ -47,7 +47,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import co.yml.charts.axis.AxisData
-import co.yml.charts.common.extensions.formatToSinglePrecision
 import co.yml.charts.common.extensions.isNotNull
 import co.yml.charts.ui.linechart.LineChart
 import co.yml.charts.ui.linechart.model.GridLines
@@ -379,104 +378,137 @@ fun detailUIToken(id: String,name: String,price: Int,image: String,priceChange24
 
 
 
-        if (token != null) {
-            Box(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .background(Color.White)
-                    .padding(10.dp)
-                    .clip(RoundedCornerShape(20.dp))
-            ) {
-                Column(
+            if (token != null) {
+                Box(
                     modifier = Modifier
                         .fillMaxWidth()
+                        .background(Color.White)
                         .padding(10.dp)
+                        .clip(RoundedCornerShape(20.dp))
                 ) {
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.SpaceBetween
+                    Column(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(10.dp)
                     ) {
-                        AsyncImage(
-                            image, contentDescription = "",
-                            modifier = Modifier.size(30.dp),
-                        )
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            horizontalArrangement = Arrangement.SpaceBetween
+                        ) {
+                            AsyncImage(
+                                image, contentDescription = "",
+                                modifier = Modifier.size(30.dp),
+                            )
 
-                        Text(
-                            "${token.amount} $name",
-                            fontSize = 14.sp,
-                            fontFamily = FontFamily.Monospace,
-                            color = Color.Black
+                            Text(
+                                "${token.amount} $name",
+                                fontSize = 14.sp,
+                                fontFamily = FontFamily.Monospace,
+                                color = Color.Black
+                            )
+                        }
+                        HorizontalDivider(
+                            thickness = 0.2.dp, color = Color.Blue,
+                            modifier = Modifier.padding(10.dp)
                         )
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            horizontalArrangement = Arrangement.SpaceBetween,
+                            verticalAlignment = Alignment.Bottom // Выравнивание по низу
+                        ) {
+                            // ЛЕВАЯ ЧАСТЬ: Сколько потратили
+                            Column {
+                                Text("Invested", fontSize = 10.sp, color = Color.Gray)
+                                Text(
+                                    "${"%.2f".format(token.totalValue)}$",
+                                    fontSize = 14.sp,
+                                    fontFamily = FontFamily.Monospace
+                                )
+                            }
+
+                            // ПРАВАЯ ЧАСТЬ: Профит (сгруппирован)
+                            Column(horizontalAlignment = Alignment.End) {
+                                val tokenProfit = (token.amount * token.price) - token.totalValue
+                                val tokenProsent =
+                                    if (token.totalValue > 0) (tokenProfit / token.totalValue * 100) else 0.0
+
+                                val isPositive = tokenProfit >= 0
+                                val pColor = if (isPositive) Color(0xFF4CAF50) else Color.Red
+                                val sign = if (isPositive) "+" else ""
+
+                                Text("Profit", fontSize = 10.sp, color = Color.Gray)
+                                Row(verticalAlignment = Alignment.CenterVertically) {
+                                    // Доллары профита
+                                    Text(
+                                        text = "$sign${"%.2f".format(tokenProfit)}$",
+                                        fontSize = 14.sp,
+                                        fontWeight = FontWeight.Bold,
+                                        fontFamily = FontFamily.Monospace,
+                                        color = pColor
+                                    )
+                                    Spacer(modifier = Modifier.width(4.dp))
+                                    // Проценты в маленькой плашке или просто текстом
+                                    Text(
+                                        text = "($sign${tokenProsent.toInt()}%)",
+                                        fontSize = 12.sp,
+                                        fontFamily = FontFamily.Monospace,
+                                        color = pColor.copy(alpha = 0.8f)
+                                    )
+                                }
+                            }
+                        }
                     }
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.SpaceAround
+
+                }
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(20.dp),
+                    horizontalArrangement = Arrangement.SpaceAround
+                ) {
+                    TextButton(
+                        modifier = Modifier
+                            .weight(1f)
+                            .padding(5.dp)
+                            .background(brush = RedGradient, shape = RoundedCornerShape(20.dp)),
+                        colors = ButtonDefaults.buttonColors(
+                            containerColor = Color.Transparent,
+                            contentColor = Color.White,
+                        ),
+                        onClick = {
+                            if (token.isNotNull()) {
+                                nav.navigate("sellScreen")
+
+                            } else {
+                                Toast.makeText(context, "You dont have token", Toast.LENGTH_LONG)
+                                    .show()
+
+                            }
+                        }
                     ) {
                         Text(
-                            "${token.totalValue}$",
-                            fontSize = 14.sp,
-                            fontFamily = FontFamily.Monospace,
-                            color = Color.Black
+                            "Sell"
                         )
+                    }
+                    TextButton(
+                        modifier = Modifier
+                            .weight(1f)
+                            .padding(5.dp)
+                            .background(brush = GreenGradient, shape = RoundedCornerShape(20.dp)),
+                        colors = ButtonDefaults.buttonColors(
+                            containerColor = Color.Transparent,
+                            contentColor = Color.White,
+                        ),
+                        onClick = {
+                            nav.navigate("buyScreen")
+                        }
+                    ) {
                         Text(
-                            "",
-                            fontSize = 14.sp,
-                            fontFamily = FontFamily.Monospace,
-                            color = Color.Black
+                            "Buy"
                         )
                     }
                 }
+
             }
-
-        }
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(20.dp),
-            horizontalArrangement = Arrangement.SpaceAround
-        ) {
-            TextButton(
-                modifier = Modifier
-                    .weight(1f)
-                    .padding(5.dp)
-                    .background(brush = RedGradient, shape = RoundedCornerShape(20.dp)),
-                colors = ButtonDefaults.buttonColors(
-                    containerColor = Color.Transparent,
-                    contentColor = Color.White,
-                ),
-                onClick = {
-                    if (token.isNotNull()) {
-                        nav.navigate("sellScreen")
-
-                    } else {
-                        Toast.makeText(context, "You dont have token", Toast.LENGTH_LONG).show()
-
-                    }
-                }
-            ) {
-                Text(
-                    "Sell"
-                )
-            }
-            TextButton(
-                modifier = Modifier
-                    .weight(1f)
-                    .padding(5.dp)
-                    .background(brush = GreenGradient, shape = RoundedCornerShape(20.dp)),
-                colors = ButtonDefaults.buttonColors(
-                    containerColor = Color.Transparent,
-                    contentColor = Color.White,
-                ),
-                onClick = {
-                    nav.navigate("buyScreen")
-                }
-            ) {
-                Text(
-                    "Buy"
-                )
-            }
-        }
-
-    }
-
-}}
+        }}
+}
