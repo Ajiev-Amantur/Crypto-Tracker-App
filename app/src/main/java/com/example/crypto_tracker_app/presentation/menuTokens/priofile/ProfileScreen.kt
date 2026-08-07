@@ -26,6 +26,7 @@ import com.example.crypto_tracker_app.R
 import com.example.crypto_tracker_app.presentation.viewmodel.TokenViewModel
 import com.example.crypto_tracker_app.ui.theme.CryptoTrackerAppTheme
 import com.example.crypto_tracker_app.ui.theme.GradientForCardBalance
+import kotlin.math.sign
 
 @Composable
 fun ProfileScreen(tokenViewModel: TokenViewModel,navController: NavHostController) {
@@ -146,23 +147,16 @@ fun ProfileScreen(tokenViewModel: TokenViewModel,navController: NavHostControlle
                                 Text("Profit / Loss", fontSize = 12.sp, color = Color.Gray)
                                 Row(horizontalArrangement = Arrangement.spacedBy(4.dp),
                                     verticalAlignment = Alignment.CenterVertically) {
+                                    val sign = if (tokenProfit >= 0) "+" else ""
+
                                     Text(
-                                        text = "${if (tokenProfit >= 0) "+" else ""}${
-                                            "%.2f".format(
-                                                tokenProfit
-                                            )
-                                        }$",
+                                        text = "$sign${"%.2f".format(tokenProfit)}$",
                                         color = tColor,
                                         fontWeight = FontWeight.Bold,
                                         fontSize = 14.sp
                                     )
                                     val profitPresent = tokenProfit / token.totalValue * 100
-                                    Text(
-                                        text = "${if (tokenProfit >= 0) "+" else ""}${
-                                            "%.2f".format(
-                                                "($profitPresent%)"
-                                            )
-                                        }",
+                                    Text(text = "$sign${"%.1f".format(profitPresent)}%",
                                         color = tColor,
                                         fontWeight = FontWeight.Bold,
                                         fontSize = 10.sp

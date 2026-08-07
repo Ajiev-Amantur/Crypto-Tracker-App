@@ -458,57 +458,68 @@ fun detailUIToken(id: String,name: String,price: Int,image: String,priceChange24
                             }
                         }
                     }
-
                 }
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(20.dp),
-                    horizontalArrangement = Arrangement.SpaceAround
-                ) {
-                    TextButton(
-                        modifier = Modifier
-                            .weight(1f)
-                            .padding(5.dp)
-                            .background(brush = RedGradient, shape = RoundedCornerShape(20.dp)),
-                        colors = ButtonDefaults.buttonColors(
-                            containerColor = Color.Transparent,
-                            contentColor = Color.White,
-                        ),
-                        onClick = {
-                            if (token.isNotNull()) {
-                                nav.navigate("sellScreen")
-
-                            } else {
-                                Toast.makeText(context, "You dont have token", Toast.LENGTH_LONG)
-                                    .show()
-
-                            }
-                        }
-                    ) {
-                        Text(
-                            "Sell"
-                        )
-                    }
-                    TextButton(
-                        modifier = Modifier
-                            .weight(1f)
-                            .padding(5.dp)
-                            .background(brush = GreenGradient, shape = RoundedCornerShape(20.dp)),
-                        colors = ButtonDefaults.buttonColors(
-                            containerColor = Color.Transparent,
-                            contentColor = Color.White,
-                        ),
-                        onClick = {
-                            nav.navigate("buyScreen")
-                        }
-                    ) {
-                        Text(
-                            "Buy"
-                        )
-                    }
-                }
-
             }
-        }}
+
+        }
+                Box(modifier = Modifier.fillMaxWidth().align(Alignment.BottomCenter)) {
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(20.dp),
+                        horizontalArrangement = Arrangement.SpaceAround
+                    ) {
+                        TextButton(
+                            modifier = Modifier
+                                .weight(1f)
+                                .padding(5.dp)
+                                .background(brush = RedGradient, shape = RoundedCornerShape(20.dp)),
+                            colors = ButtonDefaults.buttonColors(
+                                containerColor = Color.Transparent,
+                                contentColor = Color.White,
+                            ),
+                            onClick = {
+                                if (token.isNotNull()) {
+                                    nav.navigate("sellScreen")
+
+                                } else {
+                                    Toast.makeText(
+                                        context,
+                                        "You dont have token",
+                                        Toast.LENGTH_LONG
+                                    )
+                                        .show()
+
+                                }
+                            }
+                        ) {
+                            Text(
+                                "Sell"
+                            )
+                        }
+                        TextButton(
+                            modifier = Modifier
+                                .weight(1f)
+                                .padding(5.dp)
+                                .background(
+                                    brush = GreenGradient,
+                                    shape = RoundedCornerShape(20.dp)
+                                ),
+                            colors = ButtonDefaults.buttonColors(
+                                containerColor = Color.Transparent,
+                                contentColor = Color.White,
+                            ),
+                            onClick = {
+                                nav.navigate("buyScreen")
+                            }
+                        ) {
+                            Text(
+                                "Buy"
+                            )
+                        }
+                    }
+
+                }
+
+        }
 }
