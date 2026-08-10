@@ -260,6 +260,7 @@ init {
         _progressBar.value = true
         viewModelScope.launch {
             try {
+                _uiState.value = TokenUiState.loading
                 val tokens = getTokenRepo.getAllTokens()
 
                 balanceToken.forEachIndexed { index, tokenUser ->

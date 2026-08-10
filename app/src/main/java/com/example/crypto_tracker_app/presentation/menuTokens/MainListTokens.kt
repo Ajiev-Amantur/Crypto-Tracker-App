@@ -32,6 +32,7 @@ import androidx.compose.material3.SearchBarDefaults
 import androidx.compose.material3.Text
 import com.example.crypto_tracker_app.R
 import androidx.compose.material3.TextButton
+import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -86,202 +87,237 @@ fun MainListTokens(
                 tokens?.filter { it.name.contains(searchText, ignoreCase = true) }
             } ?: emptyList()
 
+            val isRefreshing = uiState is TokenUiState.loading && tokens?.isNotEmpty() == true
+
 
             Box(modifier = Modifier.fillMaxSize().background(Color.White)) {
-                LazyColumn(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .statusBarsPadding()
-                        .background(Color.Transparent)
-                ) {
-                    // Карточка баланса
-                    item {
-                        Box(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(horizontal = 16.dp, vertical = 6.dp)
-                                .clip(RoundedCornerShape(16.dp))
-                                .background(GradientForCardBalance),
-                        ) {
-                            Column(modifier = Modifier.fillMaxWidth()) {
-                                Text(
-                                    "${balance.value}$",
-                                    fontSize = 30.sp,
-                                    color = Color.White,
-                                    fontFamily = FontFamily.Cursive,
-                                    modifier = Modifier.padding(10.dp),
-                                )
-                                Text(
-                                    "your balance is equivalent",
-                                    fontSize = 14.sp,
-                                    color = Color.Gray,
-                                    fontFamily = FontFamily.Monospace,
-                                    modifier = Modifier.padding(8.dp, bottom = 30.dp)
-                                )
+                PullToRefreshBox(
+                    isRefreshing,
+                    onRefresh = {
+                        tokenViewModel.loadTokens()
+                    },
+                    modifier = Modifier.fillMaxSize()
 
-                                TextButton(
-                                    colors = ButtonDefaults.textButtonColors(containerColor = Color.Transparent),
-                                    onClick = { },
-                                ) {
+                ) {
+                    LazyColumn(
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .statusBarsPadding()
+                            .background(Color.Transparent)
+                    ) {
+                        // Карточка баланса
+                        item {
+                            Box(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(horizontal = 16.dp, vertical = 6.dp)
+                                    .clip(RoundedCornerShape(16.dp))
+                                    .background(GradientForCardBalance),
+                            ) {
+                                Column(modifier = Modifier.fillMaxWidth()) {
                                     Text(
-                                        "Deposit",
+                                        "${balance.value}$",
+                                        fontSize = 30.sp,
                                         color = Color.White,
-                                        fontSize = 18.sp,
-                                        fontFamily = FontFamily.Monospace
+                                        fontFamily = FontFamily.Cursive,
+                                        modifier = Modifier.padding(10.dp),
                                     )
+                                    Text(
+                                        "your balance is equivalent",
+                                        fontSize = 14.sp,
+                                        color = Color.Gray,
+                                        fontFamily = FontFamily.Monospace,
+                                        modifier = Modifier.padding(8.dp, bottom = 30.dp)
+                                    )
+
+                                    TextButton(
+                                        colors = ButtonDefaults.textButtonColors(containerColor = Color.Transparent),
+                                        onClick = { },
+                                    ) {
+                                        Text(
+                                            "Deposit",
+                                            color = Color.White,
+                                            fontSize = 18.sp,
+                                            fontFamily = FontFamily.Monospace
+                                        )
+                                    }
                                 }
                             }
                         }
-                    }
-                    stickyHeader {
-                        Column(
-                            modifier = Modifier.fillMaxWidth()
-                                .background(colorResource(R.color.white))
-                        ) {
-                            SearchBar(
-                                modifier = Modifier.padding(
-                                    horizontal = 12.dp,
-                                    vertical = 8.dp
-                                ),
-                                colors = SearchBarDefaults.colors(containerColor = Color(0xFFF0F8FF)),
-                                query = searchText,
-                                onQueryChange = { text -> searchText = text },
-                                onSearch = { },
-                                active = false,
-                                onActiveChange = { },
-                                placeholder = { Text("Search") }
-                            ) { }
-
-                            Row(
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .height(50.dp)
-                                    .padding(vertical = 4.dp),
-                                horizontalArrangement = Arrangement.SpaceAround,
-                                verticalAlignment = Alignment.CenterVertically
+                        stickyHeader {
+                            Column(
+                                modifier = Modifier.fillMaxWidth()
+                                    .background(colorResource(R.color.white))
                             ) {
-                                TextButton(
-                                    colors = ButtonDefaults.textButtonColors(
-                                        containerColor = Color(0xFFF0FFFF),
-                                        contentColor = Color.Black,
-                                        disabledContentColor = Color.Gray
+                                SearchBar(
+                                    modifier = Modifier.padding(
+                                        horizontal = 12.dp,
+                                        vertical = 8.dp
                                     ),
-                                    onClick = {
-                                        if (selectedRank) {
-                                            tokenViewModel.TokenByRankTop()
-                                        } else {
-                                            tokenViewModel.TokenByPriceDown()
-                                        }
-                                    }) {
-                                    Text(
-                                        "Default",
-                                        fontSize = 12.sp,
-                                        fontFamily = FontFamily.Serif
-                                    )
-                                }
+                                    colors = SearchBarDefaults.colors(
+                                        containerColor = Color(
+                                            0xFFF0F8FF
+                                        )
+                                    ),
+                                    query = searchText,
+                                    onQueryChange = { text -> searchText = text },
+                                    onSearch = { },
+                                    active = false,
+                                    onActiveChange = { },
+                                    placeholder = { Text("Search") }
+                                ) { }
 
-                                TextButton(
-                                    colors = ButtonDefaults.textButtonColors(
-                                        contentColor = Color.Black,
-                                        containerColor = Color(0xFFF0FFFF)
-                                    ),
-                                    onClick = {
-                                        if (selectedPrice) {
-                                            tokenViewModel.TokenByHighPrice()
-                                        } else {
-                                            tokenViewModel.TokenByLowPrice()
+                                Row(
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .height(50.dp)
+                                        .padding(vertical = 4.dp),
+                                    horizontalArrangement = Arrangement.SpaceAround,
+                                    verticalAlignment = Alignment.CenterVertically
+                                ) {
+                                    TextButton(
+                                        colors = ButtonDefaults.textButtonColors(
+                                            containerColor = Color(0xFFF0FFFF),
+                                            contentColor = Color.Black,
+                                            disabledContentColor = Color.Gray
+                                        ),
+                                        onClick = {
+                                            if (selectedRank) {
+                                                tokenViewModel.TokenByRankTop()
+                                            } else {
+                                                tokenViewModel.TokenByPriceDown()
+                                            }
+                                        }) {
+                                        Text(
+                                            "Default",
+                                            fontSize = 12.sp,
+                                            fontFamily = FontFamily.Serif
+                                        )
+                                    }
+
+                                    TextButton(
+                                        colors = ButtonDefaults.textButtonColors(
+                                            contentColor = Color.Black,
+                                            containerColor = Color(0xFFF0FFFF)
+                                        ),
+                                        onClick = {
+                                            if (selectedPrice) {
+                                                tokenViewModel.TokenByHighPrice()
+                                            } else {
+                                                tokenViewModel.TokenByLowPrice()
+                                            }
+                                        }
+                                    ) {
+                                        Row(verticalAlignment = Alignment.CenterVertically) {
+                                            Text(
+                                                text = "Price",
+                                                color = Color.Black,
+                                                fontSize = 12.sp,
+                                                fontFamily = FontFamily.Serif
+                                            )
+                                            Spacer(modifier = Modifier.width(4.dp))
+                                            Column(
+                                                horizontalAlignment = Alignment.CenterHorizontally,
+                                                verticalArrangement = Arrangement.Center
+                                            ) {
+                                                Image(
+                                                    painter = painterResource(R.drawable.baseline_expand_more),
+                                                    modifier = Modifier.size(14.dp),
+                                                    colorFilter = ColorFilter.tint(
+                                                        if (selectedPrice) Color.Black else Color.White.copy(
+                                                            alpha = 0.5f
+                                                        )
+                                                    ),
+                                                    contentDescription = null
+                                                )
+                                                Image(
+                                                    painter = painterResource(R.drawable.baseline_expand_less),
+                                                    modifier = Modifier.size(14.dp),
+                                                    colorFilter = ColorFilter.tint(
+                                                        if (selectedPrice == false) Color.Black else Color.White.copy(
+                                                            alpha = 0.5f
+                                                        )
+                                                    ),
+                                                    contentDescription = null
+                                                )
+                                            }
                                         }
                                     }
-                                ) {
-                                    Row(verticalAlignment = Alignment.CenterVertically) {
+
+                                    TextButton(
+                                        colors = ButtonDefaults.textButtonColors(
+                                            contentColor = Color.Black,
+                                            containerColor = Color(0xFFF0FFFF)
+                                        ),
+                                        onClick = {
+                                            if (selectedPrice24h) {
+                                                tokenViewModel.TokenByPriceUp()
+                                            } else {
+                                                tokenViewModel.TokenByPriceDown()
+                                            }
+                                        }) {
                                         Text(
-                                            text = "Price",
+                                            "24h change",
                                             color = Color.Black,
                                             fontSize = 12.sp,
                                             fontFamily = FontFamily.Serif
                                         )
-                                        Spacer(modifier = Modifier.width(4.dp))
-                                        Column(
-                                            horizontalAlignment = Alignment.CenterHorizontally,
-                                            verticalArrangement = Arrangement.Center
+                                    }
+                                }
+                            }
+                        }
+
+                        when (val state = uiState) {
+                            is TokenUiState.loading -> {
+                                if (tokens.isNullOrEmpty()) {
+                                    item {
+                                        Box(
+                                            modifier = Modifier.fillMaxSize(),
+                                            contentAlignment = Alignment.Center
                                         ) {
-                                            Image(
-                                                painter = painterResource(R.drawable.baseline_expand_more),
-                                                modifier = Modifier.size(14.dp),
-                                                colorFilter = ColorFilter.tint(
-                                                    if (selectedPrice) Color.Black else Color.White.copy(
-                                                        alpha = 0.5f
-                                                    )
-                                                ),
-                                                contentDescription = null
-                                            )
-                                            Image(
-                                                painter = painterResource(R.drawable.baseline_expand_less),
-                                                modifier = Modifier.size(14.dp),
-                                                colorFilter = ColorFilter.tint(
-                                                    if (selectedPrice == false) Color.Black else Color.White.copy(
-                                                        alpha = 0.5f
-                                                    )
-                                                ),
-                                                contentDescription = null
-                                            )
+                                            CircularProgressIndicator()
                                         }
+                                    }
+                                } else {
+                                    items(items = filtredTokens, key = { it.id }) { token ->
+                                        tokenUI(
+                                            token.name,
+                                            token.currentPrice,
+                                            token.image,
+                                            navController,
+                                            tokenViewModel,
+                                            tokenPriceViewModel,
+                                            token,
+                                            token.priceChange24hProsent
+                                        )
                                     }
                                 }
 
-                                TextButton(
-                                    colors = ButtonDefaults.textButtonColors(
-                                        contentColor = Color.Black,
-                                        containerColor = Color(0xFFF0FFFF)
-                                    ),
-                                    onClick = {
-                                        if (selectedPrice24h) {
-                                            tokenViewModel.TokenByPriceUp()
-                                        } else {
-                                            tokenViewModel.TokenByPriceDown()
-                                        }
-                                    }) {
-                                    Text(
-                                        "24h change",
-                                        color = Color.Black,
-                                        fontSize = 12.sp,
-                                        fontFamily = FontFamily.Serif
+                            }
+
+                            is TokenUiState.Sucsess -> {
+                                items(
+                                    items = filtredTokens,
+                                    key = { it.id }
+                                ) { token ->
+                                    tokenUI(
+                                        token.name, token.currentPrice, image = token.image,
+                                        navController,
+                                        tokenViewModel,
+                                        tokenPriceViewModel,
+                                        token,
+                                        priceChange24hProsent = token.priceChange24hProsent,
                                     )
                                 }
-                            }
-                        }
-                    }
-                    when (val state = uiState) {
-                        is TokenUiState.loading -> {
-                            item {
-                                Box(modifier = Modifier.fillParentMaxSize(), contentAlignment = Alignment.Center) {
-                                    CircularProgressIndicator()
+                                item {
+                                    Spacer(modifier = Modifier.height(100.dp))
                                 }
                             }
-                        }
 
-                        is TokenUiState.Sucsess -> {
-                            items(
-                                items = filtredTokens,
-                                key = { it.id }
-                            ) { token ->
-                                tokenUI(
-                                    token.name, token.currentPrice, image = token.image,
-                                    navController,
-                                    tokenViewModel,
-                                    tokenPriceViewModel,
-                                    token,
-                                    priceChange24hProsent = token.priceChange24hProsent,
-                                )
-                            }
-                            item {
-                                Spacer(modifier = Modifier.height(100.dp))
-                            }
-                        }
-
-                        is TokenUiState.Error -> {
-                            item {
-                                ErrorScreen(tokenViewModel)
+                            is TokenUiState.Error -> {
+                                item {
+                                    ErrorScreen(tokenViewModel)
+                                }
                             }
                         }
                     }
@@ -342,6 +378,8 @@ fun MainListTokens(
                 }
             }
         }
+
+
             composable("UI2") {
                 val selectedToken by tokenViewModel.selectedToken.observeAsState()
                 selectedToken?.let { token ->
