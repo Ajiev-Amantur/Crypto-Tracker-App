@@ -62,6 +62,7 @@ import com.example.crypto_tracker_app.presentation.menuTokens.priofile.ProfileSc
 import com.example.crypto_tracker_app.presentation.viewmodel.TokenViewModel
 import com.example.crypto_tracker_app.presentation.viewmodel.TokenP_TimeViewModel
 import com.example.crypto_tracker_app.ui.theme.GradientForCardBalance
+import org.koin.core.qualifier.named
 
 
 @Composable
@@ -315,8 +316,23 @@ fun MainListTokens(
                             }
 
                             is TokenUiState.Error -> {
-                                item {
-                                    ErrorScreen(tokenViewModel)
+                                if (tokens.isNullOrEmpty()) {
+                                    item {
+                                        ErrorScreen(tokenViewModel)
+                                    }
+                                }else{
+                                    items(items = filtredTokens,key = { it.id}) { token ->
+                                        tokenUI(
+                                            name = token.name,
+                                            price = token.currentPrice,
+                                            image = token.image,
+                                            navController,
+                                            tokenViewModel,
+                                            tokenPriceViewModel,
+                                            token,
+                                            token.priceChange24hProsent
+                                        )
+                                    }
                                 }
                             }
                         }
