@@ -7,5 +7,6 @@ import androidx.room.PrimaryKey
 data class BalanceDataModel(
     @PrimaryKey()
     val id: Int = 0,
-    val balance: Int
+    val balance: Int,
+    val lastBonusData: String = ""
 )

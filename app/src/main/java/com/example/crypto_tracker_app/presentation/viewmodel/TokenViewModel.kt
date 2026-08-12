@@ -2,6 +2,7 @@ package com.example.crypto_tracker_app.presentation.viewmodel
 
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.ui.text.intl.Locale
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -23,6 +24,8 @@ import com.example.crypto_tracker_app.presentation.TokenUiState
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
+import java.text.SimpleDateFormat
+import java.util.Date
 
 class TokenViewModel(
     private val getTokenRepo: GetTokensRepository,
@@ -35,6 +38,7 @@ class TokenViewModel(
     private val dao: BalanceDao,
     private val TokenDao: TokenUserDao
 ): ViewModel() {
+    val bonusBalance = mutableStateOf(0.0)
     val balance = mutableStateOf(500.0)
 
     private var _tokenList = MutableLiveData<List<CryptoTokenModel>>()
@@ -82,6 +86,35 @@ class TokenViewModel(
             val tokens = TokenDao.getTokenBalance()
             balanceToken.addAll(tokens)
         }
+    }
+    init {
+        checkDailyBonus()
+    }
+    fun checkDailyBonus(onResult: ((String) -> Unit)? = null){
+        viewModelScope.launch {
+            val today = SimpleDateFormat("yyyy-MM-dd",
+                java.util.Locale.getDefault()).format(Date())
+            val currentData = dao.getBalance()
+            if (currentData != null){
+                if (today != currentData.lastBonusData){
+                    val newBalance = bonusBalance.value + 50.0
+                    dao.insertBalance(
+                        BalanceDataModel(
+                            id = 0,
+                            balance = newBalance.toInt(),
+                            today
+                        )
+                    )
+                    balance.value = newBalance
+                    onResult?.invoke("Success! 50$ added to your balance.")
+                }else{
+                    onResult?.invoke("You already claimed your reward today!")
+
+            }
+        }else{
+                onResult?.invoke("Welcome! 50$ bonus awarded.")
+            }
+    }
     }
     fun sellUserToken(nameToken: String, sellAmount: Double, currentPrice: Double){
         val index = balanceToken.indexOfFirst { it.name == nameToken }
@@ -145,7 +178,8 @@ init {
     fun updateBalane(newSum: Double) {
         viewModelScope.launch {
             balance.value = newSum
-            dao.insertBalance(BalanceDataModel(0,newSum.toInt()))
+            dao.insertBalance(BalanceDataModel(0,
+                newSum.toInt()))
             }
         }
 

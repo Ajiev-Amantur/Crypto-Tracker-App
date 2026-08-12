@@ -75,7 +75,8 @@ fun ProfileScreen(tokenViewModel: TokenViewModel,navController: NavHostControlle
                             )
 
                             Button(
-                                onClick = { /* Deposit */ },
+                                onClick = { /* Deposit */
+                                navController.navigate("dailyRewardScreen")},
                                 colors = ButtonDefaults.buttonColors(
                                     containerColor = Color.White.copy(
                                         alpha = 0.2f
@@ -83,7 +84,7 @@ fun ProfileScreen(tokenViewModel: TokenViewModel,navController: NavHostControlle
                                 ),
                                 shape = RoundedCornerShape(10.dp)
                             ) {
-                                Text("Deposit", color = Color.White)
+                                Text("Get Daily Bonus", color = Color.White)
                             }
                         }
                     }

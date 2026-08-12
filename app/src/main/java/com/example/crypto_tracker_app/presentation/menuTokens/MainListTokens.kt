@@ -53,11 +53,13 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import com.example.crypto_tracker_app.domain.model.CryptoTokenModel
 import com.example.crypto_tracker_app.presentation.ErrorScreen
 import com.example.crypto_tracker_app.presentation.TokenUiState
 import com.example.crypto_tracker_app.presentation.menuTokens.detailToken.BuyScreen
 import com.example.crypto_tracker_app.presentation.menuTokens.detailToken.SellScreen
 import com.example.crypto_tracker_app.presentation.menuTokens.detailToken.detailUIToken
+import com.example.crypto_tracker_app.presentation.menuTokens.priofile.DailyRewardScreen
 import com.example.crypto_tracker_app.presentation.menuTokens.priofile.ProfileScreen
 import com.example.crypto_tracker_app.presentation.viewmodel.TokenViewModel
 import com.example.crypto_tracker_app.presentation.viewmodel.TokenP_TimeViewModel
@@ -436,6 +438,9 @@ fun MainListTokens(
         }
         composable("profileScreen"){
             ProfileScreen(tokenViewModel,navController)
+        }
+        composable("dailyRewardScreen"){
+            DailyRewardScreen(TokenViewModel)
         }
         }
 }

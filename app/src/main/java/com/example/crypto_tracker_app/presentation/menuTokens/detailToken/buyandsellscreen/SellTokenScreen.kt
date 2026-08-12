@@ -158,7 +158,8 @@ fun SellScreen(image: String,name: String,nav: NavHostController,tokenViewModel:
                         Toast.makeText(context,"Недостаточно монет!", Toast.LENGTH_LONG)
 
                     }else{
-                        tokenViewModel.sellUserToken(name,sellAmount
+                        tokenViewModel.
+                        sellUserToken(name,sellAmount
                             ,token?.currentPrice?: 0.0)
                     }
                 },
