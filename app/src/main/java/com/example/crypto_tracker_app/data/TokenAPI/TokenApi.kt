@@ -9,7 +9,8 @@ interface TokenApi {
     suspend fun getTokens(
     @Query("price_change_percentage") priceChange: String = "24h,7d,30d,1y",
     @Query("vs_currency") currency: String,
+    @Query("per_page") perPage: Int = 250,
+    @Query("page") page: Int = 1,
     @Query("sparkline") sparkline: Boolean = true
     ): List<CryptoTokenDto>
-
 }

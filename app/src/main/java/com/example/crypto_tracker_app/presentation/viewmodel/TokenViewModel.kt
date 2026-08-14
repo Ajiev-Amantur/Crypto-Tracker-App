@@ -112,6 +112,13 @@ class TokenViewModel(
 
             }
         }else{
+            val newBalance = balance.value + 50.0
+                balance.value = newBalance
+                dao.insertBalance(BalanceDataModel(
+                    id = 0,
+                    newBalance.toInt(),
+                    today
+                ))
                 onResult?.invoke("Welcome! 50$ bonus awarded.")
             }
     }

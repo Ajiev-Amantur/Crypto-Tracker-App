@@ -7,6 +7,12 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableLongStateOf
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -18,9 +24,13 @@ import androidx.compose.ui.text.intl.Locale
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.crypto_tracker_app.presentation.viewmodel.TokenViewModel
+import kotlinx.coroutines.delay
 
 @Composable
 fun DailyRewardScreen(tokenViewModel: TokenViewModel) {
+    var isTimeVisible by remember {
+        mutableStateOf(false)
+    }
     val context = LocalContext.current
     val goldGradient = Brush.verticalGradient(
         colors = listOf(Color(0xFFFFD700), Color(0xFFFFA500))
@@ -97,31 +107,55 @@ fun DailyRewardScreen(tokenViewModel: TokenViewModel) {
                 Text("🎁", fontSize = 50.sp)
             }
         }
-
+        var secondLeft by remember {
+            mutableLongStateOf(86400L)
+        }
+        if (isTimeVisible) {
+            LaunchedEffect(secondLeft) {
+                if (secondLeft > 0) {
+                    delay(1000)
+                    secondLeft -= 1
+                }
+            }
+        }
+        Column(modifier = Modifier.fillMaxWidth(),
+            horizontalAlignment = Alignment.CenterHorizontally) {
+            TimeCircle(secondLeft,86400L)
+        }
         Spacer(modifier = Modifier.weight(1f)) // Выталкивает кнопку вниз
 
         // Кнопка
-        Button(
-            onClick = { /* Логика зачисления */
-                tokenViewModel.checkDailyBonus { message ->
-                    Toast.makeText(context,message,Toast.LENGTH_SHORT)
-                }
-            },
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(64.dp)
-                .clip(RoundedCornerShape(20.dp))
-                .background(goldGradient), // Применяем градиент
-            colors = ButtonDefaults.buttonColors(
-                containerColor = Color.Transparent // Обязательно!
-            ),
-            shape = RoundedCornerShape(20.dp)
-        ) {
+        if (!isTimeVisible) {
+            Button(
+                onClick = { /* Логика зачисления */
+                    isTimeVisible = true
+                    tokenViewModel.checkDailyBonus { message ->
+                        Toast.makeText(context, message, Toast.LENGTH_SHORT).show()
+                    }
+                },
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(64.dp)
+                    .clip(RoundedCornerShape(20.dp))
+                    .background(goldGradient), // Применяем градиент
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = Color.Transparent // Обязательно!
+                ),
+                shape = RoundedCornerShape(20.dp)
+            ) {
+                Text(
+                    "CLAIM NOW",
+                    fontSize = 18.sp,
+                    fontWeight = FontWeight.Bold,
+                    color = Color.White
+                )
+            }
+        }else{
             Text(
-                "CLAIM NOW",
-                fontSize = 18.sp,
-                fontWeight = FontWeight.Bold,
-                color = Color.White
+                text = "Reward claimed! Come back tomorrow.",
+                color = Color.Gray,
+                fontSize = 16.sp,
+                fontWeight = FontWeight.Medium
             )
         }
 

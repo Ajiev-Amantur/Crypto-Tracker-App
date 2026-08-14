@@ -440,7 +440,7 @@ fun MainListTokens(
             ProfileScreen(tokenViewModel,navController)
         }
         composable("dailyRewardScreen"){
-            DailyRewardScreen(TokenViewModel)
+            DailyRewardScreen(tokenViewModel)
         }
         }
 }
