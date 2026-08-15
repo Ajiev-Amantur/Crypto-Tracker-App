@@ -28,9 +28,9 @@ import kotlinx.coroutines.delay
 
 @Composable
 fun DailyRewardScreen(tokenViewModel: TokenViewModel) {
-    var isTimeVisible by remember {
-        mutableStateOf(false)
-    }
+    var isTimeVisible by tokenViewModel.isTimeVisisble
+    var isSecondLeft by tokenViewModel.isSecondLeft
+
     val context = LocalContext.current
     val goldGradient = Brush.verticalGradient(
         colors = listOf(Color(0xFFFFD700), Color(0xFFFFA500))
@@ -94,33 +94,27 @@ fun DailyRewardScreen(tokenViewModel: TokenViewModel) {
         }
 
         Spacer(modifier = Modifier.height(40.dp))
-
-        // Иконка подарка
-        Surface(
-            modifier = Modifier.size(100.dp),
-            shape = CircleShape,
-            color = Color(0xFFFFEAA7),
-            tonalElevation = 4.dp,
-            shadowElevation = 6.dp
-        ) {
-            Box(contentAlignment = Alignment.Center) {
-                Text("🎁", fontSize = 50.sp)
-            }
-        }
-        var secondLeft by remember {
-            mutableLongStateOf(86400L)
-        }
-        if (isTimeVisible) {
-            LaunchedEffect(secondLeft) {
-                if (secondLeft > 0) {
-                    delay(1000)
-                    secondLeft -= 1
+        if (!isTimeVisible) {
+            // Иконка подарка
+            Surface(
+                modifier = Modifier.size(100.dp),
+                shape = CircleShape,
+                color = Color(0xFFFFEAA7),
+                tonalElevation = 4.dp,
+                shadowElevation = 6.dp
+            ) {
+                Box(contentAlignment = Alignment.Center) {
+                    Text("🎁", fontSize = 50.sp)
                 }
             }
-        }
-        Column(modifier = Modifier.fillMaxWidth(),
-            horizontalAlignment = Alignment.CenterHorizontally) {
-            TimeCircle(secondLeft,86400L)
+        }else {
+
+            Column(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                TimeCircle(isSecondLeft, 86400L)
+            }
         }
         Spacer(modifier = Modifier.weight(1f)) // Выталкивает кнопку вниз
 
@@ -128,7 +122,6 @@ fun DailyRewardScreen(tokenViewModel: TokenViewModel) {
         if (!isTimeVisible) {
             Button(
                 onClick = { /* Логика зачисления */
-                    isTimeVisible = true
                     tokenViewModel.checkDailyBonus { message ->
                         Toast.makeText(context, message, Toast.LENGTH_SHORT).show()
                     }

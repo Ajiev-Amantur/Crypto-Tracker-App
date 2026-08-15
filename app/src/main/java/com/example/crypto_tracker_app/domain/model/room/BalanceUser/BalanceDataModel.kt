@@ -8,5 +8,6 @@ data class BalanceDataModel(
     @PrimaryKey()
     val id: Int = 0,
     val balance: Int,
-    val lastBonusData: String = ""
+    val lastBonusData: String = "",
+    val lastBonusTime: Long = 0L
 )

@@ -21,6 +21,7 @@ import com.example.crypto_tracker_app.domain.usecase.SortTokenByRankTopUseCase
 import com.example.crypto_tracker_app.domain.usecase.SortTokenHighPriceUseCase
 import com.example.crypto_tracker_app.domain.usecase.SortTokenLowPriceUseCase
 import com.example.crypto_tracker_app.presentation.TokenUiState
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
@@ -38,8 +39,9 @@ class TokenViewModel(
     private val dao: BalanceDao,
     private val TokenDao: TokenUserDao
 ): ViewModel() {
-    val bonusBalance = mutableStateOf(0.0)
     val balance = mutableStateOf(500.0)
+    var isTimeVisisble = mutableStateOf(false)
+    var isSecondLeft = mutableStateOf(86400L)
 
     private var _tokenList = MutableLiveData<List<CryptoTokenModel>>()
     val tokenList : LiveData<List<CryptoTokenModel>> = _tokenList
@@ -88,23 +90,45 @@ class TokenViewModel(
         }
     }
     init {
-        checkDailyBonus()
+        loadDailyBonus()
+    }
+    fun loadDailyBonus(){
+        viewModelScope.launch {
+            val currentData = dao.getBalance()
+            if (currentData != null && currentData.lastBonusTime != 0L) {
+                val nowTime = System.currentTimeMillis()
+                val passed = nowTime - currentData.lastBonusTime
+                val dayMs = 24 * 60 * 60 * 1000L
+                if (passed < dayMs){
+                    isTimeVisisble.value = true
+                    isSecondLeft.value = (dayMs - passed) / 1000
+                    startTime() // Запускаем тикалку!
+                }else{
+                    isTimeVisisble.value = false
+                }
+            }
+        }
     }
     fun checkDailyBonus(onResult: ((String) -> Unit)? = null){
         viewModelScope.launch {
+            val time = System.currentTimeMillis()
             val today = SimpleDateFormat("yyyy-MM-dd",
                 java.util.Locale.getDefault()).format(Date())
             val currentData = dao.getBalance()
             if (currentData != null){
                 if (today != currentData.lastBonusData){
-                    val newBalance = bonusBalance.value + 50.0
+                    val newBalance = balance.value + 50.0
                     dao.insertBalance(
                         BalanceDataModel(
                             id = 0,
                             balance = newBalance.toInt(),
-                            today
+                            today,
+                            time
                         )
                     )
+                    isTimeVisisble.value = true
+                    isSecondLeft.value = 86400L // Исправили опечатку
+                    startTime()
                     balance.value = newBalance
                     onResult?.invoke("Success! 50$ added to your balance.")
                 }else{
@@ -117,11 +141,26 @@ class TokenViewModel(
                 dao.insertBalance(BalanceDataModel(
                     id = 0,
                     newBalance.toInt(),
-                    today
+                    today,
+                    time
                 ))
+                isTimeVisisble.value = true
+                isSecondLeft.value = 86400L
+                startTime()
                 onResult?.invoke("Welcome! 50$ bonus awarded.")
             }
     }
+    }
+   private fun startTime(){
+        viewModelScope.launch {
+            while (isSecondLeft.value > 0 && isTimeVisisble.value){
+                delay(1000)
+                isSecondLeft.value -= 1
+            }
+            if (isSecondLeft.value <= 0) {
+                isTimeVisisble.value = false
+            }
+        }
     }
     fun sellUserToken(nameToken: String, sellAmount: Double, currentPrice: Double){
         val index = balanceToken.indexOfFirst { it.name == nameToken }
@@ -184,11 +223,16 @@ init {
 
     fun updateBalane(newSum: Double) {
         viewModelScope.launch {
+            val currentData = dao.getBalance()
             balance.value = newSum
-            dao.insertBalance(BalanceDataModel(0,
-                newSum.toInt()))
-            }
+            dao.insertBalance(BalanceDataModel(
+                id = 0,
+                balance = newSum.toInt(),
+                lastBonusData = currentData?.lastBonusData ?: "",
+                lastBonusTime = currentData?.lastBonusTime ?: 0L
+            ))
         }
+    }
 
 
     fun prepareSparkline(prices: List<Double>): List<Point>{
