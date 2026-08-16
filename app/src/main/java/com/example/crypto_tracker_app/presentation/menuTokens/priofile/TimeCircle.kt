@@ -24,18 +24,18 @@ val sweepAngle = (timeLeft.toFloat() / totalTime) * 250
         contentAlignment = Alignment.Center){
         Canvas(modifier = Modifier.size(180.dp)) {
             drawArc(
-                color = Color.Gray,
+                color = Color.Black,
                 startAngle = -215f,
                 sweepAngle = 250f,
                 useCenter = false,
-                style = Stroke(width = 12.dp.toPx(), cap = StrokeCap.Round)
+                style = Stroke(width = 18.dp.toPx(), cap = StrokeCap.Round)
             )
             drawArc(
                 color = Color.Green,
                 startAngle = -215f,
                 sweepAngle = sweepAngle,
                 useCenter = false,
-                style = Stroke(width = 12.dp.toPx(), cap = StrokeCap.Round)
+                style = Stroke(width = 18.dp.toPx(), cap = StrokeCap.Round)
             )
 
         }

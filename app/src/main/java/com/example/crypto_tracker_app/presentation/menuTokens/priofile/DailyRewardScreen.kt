@@ -1,5 +1,8 @@
 package com.example.crypto_tracker_app.presentation.menuTokens.priofile
 
+import android.app.NotificationChannel
+import android.app.NotificationManager
+import android.content.Context
 import android.widget.Toast
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
@@ -9,9 +12,6 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableLongStateOf
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -20,11 +20,10 @@ import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.intl.Locale
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.core.app.NotificationCompat
 import com.example.crypto_tracker_app.presentation.viewmodel.TokenViewModel
-import kotlinx.coroutines.delay
 
 @Composable
 fun DailyRewardScreen(tokenViewModel: TokenViewModel) {
@@ -90,6 +89,23 @@ fun DailyRewardScreen(tokenViewModel: TokenViewModel) {
                         color = Color.White
                     )
                 }
+            }
+        }
+        LaunchedEffect(isTimeVisible){
+            if (!isTimeVisible){
+                val notificationManager = context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+                val channelId = "Bonus_channel"
+                val channel = NotificationChannel(channelId,"Daily_Bonus", NotificationManager.IMPORTANCE_DEFAULT)
+                notificationManager.createNotificationChannel(channel)
+
+                val notification = NotificationCompat.Builder(context,channelId)
+                    .setSmallIcon(com.example.crypto_tracker_app.R.mipmap.ic_launcher)
+                    .setContentTitle("Bonus Ready!")
+                    .setContentText("Your $50 daily reward is waiting for you!")
+                    .setPriority(NotificationCompat.PRIORITY_DEFAULT)
+                    .setAutoCancel(true)
+                    .build()
+                notificationManager.notify(20,notification)
             }
         }
 

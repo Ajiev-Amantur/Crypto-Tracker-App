@@ -39,7 +39,7 @@ class TokenViewModel(
     private val dao: BalanceDao,
     private val TokenDao: TokenUserDao
 ): ViewModel() {
-    val balance = mutableStateOf(500.0)
+    val balance = mutableStateOf(50.0)
     var isTimeVisisble = mutableStateOf(false)
     var isSecondLeft = mutableStateOf(86400L)
 
