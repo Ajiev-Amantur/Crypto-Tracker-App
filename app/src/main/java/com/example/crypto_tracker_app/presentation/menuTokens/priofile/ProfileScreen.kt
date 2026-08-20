@@ -35,7 +35,9 @@ fun ProfileScreen(tokenViewModel: TokenViewModel,navController: NavHostControlle
     val totalProfit = tokenViewModel.tokenPriceUpOrDown // Общий плюс/минус
 
     CryptoTrackerAppTheme {
-        Box(modifier = Modifier.fillMaxSize()) {
+        Box(modifier = Modifier.fillMaxSize().background(
+            MaterialTheme.colorScheme.background
+        )) {
             LazyColumn(modifier = Modifier.fillMaxSize()) {
 
                 // --- ШАПКА: ОБЩИЙ БАЛАНС ---
@@ -52,7 +54,7 @@ fun ProfileScreen(tokenViewModel: TokenViewModel,navController: NavHostControlle
                             Text(
                                 text = "${"%.2f".format(totalBalance)}$",
                                 fontSize = 32.sp,
-                                color = Color.White,
+                                color = MaterialTheme.colorScheme.surface,
                                 fontWeight = FontWeight.Bold,
                                 fontFamily = FontFamily.Monospace
                             )
@@ -94,7 +96,7 @@ fun ProfileScreen(tokenViewModel: TokenViewModel,navController: NavHostControlle
                 items(tokenViewModel.balanceToken) { token ->
                     Card(
                         modifier = Modifier
-                            .fillMaxWidth()
+                            .fillMaxWidth().background(MaterialTheme.colorScheme.background)
                             .padding(horizontal = 16.dp, vertical = 6.dp),
                         colors = CardDefaults.cardColors(containerColor = Color.White),
                         elevation = CardDefaults.cardElevation(2.dp)
@@ -108,11 +110,14 @@ fun ProfileScreen(tokenViewModel: TokenViewModel,navController: NavHostControlle
                                 )
 
                                 Column(modifier = Modifier.padding(start = 12.dp).weight(1f)) {
-                                    Text(token.name, fontWeight = FontWeight.Bold, fontSize = 16.sp)
+                                    Text(token.name,
+                                        fontWeight = FontWeight.Bold,
+                                        fontSize = 16.sp,
+                                        color = MaterialTheme.colorScheme.surface)
                                     Text(
                                         "Price: $${token.price}",
-                                        color = Color.Gray,
-                                        fontSize = 12.sp
+                                        color = MaterialTheme.colorScheme.surface,
+                                        fontSize = 12.sp,
                                     )
                                 }
 
@@ -122,11 +127,13 @@ fun ProfileScreen(tokenViewModel: TokenViewModel,navController: NavHostControlle
                                     Text(
                                         text = "$${"%.2f".format(currentVal)}",
                                         fontWeight = FontWeight.Bold,
-                                        fontSize = 16.sp
+                                        fontSize = 16.sp,
+                                        color = MaterialTheme.colorScheme.surface
                                     )
                                     Text(
                                         "${token.amount} ${token.name.take(3).uppercase()}",
-                                        fontSize = 12.sp
+                                        fontSize = 12.sp,
+                                        color = MaterialTheme.colorScheme.surface
                                     )
                                 }
                             }
@@ -145,7 +152,8 @@ fun ProfileScreen(tokenViewModel: TokenViewModel,navController: NavHostControlle
                                 modifier = Modifier.fillMaxWidth(),
                                 horizontalArrangement = Arrangement.SpaceBetween
                             ) {
-                                Text("Profit / Loss", fontSize = 12.sp, color = Color.Gray)
+                                Text("Profit / Loss", fontSize = 12.sp,
+                                    color = MaterialTheme.colorScheme.surface)
                                 Row(horizontalArrangement = Arrangement.spacedBy(4.dp),
                                     verticalAlignment = Alignment.CenterVertically) {
                                     val sign = if (tokenProfit >= 0) "+" else ""
@@ -177,7 +185,7 @@ fun ProfileScreen(tokenViewModel: TokenViewModel,navController: NavHostControlle
             Box(
                 modifier = Modifier.fillMaxWidth()
                     .height(80.dp).align(Alignment.BottomCenter)
-                    .background(Color(0xFFF5FFFA))
+                    .background(MaterialTheme.colorScheme.background)
                     .padding(horizontal = 16.dp, vertical = 10.dp)
                     .clip(RoundedCornerShape(20.dp)),
                 contentAlignment = Alignment.Center
@@ -208,7 +216,7 @@ fun ProfileScreen(tokenViewModel: TokenViewModel,navController: NavHostControlle
                             "Menu",
                             fontFamily = FontFamily.SansSerif,
                             fontSize = 16.sp,
-                            color = Color.Gray
+                            color = MaterialTheme.colorScheme.surface
                         )
                     }
 
@@ -226,7 +234,7 @@ fun ProfileScreen(tokenViewModel: TokenViewModel,navController: NavHostControlle
                             "Profile",
                             fontFamily = FontFamily.SansSerif,
                             fontSize = 16.sp,
-                            color = Color.Gray
+                            color = MaterialTheme.colorScheme.surface
                         )
                     }
                 }

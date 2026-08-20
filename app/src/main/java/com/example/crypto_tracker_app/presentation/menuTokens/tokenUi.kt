@@ -1,6 +1,6 @@
 package com.example.crypto_tracker_app.presentation.menuTokens
 
-import android.widget.Toast
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -16,6 +16,7 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -71,7 +72,6 @@ NavHostController, tokenViewModel: TokenViewModel, tokenPTviewModel: TokenP_Time
     val context = LocalContext.current
     val sizeScreen = 80f
     val steps = 5
-
     Card(
         modifier = Modifier
             .fillMaxWidth()
@@ -81,7 +81,7 @@ NavHostController, tokenViewModel: TokenViewModel, tokenPTviewModel: TokenP_Time
                 nav.navigate("UI2")
             }
             ),
-        colors = CardDefaults.cardColors(Color.White),
+        colors = CardDefaults.cardColors(MaterialTheme.colorScheme.background),
         elevation = CardDefaults.cardElevation(defaultElevation = 6.dp)
     ) {
         Column(modifier = Modifier.fillMaxWidth()) {
@@ -102,7 +102,7 @@ NavHostController, tokenViewModel: TokenViewModel, tokenPTviewModel: TokenP_Time
                     name, fontStyle = FontStyle.Italic,
                     fontSize = 14.sp,
                     fontWeight = FontWeight.Bold,
-                    color = Color(color = android.graphics.Color.BLACK),
+                    color = MaterialTheme.colorScheme.surface,
                     modifier = Modifier
                         .padding(start = 12.dp)
                         .weight(1f)
@@ -206,7 +206,8 @@ NavHostController, tokenViewModel: TokenViewModel, tokenPTviewModel: TokenP_Time
                             contentDescription = "image"
                         )
                         Text(
-                            color = if (priceChange24hProsent > 0) Color.Black else Color.White,
+                            color = if (priceChange24hProsent > 0) MaterialTheme.colorScheme.onSurface
+                            else MaterialTheme.colorScheme.surface,
                             modifier = Modifier.padding(5.dp),
                             text = "$formatterPrice%",
                             fontSize = 16.sp,
@@ -218,6 +219,7 @@ NavHostController, tokenViewModel: TokenViewModel, tokenPTviewModel: TokenP_Time
             Text(
                 "$price$", fontStyle = FontStyle.Normal,
                 fontSize = 12.sp,
+                color = MaterialTheme.colorScheme.surface,
                 modifier = Modifier.padding(start = 12.dp, 4.dp)
             )
 

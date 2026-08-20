@@ -5,6 +5,12 @@
 
 package com.example.crypto_tracker_app.presentation.menuTokens
 
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.core.FiniteAnimationSpec
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.expandVertically
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -27,6 +33,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.SearchBar
 import androidx.compose.material3.SearchBarDefaults
 import androidx.compose.material3.Text
@@ -45,6 +52,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
+import androidx.compose.ui.graphics.Matrix
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontFamily
@@ -93,7 +101,8 @@ fun MainListTokens(
             val isRefreshing = uiState is TokenUiState.loading && tokens?.isNotEmpty() == true
 
 
-            Box(modifier = Modifier.fillMaxSize().background(Color.White)) {
+            Box(modifier = Modifier.fillMaxSize().
+            background(MaterialTheme.colorScheme.background)) {
                 PullToRefreshBox(
                     isRefreshing,
                     onRefresh = {
@@ -121,14 +130,14 @@ fun MainListTokens(
                                     Text(
                                         "${balance.value}$",
                                         fontSize = 30.sp,
-                                        color = Color.White,
+                                        color = MaterialTheme.colorScheme.onBackground,
                                         fontFamily = FontFamily.Cursive,
                                         modifier = Modifier.padding(10.dp),
                                     )
                                     Text(
                                         "your balance is equivalent",
                                         fontSize = 14.sp,
-                                        color = Color.Gray,
+                                        color = MaterialTheme.colorScheme.onBackground,
                                         fontFamily = FontFamily.Monospace,
                                         modifier = Modifier.padding(8.dp, bottom = 30.dp)
                                     )
@@ -139,7 +148,7 @@ fun MainListTokens(
                                     ) {
                                         Text(
                                             "Deposit",
-                                            color = Color.White,
+                                            color = MaterialTheme.colorScheme.onBackground,
                                             fontSize = 18.sp,
                                             fontFamily = FontFamily.Monospace
                                         )
@@ -150,7 +159,7 @@ fun MainListTokens(
                         stickyHeader {
                             Column(
                                 modifier = Modifier.fillMaxWidth()
-                                    .background(colorResource(R.color.white))
+                                    .background(MaterialTheme.colorScheme.background)
                             ) {
                                 SearchBar(
                                     modifier = Modifier.padding(
@@ -158,16 +167,15 @@ fun MainListTokens(
                                         vertical = 8.dp
                                     ),
                                     colors = SearchBarDefaults.colors(
-                                        containerColor = Color(
-                                            0xFFF0F8FF
-                                        )
+                                        containerColor = MaterialTheme.colorScheme.background
                                     ),
                                     query = searchText,
                                     onQueryChange = { text -> searchText = text },
                                     onSearch = { },
                                     active = false,
                                     onActiveChange = { },
-                                    placeholder = { Text("Search") }
+                                    placeholder = { Text("Search", color =
+                                        MaterialTheme.colorScheme.surface) }
                                 ) { }
 
                                 Row(
@@ -180,8 +188,8 @@ fun MainListTokens(
                                 ) {
                                     TextButton(
                                         colors = ButtonDefaults.textButtonColors(
-                                            containerColor = Color(0xFFF0FFFF),
-                                            contentColor = Color.Black,
+                                            containerColor = MaterialTheme.colorScheme.surface,
+                                            contentColor = MaterialTheme.colorScheme.onSurface,
                                             disabledContentColor = Color.Gray
                                         ),
                                         onClick = {
@@ -194,14 +202,15 @@ fun MainListTokens(
                                         Text(
                                             "Default",
                                             fontSize = 12.sp,
-                                            fontFamily = FontFamily.Serif
+                                            fontFamily = FontFamily.Serif,
+                                            color = MaterialTheme.colorScheme.onBackground
                                         )
                                     }
 
                                     TextButton(
                                         colors = ButtonDefaults.textButtonColors(
-                                            contentColor = Color.Black,
-                                            containerColor = Color(0xFFF0FFFF)
+                                            contentColor = MaterialTheme.colorScheme.onSurface,
+                                            containerColor = MaterialTheme.colorScheme.surface
                                         ),
                                         onClick = {
                                             if (selectedPrice) {
@@ -214,7 +223,7 @@ fun MainListTokens(
                                         Row(verticalAlignment = Alignment.CenterVertically) {
                                             Text(
                                                 text = "Price",
-                                                color = Color.Black,
+                                                color = MaterialTheme.colorScheme.onBackground,
                                                 fontSize = 12.sp,
                                                 fontFamily = FontFamily.Serif
                                             )
@@ -227,7 +236,8 @@ fun MainListTokens(
                                                     painter = painterResource(R.drawable.baseline_expand_more),
                                                     modifier = Modifier.size(14.dp),
                                                     colorFilter = ColorFilter.tint(
-                                                        if (selectedPrice) Color.Black else Color.White.copy(
+                                                        if (selectedPrice) MaterialTheme.colorScheme.onSurface
+                                                        else MaterialTheme.colorScheme.onSurface.copy(
                                                             alpha = 0.5f
                                                         )
                                                     ),
@@ -237,7 +247,8 @@ fun MainListTokens(
                                                     painter = painterResource(R.drawable.baseline_expand_less),
                                                     modifier = Modifier.size(14.dp),
                                                     colorFilter = ColorFilter.tint(
-                                                        if (selectedPrice == false) Color.Black else Color.White.copy(
+                                                        if (selectedPrice == false) MaterialTheme.colorScheme.onSurface
+                                                        else MaterialTheme.colorScheme.onSurface.copy(
                                                             alpha = 0.5f
                                                         )
                                                     ),
@@ -249,8 +260,8 @@ fun MainListTokens(
 
                                     TextButton(
                                         colors = ButtonDefaults.textButtonColors(
-                                            contentColor = Color.Black,
-                                            containerColor = Color(0xFFF0FFFF)
+                                            contentColor = MaterialTheme.colorScheme.onSurface,
+                                            containerColor = MaterialTheme.colorScheme.surface
                                         ),
                                         onClick = {
                                             if (selectedPrice24h) {
@@ -261,7 +272,7 @@ fun MainListTokens(
                                         }) {
                                         Text(
                                             "24h change",
-                                            color = Color.Black,
+                                            color = MaterialTheme.colorScheme.onBackground,
                                             fontSize = 12.sp,
                                             fontFamily = FontFamily.Serif
                                         )
@@ -303,6 +314,11 @@ fun MainListTokens(
                                     items = filtredTokens,
                                     key = { it.id }
                                 ) { token ->
+                                    AnimatedVisibility(
+                                        visible = state is TokenUiState.Sucsess,
+                                        enter = fadeIn(animationSpec = tween(1000))
+                                                + expandVertically(), exit = fadeOut()
+                                    ) {
                                     tokenUI(
                                         token.name, token.currentPrice, image = token.image,
                                         navController,
@@ -311,6 +327,7 @@ fun MainListTokens(
                                         token,
                                         priceChange24hProsent = token.priceChange24hProsent,
                                     )
+                                }
                                 }
                                 item {
                                     Spacer(modifier = Modifier.height(100.dp))
@@ -322,8 +339,8 @@ fun MainListTokens(
                                     item {
                                         ErrorScreen(tokenViewModel)
                                     }
-                                }else{
-                                    items(items = filtredTokens,key = { it.id}) { token ->
+                                }else {
+                                    items(items = filtredTokens, key = { it.id }) { token ->
                                         tokenUI(
                                             name = token.name,
                                             price = token.currentPrice,
@@ -334,7 +351,8 @@ fun MainListTokens(
                                             token,
                                             token.priceChange24hProsent
                                         )
-                                    }
+
+                                }
                                 }
                             }
                         }
@@ -345,7 +363,7 @@ fun MainListTokens(
                     Box(
                         modifier = Modifier.fillMaxWidth()
                             .height(80.dp).align(Alignment.BottomCenter)
-                            .background(Color(0xFFF5FFFA))
+                            .background(MaterialTheme.colorScheme.background)
                             .padding(horizontal = 16.dp, vertical = 10.dp)
                             .clip(RoundedCornerShape(20.dp)),
                         contentAlignment = Alignment.Center
@@ -369,7 +387,7 @@ fun MainListTokens(
                                     "Menu",
                                     fontFamily = FontFamily.SansSerif,
                                     fontSize = 16.sp,
-                                    color = Color.Gray
+                                    color = MaterialTheme.colorScheme.onBackground
                                 )
                             }
 
@@ -388,7 +406,7 @@ fun MainListTokens(
                                     "Profile",
                                     fontFamily = FontFamily.SansSerif,
                                     fontSize = 16.sp,
-                                    color = Color.Gray
+                                    color = MaterialTheme.colorScheme.onBackground
                                 )
                             }
                         }

@@ -347,7 +347,7 @@ init {
             try {
                 _uiState.value = TokenUiState.loading
                 val tokens = getTokenRepo.getAllTokens()
-
+                delay(1000)
                 balanceToken.forEachIndexed { index, tokenUser ->
                     val searchedToken = tokens.find { it.name == tokenUser.name }
                     if (searchedToken != null){

@@ -24,6 +24,7 @@ import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
@@ -105,7 +106,8 @@ fun detailUIToken(id: String,name: String,price: Int,image: String,priceChange24
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(bottom = 80.dp)
-                .background(Color.Unspecified).verticalScroll(rememberScrollState())
+                .background(MaterialTheme.colorScheme.background)
+                .verticalScroll(rememberScrollState())
         ) {
             Row(
                 verticalAlignment = Alignment.CenterVertically,
@@ -125,7 +127,8 @@ fun detailUIToken(id: String,name: String,price: Int,image: String,priceChange24
                 Text(
                     name,
                     Modifier.padding(10.dp),
-                    fontSize = 20.sp
+                    fontSize = 20.sp,
+                    color = MaterialTheme.colorScheme.surface
                 )
             }
             Row(
@@ -135,7 +138,8 @@ fun detailUIToken(id: String,name: String,price: Int,image: String,priceChange24
                 Text(
                     "${price}$",
                     modifier = Modifier.padding(10.dp),
-                    fontSize = 20.sp
+                    fontSize = 20.sp,
+                    color = MaterialTheme.colorScheme.surface
                 )
 
                 val formatterPrice = "%.1f".format(priceChanged)
@@ -144,7 +148,8 @@ fun detailUIToken(id: String,name: String,price: Int,image: String,priceChange24
                         brush = if (priceChange24hProsent > 0) GreenGradient else RedGradient,
                         shape = CardDefaults.shape
                     ),
-                    colors = CardDefaults.cardColors(containerColor = Color.Transparent)
+                    colors = CardDefaults.cardColors
+                        (containerColor = Color.Transparent)
                 ) {
                     Row(
                         verticalAlignment = Alignment.CenterVertically
@@ -246,6 +251,7 @@ fun detailUIToken(id: String,name: String,price: Int,image: String,priceChange24
                 LineChart(
                     modifier = Modifier
                         .fillMaxWidth()
+                        .background(MaterialTheme.colorScheme.background)
                         .clip(RoundedCornerShape(20.dp))
                         .height(250.dp),
                     lineChartData = lineChartData
@@ -256,6 +262,7 @@ fun detailUIToken(id: String,name: String,price: Int,image: String,priceChange24
                 horizontalArrangement = Arrangement.SpaceAround
             ) {
                 Button(
+                    modifier = Modifier.background(MaterialTheme.colorScheme.background),
                     onClick = {
                         viewModel.loadTokensByTime(
                             id = id,
@@ -272,12 +279,11 @@ fun detailUIToken(id: String,name: String,price: Int,image: String,priceChange24
                             0xFF4B0082
                         ),
                     )
-                ) {
-                    Text("1day")
-                }
+                ) {}
 
 
                 Button(
+                    modifier = Modifier.background(MaterialTheme.colorScheme.background),
 
                     onClick = {
                         viewModel.loadTokensByTime(
@@ -301,6 +307,8 @@ fun detailUIToken(id: String,name: String,price: Int,image: String,priceChange24
                 }
 
                 Button(
+                    modifier = Modifier.background(MaterialTheme.colorScheme.background),
+
                     onClick = {
                         viewModel.loadTokensByTime(
                             id = id.toString(),
@@ -322,6 +330,8 @@ fun detailUIToken(id: String,name: String,price: Int,image: String,priceChange24
                 }
 
                 Button(
+                    modifier = Modifier.background(MaterialTheme.colorScheme.background),
+
                     onClick = {
                         viewModel.loadTokensByTime(
                             id = id.toString(),
@@ -346,7 +356,7 @@ fun detailUIToken(id: String,name: String,price: Int,image: String,priceChange24
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .background(Color.White)
+                    .background(MaterialTheme.colorScheme.background)
                     .padding(10.dp)
             ) {
                 Column(modifier = Modifier.fillMaxWidth()) {
@@ -382,7 +392,7 @@ fun detailUIToken(id: String,name: String,price: Int,image: String,priceChange24
                 Box(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .background(Color.White)
+                        .background(MaterialTheme.colorScheme.background)
                         .padding(10.dp)
                         .clip(RoundedCornerShape(20.dp))
                 ) {
@@ -404,7 +414,7 @@ fun detailUIToken(id: String,name: String,price: Int,image: String,priceChange24
                                 "${token.amount} $name",
                                 fontSize = 14.sp,
                                 fontFamily = FontFamily.Monospace,
-                                color = Color.Black
+                                color = MaterialTheme.colorScheme.surface
                             )
                         }
                         HorizontalDivider(
@@ -418,11 +428,13 @@ fun detailUIToken(id: String,name: String,price: Int,image: String,priceChange24
                         ) {
                             // ЛЕВАЯ ЧАСТЬ: Сколько потратили
                             Column {
-                                Text("Invested", fontSize = 10.sp, color = Color.Gray)
+                                Text("Invested", fontSize = 10.sp,
+                                    color = MaterialTheme.colorScheme.surface)
                                 Text(
                                     "${"%.2f".format(token.totalValue)}$",
                                     fontSize = 14.sp,
-                                    fontFamily = FontFamily.Monospace
+                                    fontFamily = FontFamily.Monospace,
+                                    color = MaterialTheme.colorScheme.surface
                                 )
                             }
 
@@ -436,7 +448,8 @@ fun detailUIToken(id: String,name: String,price: Int,image: String,priceChange24
                                 val pColor = if (isPositive) Color(0xFF4CAF50) else Color.Red
                                 val sign = if (isPositive) "+" else ""
 
-                                Text("Profit", fontSize = 10.sp, color = Color.Gray)
+                                Text("Profit", fontSize = 10.sp,
+                                    color = MaterialTheme.colorScheme.surface)
                                 Row(verticalAlignment = Alignment.CenterVertically) {
                                     // Доллары профита
                                     Text(
