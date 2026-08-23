@@ -1,5 +1,6 @@
 package com.example.crypto_tracker_app.presentation.menuTokens.priofile
 
+import android.R
 import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.content.Context
@@ -23,6 +24,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.core.app.NotificationCompat
+import com.example.crypto_tracker_app.presentation.menuTokens.MainListTokens
 import com.example.crypto_tracker_app.presentation.viewmodel.TokenViewModel
 
 @Composable
@@ -41,8 +43,8 @@ fun DailyRewardScreen(tokenViewModel: TokenViewModel) {
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .background(Color(0xFFF8F9FA)) // Светлый приятный фон
-            .padding(24.dp),
+            .background(MaterialTheme.colorScheme.background) // Светлый приятный фон
+            .padding(24.dp, end = 24.dp, bottom = 24.dp, top = 10.dp),
         horizontalAlignment = Alignment.CenterHorizontally // Центрируем всё!
     ) {
         // Заголовок
@@ -50,7 +52,7 @@ fun DailyRewardScreen(tokenViewModel: TokenViewModel) {
             text = "Daily Reward",
             fontSize = 28.sp,
             fontWeight = FontWeight.ExtraBold,
-            color = Color(0xFF2D3436)
+            color = MaterialTheme.colorScheme.onBackground
         )
         Text(
             text = "Your free daily tokens are ready!",
@@ -120,7 +122,7 @@ fun DailyRewardScreen(tokenViewModel: TokenViewModel) {
                 shadowElevation = 6.dp
             ) {
                 Box(contentAlignment = Alignment.Center) {
-                    Text("🎁", fontSize = 50.sp)
+                    Text("🎁", fontSize = 50.sp, color = MaterialTheme.colorScheme.onBackground)
                 }
             }
         }else {
@@ -156,13 +158,13 @@ fun DailyRewardScreen(tokenViewModel: TokenViewModel) {
                     "CLAIM NOW",
                     fontSize = 18.sp,
                     fontWeight = FontWeight.Bold,
-                    color = Color.White
+                    color = MaterialTheme.colorScheme.onBackground
                 )
             }
         }else{
             Text(
                 text = "Reward claimed! Come back tomorrow.",
-                color = Color.Gray,
+                color = MaterialTheme.colorScheme.onBackground,
                 fontSize = 16.sp,
                 fontWeight = FontWeight.Medium
             )
@@ -172,7 +174,7 @@ fun DailyRewardScreen(tokenViewModel: TokenViewModel) {
             modifier = Modifier.padding(top = 12.dp, bottom = 10.dp),
             text = "Come back in 24h for more!",
             fontSize = 12.sp,
-            color = Color.Gray
+            color = MaterialTheme.colorScheme.onBackground
         )
     }
 }

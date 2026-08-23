@@ -4,9 +4,8 @@
 )
 
 package com.example.crypto_tracker_app.presentation.menuTokens
-
+import com.example.crypto_tracker_app.presentation.menuTokens.TokenUI
 import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.core.FiniteAnimationSpec
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.expandVertically
 import androidx.compose.animation.fadeIn
@@ -72,8 +71,6 @@ import com.example.crypto_tracker_app.presentation.menuTokens.priofile.ProfileSc
 import com.example.crypto_tracker_app.presentation.viewmodel.TokenViewModel
 import com.example.crypto_tracker_app.presentation.viewmodel.TokenP_TimeViewModel
 import com.example.crypto_tracker_app.ui.theme.GradientForCardBalance
-import org.koin.core.qualifier.named
-
 
 @Composable
 fun MainListTokens(
@@ -130,14 +127,14 @@ fun MainListTokens(
                                     Text(
                                         "${balance.value}$",
                                         fontSize = 30.sp,
-                                        color = MaterialTheme.colorScheme.onBackground,
+                                        color = Color.White,
                                         fontFamily = FontFamily.Cursive,
                                         modifier = Modifier.padding(10.dp),
                                     )
                                     Text(
                                         "your balance is equivalent",
                                         fontSize = 14.sp,
-                                        color = MaterialTheme.colorScheme.onBackground,
+                                        color = Color.White,
                                         fontFamily = FontFamily.Monospace,
                                         modifier = Modifier.padding(8.dp, bottom = 30.dp)
                                     )
@@ -148,7 +145,7 @@ fun MainListTokens(
                                     ) {
                                         Text(
                                             "Deposit",
-                                            color = MaterialTheme.colorScheme.onBackground,
+                                            color = Color.White,
                                             fontSize = 18.sp,
                                             fontFamily = FontFamily.Monospace
                                         )
@@ -167,7 +164,7 @@ fun MainListTokens(
                                         vertical = 8.dp
                                     ),
                                     colors = SearchBarDefaults.colors(
-                                        containerColor = MaterialTheme.colorScheme.background
+                                        containerColor = MaterialTheme.colorScheme.surface
                                     ),
                                     query = searchText,
                                     onQueryChange = { text -> searchText = text },
@@ -175,7 +172,7 @@ fun MainListTokens(
                                     active = false,
                                     onActiveChange = { },
                                     placeholder = { Text("Search", color =
-                                        MaterialTheme.colorScheme.surface) }
+                                        MaterialTheme.colorScheme.onBackground) }
                                 ) { }
 
                                 Row(
@@ -294,13 +291,12 @@ fun MainListTokens(
                                     }
                                 } else {
                                     items(items = filtredTokens, key = { it.id }) { token ->
-                                        tokenUI(
+                                        TokenUI(
                                             token.name,
                                             token.currentPrice,
                                             token.image,
                                             navController,
                                             tokenViewModel,
-                                            tokenPriceViewModel,
                                             token,
                                             token.priceChange24hProsent
                                         )
@@ -319,11 +315,10 @@ fun MainListTokens(
                                         enter = fadeIn(animationSpec = tween(1000))
                                                 + expandVertically(), exit = fadeOut()
                                     ) {
-                                    tokenUI(
+                                    TokenUI(
                                         token.name, token.currentPrice, image = token.image,
                                         navController,
                                         tokenViewModel,
-                                        tokenPriceViewModel,
                                         token,
                                         priceChange24hProsent = token.priceChange24hProsent,
                                     )
@@ -341,13 +336,12 @@ fun MainListTokens(
                                     }
                                 }else {
                                     items(items = filtredTokens, key = { it.id }) { token ->
-                                        tokenUI(
+                                        TokenUI(
                                             name = token.name,
                                             price = token.currentPrice,
                                             image = token.image,
                                             navController,
                                             tokenViewModel,
-                                            tokenPriceViewModel,
                                             token,
                                             token.priceChange24hProsent
                                         )

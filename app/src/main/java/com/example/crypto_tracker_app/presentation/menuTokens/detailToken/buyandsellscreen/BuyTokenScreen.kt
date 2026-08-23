@@ -16,6 +16,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -57,7 +58,7 @@ fun BuyScreen(
     var priceText by remember { mutableStateOf("") }
 
 
-    Box(modifier = Modifier.fillMaxSize()) {
+    Box(modifier = Modifier.fillMaxSize().background(MaterialTheme.colorScheme.background)) {
         Column(modifier = Modifier.fillMaxWidth().padding(top = 20.dp)) {
             Box(modifier = Modifier.fillMaxWidth().padding(20.dp)) {
                 Column {
@@ -101,6 +102,7 @@ fun BuyScreen(
                     Text(
                         "Price",
                         fontSize = 14.sp,
+                        color = MaterialTheme.colorScheme.onBackground,
                         modifier = Modifier.padding(horizontal = 20.dp)
 
                     )
@@ -108,9 +110,11 @@ fun BuyScreen(
                         value = priceText,
                         onValueChange = { text -> priceText = text },
                         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
-                        label = { Text("Write Here Price") },
-                        suffix = { Text("$")},
-                        modifier = Modifier.fillMaxWidth().padding(vertical = 10.dp),
+                        label = { Text("Write Here Price", color = MaterialTheme.colorScheme.onBackground,) },
+                        suffix = { Text("$",color = MaterialTheme.colorScheme.onBackground,
+                        )},
+                        modifier = Modifier.fillMaxWidth().padding(vertical = 10.dp).background(
+                            MaterialTheme.colorScheme.background),
                     )
                     val inputPrice = priceText.toFloatOrNull()?: 0.0f
                     val tokenPrice = token?.currentPrice?.toFloat()?: 0.0f
@@ -123,6 +127,7 @@ fun BuyScreen(
                     quantityTextState = if (priceText.isEmpty()) "" else result.toString()
                     Text(
                         "Quantity",
+                        color = MaterialTheme.colorScheme.onBackground,
                         fontSize = 14.sp,
                         modifier = Modifier.padding(horizontal = 20.dp)
                     )
@@ -130,9 +135,10 @@ fun BuyScreen(
                         value = quantityTextState,
                         onValueChange = { },
                         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal),
-                        label = { Text("amount 0.001${token?.name}") },
-                        suffix = {Text("$name")},
-                        modifier = Modifier.fillMaxWidth().padding(vertical = 10.dp)
+                        label = { Text("amount 0.001${token?.name}",color = MaterialTheme.colorScheme.onBackground,) },
+                        suffix = {Text("$name",color = MaterialTheme.colorScheme.onBackground,)},
+                        modifier = Modifier.fillMaxWidth().padding(vertical = 10.dp).background(
+                            MaterialTheme.colorScheme.background)
                     )
                 }
             }

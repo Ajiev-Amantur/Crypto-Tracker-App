@@ -1,6 +1,5 @@
 package com.example.crypto_tracker_app.presentation.menuTokens
 
-import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -21,14 +20,12 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontStyle
@@ -48,19 +45,17 @@ import coil.compose.AsyncImage
 import com.example.crypto_tracker_app.R
 import com.example.crypto_tracker_app.domain.model.CryptoTokenModel
 import com.example.crypto_tracker_app.presentation.viewmodel.TokenViewModel
-import com.example.crypto_tracker_app.presentation.viewmodel.TokenP_TimeViewModel
 import com.example.crypto_tracker_app.ui.theme.GreenGradient
 import com.example.crypto_tracker_app.ui.theme.RedGradient
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 
 @Composable
-fun tokenUI(name: String, price: Double, image: String, nav:
-NavHostController, tokenViewModel: TokenViewModel, tokenPTviewModel: TokenP_TimeViewModel,
+fun TokenUI(name: String, price: Double, image: String, nav:
+NavHostController, tokenViewModel: TokenViewModel,
              token: CryptoTokenModel,
              priceChange24hProsent: Double) {
 
-    val progressBar by tokenViewModel.progressBar.observeAsState()
     var myPoint by remember(token.id){ mutableStateOf<List<Point>>(emptyList())}
     LaunchedEffect(token.id) {
         withContext(Dispatchers.Default){
@@ -69,7 +64,6 @@ NavHostController, tokenViewModel: TokenViewModel, tokenPTviewModel: TokenP_Time
         }
     }
 
-    val context = LocalContext.current
     val sizeScreen = 80f
     val steps = 5
     Card(
@@ -102,7 +96,7 @@ NavHostController, tokenViewModel: TokenViewModel, tokenPTviewModel: TokenP_Time
                     name, fontStyle = FontStyle.Italic,
                     fontSize = 14.sp,
                     fontWeight = FontWeight.Bold,
-                    color = MaterialTheme.colorScheme.surface,
+                    color = MaterialTheme.colorScheme.onBackground,
                     modifier = Modifier
                         .padding(start = 12.dp)
                         .weight(1f)
@@ -124,8 +118,9 @@ NavHostController, tokenViewModel: TokenViewModel, tokenPTviewModel: TokenP_Time
                     val stepSize = remember(points) {
                         (sizeScreen / (points.size - 1)).dp
                     }
+                    val chartBackgroundColor = MaterialTheme.colorScheme.background
 
-                    val xAxisData = remember(stepSize) {
+                    val xAxisData = remember(stepSize,chartBackgroundColor) {
                         AxisData.Builder()
                             .axisLineColor(Color.Transparent)
                             .axisStepSize(stepSize)
@@ -138,23 +133,23 @@ NavHostController, tokenViewModel: TokenViewModel, tokenPTviewModel: TokenP_Time
                             .build()
                     }
 
-                    val yAxisData = remember(steps) {
+                    val yAxisData = remember(steps,chartBackgroundColor) {
                         AxisData.Builder()
                             .axisLineColor(Color.Transparent)
                             .steps(steps)
-                            .backgroundColor(Color.White)
+                            .backgroundColor(Color.Transparent)
                             .labelAndAxisLinePadding(0.dp)
                             .labelData { "" }.build()
                     }
 
-                    val lineChartData = remember(points, xAxisData, yAxisData) {
+                    val lineChartData = remember(points, xAxisData, yAxisData, chartBackgroundColor) {
                         LineChartData(
                             linePlotData = LinePlotData(
                                 lines = listOf(
                                     Line(
                                         dataPoints = points,
                                         LineStyle(
-                                            color = if (priceChange24hProsent > 0) Color(0xFF0AFE47) else Color.Red,
+                                            color = if (priceChange24hProsent > 0) Color(0xFF0002E8) else Color.Red,
                                             width = 6.0f),
                                         intersectionPoint = null,
                                         selectionHighlightPoint = null,
@@ -169,7 +164,7 @@ NavHostController, tokenViewModel: TokenViewModel, tokenPTviewModel: TokenP_Time
                                 enableHorizontalLines = false,
                                 enableVerticalLines = false
                             ),
-                            backgroundColor = Color.White,
+                            backgroundColor = chartBackgroundColor,
                             paddingRight = 0.dp,
                             containerPaddingEnd = 0.dp
                         )
@@ -206,7 +201,7 @@ NavHostController, tokenViewModel: TokenViewModel, tokenPTviewModel: TokenP_Time
                             contentDescription = "image"
                         )
                         Text(
-                            color = if (priceChange24hProsent > 0) MaterialTheme.colorScheme.onSurface
+                            color = if (priceChange24hProsent > 0) MaterialTheme.colorScheme.onBackground
                             else MaterialTheme.colorScheme.surface,
                             modifier = Modifier.padding(5.dp),
                             text = "$formatterPrice%",
@@ -219,7 +214,7 @@ NavHostController, tokenViewModel: TokenViewModel, tokenPTviewModel: TokenP_Time
             Text(
                 "$price$", fontStyle = FontStyle.Normal,
                 fontSize = 12.sp,
-                color = MaterialTheme.colorScheme.surface,
+                color = MaterialTheme.colorScheme.onBackground,
                 modifier = Modifier.padding(start = 12.dp, 4.dp)
             )
 

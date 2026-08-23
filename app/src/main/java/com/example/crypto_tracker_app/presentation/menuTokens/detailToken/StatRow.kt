@@ -25,13 +25,13 @@ fun StatRow(label: String,value: String){
         Text(
             text = label,
             fontSize = 14.sp,
-            color = Color.Gray,
+            color = MaterialTheme.colorScheme.onBackground,
             fontFamily = FontFamily.SansSerif
         )
         Text(
             text = value,
             fontSize = 14.sp,
-            color = MaterialTheme.colorScheme.surface,
+            color = MaterialTheme.colorScheme.onBackground,
             fontWeight = FontWeight.SemiBold,
             fontFamily = FontFamily.Monospace
         )

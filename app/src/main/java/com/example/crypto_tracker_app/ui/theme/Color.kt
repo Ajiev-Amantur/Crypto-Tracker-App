@@ -18,9 +18,9 @@ val CryptoDarkSurface = Color(0xFF1E2329)
 // Цвет карточек в темной теме
 val CryptoPrimary = Color(0xFFFCD535)
 // Фирменный желтый (как Binance) или выбери свой
-val CryptoTextPrimary = Color(0xFFEAECEF)
+val CryptoTextPrimary = Color(0xFFD1D1D3)
 // Светло-серый текст для темной темы
-val CryptoTextSecondary = Color(0xFF848E9C)
+val CryptoTextSecondary = Color(0xFFB8BDD9)
 // Серый текст для подписей
 // СВЕТЛАЯ ТЕМА (Crypto Light)
  val CryptoLightBackground = Color(0xFFFFFFFF)

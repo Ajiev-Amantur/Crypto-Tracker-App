@@ -99,13 +99,12 @@ fun detailUIToken(id: String,name: String,price: Int,image: String,priceChange24
     Box(
         modifier = Modifier
             .fillMaxSize()
-            .padding(10.dp)
-            .statusBarsPadding()
+            .statusBarsPadding().background(MaterialTheme.colorScheme.background)
     ) {
         Column(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(bottom = 80.dp)
+                .padding(bottom = 80.dp, top = 10.dp, start = 10.dp, end = 10.dp)
                 .background(MaterialTheme.colorScheme.background)
                 .verticalScroll(rememberScrollState())
         ) {
@@ -128,7 +127,7 @@ fun detailUIToken(id: String,name: String,price: Int,image: String,priceChange24
                     name,
                     Modifier.padding(10.dp),
                     fontSize = 20.sp,
-                    color = MaterialTheme.colorScheme.surface
+                    color = MaterialTheme.colorScheme.onBackground
                 )
             }
             Row(
@@ -139,7 +138,7 @@ fun detailUIToken(id: String,name: String,price: Int,image: String,priceChange24
                     "${price}$",
                     modifier = Modifier.padding(10.dp),
                     fontSize = 20.sp,
-                    color = MaterialTheme.colorScheme.surface
+                    color = MaterialTheme.colorScheme.onBackground
                 )
 
                 val formatterPrice = "%.1f".format(priceChanged)
@@ -164,7 +163,7 @@ fun detailUIToken(id: String,name: String,price: Int,image: String,priceChange24
                             contentDescription = "image"
                         )
                         Text(
-                            color = if (priceChanged > 0) Color.Black else Color.White,
+                            color = MaterialTheme.colorScheme.onBackground ,
                             modifier = Modifier.padding(5.dp),
                             text = "$formatterPrice%",
                             fontSize = 18.sp,
@@ -195,7 +194,7 @@ fun detailUIToken(id: String,name: String,price: Int,image: String,priceChange24
                     .axisLineColor(Color.White)
                     .axisStepSize(screen.dp)
                     .axisLabelFontSize(0.sp)
-                    .backgroundColor(Color.White)
+                    .backgroundColor(MaterialTheme.colorScheme.background)
                     .steps(5)
                     .labelData { i ->
                         if (datePriceToken.isEmpty() || i >= datePriceToken.size) {
@@ -215,7 +214,7 @@ fun detailUIToken(id: String,name: String,price: Int,image: String,priceChange24
                 val yAxisData = AxisData.Builder()
                     .axisLineColor(Color.Transparent)
                     .steps(steps)
-                    .backgroundColor(Color.White)
+                    .backgroundColor(MaterialTheme.colorScheme.background)
                     .labelAndAxisLinePadding(20.dp)
                     .labelData { " " }
                     .labelAndAxisLinePadding(0.dp)
@@ -244,7 +243,7 @@ fun detailUIToken(id: String,name: String,price: Int,image: String,priceChange24
                         enableHorizontalLines = false,
                         enableVerticalLines = false
                     ),
-                    backgroundColor = Color.White,
+                    backgroundColor = MaterialTheme.colorScheme.background,
                     paddingRight = 0.dp,
                     containerPaddingEnd = 0.dp
                 )
@@ -272,14 +271,12 @@ fun detailUIToken(id: String,name: String,price: Int,image: String,priceChange24
                         viewModel.updateSelectB("1")
                     },
                     colors = ButtonDefaults.buttonColors(
-                        containerColor = if (selectedDay == "1") Color(0xFFE0FFFF) else Color(
-                            0xFFF0FFFF
-                        ),
+                        containerColor = MaterialTheme.colorScheme.background,
                         contentColor = if (selectedDay == "1") Color(0xFF1E90FF) else Color(
-                            0xFF4B0082
-                        ),
-                    )
-                ) {}
+                            0xFF4B0082))
+                ) {
+                    Text("24h")
+                }
 
 
                 Button(
@@ -295,9 +292,7 @@ fun detailUIToken(id: String,name: String,price: Int,image: String,priceChange24
 
                     },
                     colors = ButtonDefaults.buttonColors(
-                        containerColor = if (selectedDay == "7") Color(0xFFE0FFFF) else Color(
-                            0xFFF0FFFF
-                        ),
+                        containerColor = MaterialTheme.colorScheme.background,
                         contentColor = if (selectedDay == "7") Color(0xFF1E90FF) else Color(
                             0xFF4B0082
                         ),
@@ -318,9 +313,7 @@ fun detailUIToken(id: String,name: String,price: Int,image: String,priceChange24
                         viewModel.updateSelectB("30")
                     },
                     colors = ButtonDefaults.buttonColors(
-                        containerColor = if (selectedDay == "30") Color(0xFFE0FFFF) else Color(
-                            0xFFF0FFFF
-                        ),
+                        containerColor = MaterialTheme.colorScheme.background,
                         contentColor = if (selectedDay == "30") Color(0xFF1E90FF) else Color(
                             0xFF4B0082
                         ),
@@ -341,9 +334,7 @@ fun detailUIToken(id: String,name: String,price: Int,image: String,priceChange24
                         viewModel.updateSelectB("365")
                     },
                     colors = ButtonDefaults.buttonColors(
-                        containerColor = if (selectedDay == "365") Color(0xFFE0FFFF) else Color(
-                            0xFFF0FFFF
-                        ),
+                        containerColor = MaterialTheme.colorScheme.background,
                         contentColor = if (selectedDay == "365") Color(0xFF1E90FF) else Color(
                             0xFF4B0082
                         ),
@@ -363,23 +354,24 @@ fun detailUIToken(id: String,name: String,price: Int,image: String,priceChange24
                     Text(
                         text = "Market Statistics",
                         fontSize = 18.sp,
+                        color = MaterialTheme.colorScheme.onBackground,
                         fontWeight = FontWeight.Bold,
                         modifier = Modifier.padding(bottom = 12.dp)
                     )
                     StatRow("Min price", "$atlPrice$")
-                    HorizontalDivider(thickness = 0.5.dp, color = Color.LightGray)
+                    HorizontalDivider(thickness = 0.5.dp, color = MaterialTheme.colorScheme.onBackground)
 
                     StatRow("Max price", "$athPrice$")
-                    HorizontalDivider(thickness = 0.5.dp, color = Color.LightGray)
+                    HorizontalDivider(thickness = 0.5.dp, color = MaterialTheme.colorScheme.onBackground)
 
                     StatRow("High price 24h", "$highPrice24h$")
-                    HorizontalDivider(thickness = 0.5.dp, color = Color.LightGray)
+                    HorizontalDivider(thickness = 0.5.dp, color = MaterialTheme.colorScheme.onBackground)
 
                     StatRow("Low price 24h", "${lowPrice24h.toInt()}$")
-                    HorizontalDivider(thickness = 0.5.dp, color = Color.LightGray)
+                    HorizontalDivider(thickness = 0.5.dp, color = MaterialTheme.colorScheme.onBackground)
 
                     StatRow("Total Supply", "${totalSupply.toInt()}$")
-                    HorizontalDivider(thickness = 0.5.dp, color = Color.LightGray)
+                    HorizontalDivider(thickness = 0.5.dp, color = MaterialTheme.colorScheme.onBackground)
 
                     StatRow("Max Supply", "${maxSypply.toInt()}$")
                 }
@@ -414,11 +406,11 @@ fun detailUIToken(id: String,name: String,price: Int,image: String,priceChange24
                                 "${token.amount} $name",
                                 fontSize = 14.sp,
                                 fontFamily = FontFamily.Monospace,
-                                color = MaterialTheme.colorScheme.surface
+                                color = MaterialTheme.colorScheme.onBackground
                             )
                         }
                         HorizontalDivider(
-                            thickness = 0.2.dp, color = Color.Blue,
+                            thickness = 0.2.dp, color = MaterialTheme.colorScheme.onBackground,
                             modifier = Modifier.padding(10.dp)
                         )
                         Row(
@@ -429,12 +421,12 @@ fun detailUIToken(id: String,name: String,price: Int,image: String,priceChange24
                             // ЛЕВАЯ ЧАСТЬ: Сколько потратили
                             Column {
                                 Text("Invested", fontSize = 10.sp,
-                                    color = MaterialTheme.colorScheme.surface)
+                                    color = MaterialTheme.colorScheme.onBackground)
                                 Text(
                                     "${"%.2f".format(token.totalValue)}$",
                                     fontSize = 14.sp,
                                     fontFamily = FontFamily.Monospace,
-                                    color = MaterialTheme.colorScheme.surface
+                                    color = MaterialTheme.colorScheme.onBackground
                                 )
                             }
 
@@ -449,7 +441,7 @@ fun detailUIToken(id: String,name: String,price: Int,image: String,priceChange24
                                 val sign = if (isPositive) "+" else ""
 
                                 Text("Profit", fontSize = 10.sp,
-                                    color = MaterialTheme.colorScheme.surface)
+                                    color = MaterialTheme.colorScheme.onBackground)
                                 Row(verticalAlignment = Alignment.CenterVertically) {
                                     // Доллары профита
                                     Text(

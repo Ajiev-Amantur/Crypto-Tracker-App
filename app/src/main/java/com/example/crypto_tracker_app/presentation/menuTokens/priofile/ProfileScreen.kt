@@ -38,7 +38,7 @@ fun ProfileScreen(tokenViewModel: TokenViewModel,navController: NavHostControlle
         Box(modifier = Modifier.fillMaxSize().background(
             MaterialTheme.colorScheme.background
         )) {
-            LazyColumn(modifier = Modifier.fillMaxSize()) {
+            LazyColumn(modifier = Modifier.fillMaxSize().background(MaterialTheme.colorScheme.background)) {
 
                 // --- ШАПКА: ОБЩИЙ БАЛАНС ---
                 item {
@@ -54,7 +54,7 @@ fun ProfileScreen(tokenViewModel: TokenViewModel,navController: NavHostControlle
                             Text(
                                 text = "${"%.2f".format(totalBalance)}$",
                                 fontSize = 32.sp,
-                                color = MaterialTheme.colorScheme.surface,
+                                color = Color.White,
                                 fontWeight = FontWeight.Bold,
                                 fontFamily = FontFamily.Monospace
                             )
@@ -98,7 +98,7 @@ fun ProfileScreen(tokenViewModel: TokenViewModel,navController: NavHostControlle
                         modifier = Modifier
                             .fillMaxWidth().background(MaterialTheme.colorScheme.background)
                             .padding(horizontal = 16.dp, vertical = 6.dp),
-                        colors = CardDefaults.cardColors(containerColor = Color.White),
+                        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.background),
                         elevation = CardDefaults.cardElevation(2.dp)
                     ) {
                         Column(modifier = Modifier.padding(16.dp)) {
@@ -113,10 +113,10 @@ fun ProfileScreen(tokenViewModel: TokenViewModel,navController: NavHostControlle
                                     Text(token.name,
                                         fontWeight = FontWeight.Bold,
                                         fontSize = 16.sp,
-                                        color = MaterialTheme.colorScheme.surface)
+                                        color = MaterialTheme.colorScheme.onBackground)
                                     Text(
                                         "Price: $${token.price}",
-                                        color = MaterialTheme.colorScheme.surface,
+                                        color = MaterialTheme.colorScheme.onBackground,
                                         fontSize = 12.sp,
                                     )
                                 }
@@ -128,12 +128,12 @@ fun ProfileScreen(tokenViewModel: TokenViewModel,navController: NavHostControlle
                                         text = "$${"%.2f".format(currentVal)}",
                                         fontWeight = FontWeight.Bold,
                                         fontSize = 16.sp,
-                                        color = MaterialTheme.colorScheme.surface
+                                        color = MaterialTheme.colorScheme.onBackground
                                     )
                                     Text(
                                         "${token.amount} ${token.name.take(3).uppercase()}",
                                         fontSize = 12.sp,
-                                        color = MaterialTheme.colorScheme.surface
+                                        color = MaterialTheme.colorScheme.onBackground
                                     )
                                 }
                             }
@@ -141,7 +141,8 @@ fun ProfileScreen(tokenViewModel: TokenViewModel,navController: NavHostControlle
                             // Линия разграничения
                             HorizontalDivider(
                                 modifier = Modifier.padding(vertical = 8.dp),
-                                thickness = 0.5.dp
+                                thickness = 0.5.dp,
+                                color = MaterialTheme.colorScheme.onBackground
                             )
 
                             // ПРОФИТ КОНКРЕТНОЙ МОНЕТЫ
@@ -153,7 +154,7 @@ fun ProfileScreen(tokenViewModel: TokenViewModel,navController: NavHostControlle
                                 horizontalArrangement = Arrangement.SpaceBetween
                             ) {
                                 Text("Profit / Loss", fontSize = 12.sp,
-                                    color = MaterialTheme.colorScheme.surface)
+                                    color = MaterialTheme.colorScheme.onBackground)
                                 Row(horizontalArrangement = Arrangement.spacedBy(4.dp),
                                     verticalAlignment = Alignment.CenterVertically) {
                                     val sign = if (tokenProfit >= 0) "+" else ""
@@ -216,7 +217,7 @@ fun ProfileScreen(tokenViewModel: TokenViewModel,navController: NavHostControlle
                             "Menu",
                             fontFamily = FontFamily.SansSerif,
                             fontSize = 16.sp,
-                            color = MaterialTheme.colorScheme.surface
+                            color = MaterialTheme.colorScheme.onBackground
                         )
                     }
 
@@ -234,7 +235,7 @@ fun ProfileScreen(tokenViewModel: TokenViewModel,navController: NavHostControlle
                             "Profile",
                             fontFamily = FontFamily.SansSerif,
                             fontSize = 16.sp,
-                            color = MaterialTheme.colorScheme.surface
+                            color = MaterialTheme.colorScheme.onBackground
                         )
                     }
                 }
