@@ -120,7 +120,7 @@ fun SellScreen(image: String, name: String, nav: NavHostController, tokenViewMod
                 val textFieldValue = quantityTextState.toDoubleOrNull() ?: 0.0
 
                 val result = price * textFieldValue
-                val totalPrice = if (quantityTextState.isEmpty()) "" else "%.2f".format(result)
+                val totalPrice = if (quantityTextState.isEmpty()) "" else "%.8f".format(result).trimEnd('0').trimEnd('.',',')
                 
                 Text(
                     "You will get (USD)",

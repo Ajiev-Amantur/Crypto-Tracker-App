@@ -70,7 +70,7 @@ import java.util.Date
 import java.util.Locale
 
 @Composable
-fun detailUIToken(id: String,name: String,price: Int,image: String,priceChange24h: Double,
+fun detailUIToken(id: String,name: String,price: Double,image: String,priceChange24h: Double,
                   priceAltProsent: Double,atlPrice: Double,athPrice: Double,
                   totalSupply : Double,maxSypply: Double,
                   highPrice24h: Double,lowPrice24h: Double,
@@ -94,6 +94,15 @@ fun detailUIToken(id: String,name: String,price: Int,image: String,priceChange24
         "30" -> priceChange30dProsent
         "365" -> priceChange1yProsent
         else -> priceChange24hProsent
+    }
+
+    // Универсальная функция для "умного" форматирования цен и количеств
+    fun formatSmart(value: Double): String {
+        return when {
+            value >= 1.0 -> "%.2f".format(value)
+            value >= 0.0001 -> "%.4f".format(value)
+            else -> "%.10f".format(value).trimEnd('0').trimEnd('.', ',')
+        }
     }
 
     Box(
@@ -135,7 +144,7 @@ fun detailUIToken(id: String,name: String,price: Int,image: String,priceChange24
                 horizontalArrangement = Arrangement.SpaceEvenly
             ) {
                 Text(
-                    "${price}$",
+                    "${formatSmart(price)}$",
                     modifier = Modifier.padding(10.dp),
                     fontSize = 20.sp,
                     color = MaterialTheme.colorScheme.onBackground
@@ -358,22 +367,23 @@ fun detailUIToken(id: String,name: String,price: Int,image: String,priceChange24
                         fontWeight = FontWeight.Bold,
                         modifier = Modifier.padding(bottom = 12.dp)
                     )
-                    StatRow("Min price", "$atlPrice$")
+                    
+                    StatRow("Min price", "${formatSmart(atlPrice)}$")
                     HorizontalDivider(thickness = 0.5.dp, color = MaterialTheme.colorScheme.onBackground)
 
-                    StatRow("Max price", "$athPrice$")
+                    StatRow("Max price", "${formatSmart(athPrice)}$")
                     HorizontalDivider(thickness = 0.5.dp, color = MaterialTheme.colorScheme.onBackground)
 
-                    StatRow("High price 24h", "$highPrice24h$")
+                    StatRow("High price 24h", "${formatSmart(highPrice24h)}$")
                     HorizontalDivider(thickness = 0.5.dp, color = MaterialTheme.colorScheme.onBackground)
 
-                    StatRow("Low price 24h", "${lowPrice24h.toInt()}$")
+                    StatRow("Low price 24h", "${formatSmart(lowPrice24h)}$")
                     HorizontalDivider(thickness = 0.5.dp, color = MaterialTheme.colorScheme.onBackground)
 
-                    StatRow("Total Supply", "${totalSupply.toInt()}$")
+                    StatRow("Total Supply", "${totalSupply.toLong()}$")
                     HorizontalDivider(thickness = 0.5.dp, color = MaterialTheme.colorScheme.onBackground)
 
-                    StatRow("Max Supply", "${maxSypply.toInt()}$")
+                    StatRow("Max Supply", "${maxSypply.toLong()}$")
                 }
             }
 
@@ -401,9 +411,9 @@ fun detailUIToken(id: String,name: String,price: Int,image: String,priceChange24
                                 image, contentDescription = "",
                                 modifier = Modifier.size(30.dp),
                             )
-
+                            
                             Text(
-                                "${token.amount} $name",
+                                "${formatSmart(token.amount)} $name",
                                 fontSize = 14.sp,
                                 fontFamily = FontFamily.Monospace,
                                 color = MaterialTheme.colorScheme.onBackground
@@ -492,8 +502,7 @@ fun detailUIToken(id: String,name: String,price: Int,image: String,priceChange24
                                         context,
                                         "You dont have token",
                                         Toast.LENGTH_LONG
-                                    )
-                                        .show()
+                                    ).show()
 
                                 }
                             }

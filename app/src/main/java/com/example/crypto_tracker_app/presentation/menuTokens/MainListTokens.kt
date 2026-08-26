@@ -78,8 +78,9 @@ fun MainListTokens(
     tokenPriceViewModel: TokenP_TimeViewModel,
     ) {
     val navController = rememberNavController()
-    NavHost(navController, "UI1") {
-        composable("UI1") {
+    Box(modifier = Modifier.fillMaxSize().background(MaterialTheme.colorScheme.background)) {
+        NavHost(navController, "UI1") {
+            composable("UI1") {
             val tokens by tokenViewModel.tokenList.observeAsState()
             val selectedPrice by tokenViewModel.selectedPrice.observeAsState(true)
             val selectedPrice24h by tokenViewModel.selectedPrice24h.observeAsState(true)
@@ -416,7 +417,7 @@ fun MainListTokens(
                     detailUIToken(
                         id = token.id,
                         name = token.name,
-                        price = token.currentPrice.toInt(),
+                        price = token.currentPrice,
                         image = token.image,
                         priceChange24h = token.priceChange24h,
                         priceAltProsent = token.atlChangePercentage,
@@ -455,4 +456,4 @@ fun MainListTokens(
             DailyRewardScreen(tokenViewModel)
         }
         }
-}
+}}

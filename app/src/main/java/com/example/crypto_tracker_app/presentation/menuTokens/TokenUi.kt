@@ -211,8 +211,15 @@ NavHostController, tokenViewModel: TokenViewModel,
                     }
                 }
             }
+            val formattedPrice = when{
+                price >= 1.0 -> "%.2f".format(price)
+                price >= 0.0001 -> "%.4f".format(price)
+                else -> "%.10f".format(price).trimEnd('0')
+                    .trimEnd('.',',')
+            }
             Text(
-                "$price$", fontStyle = FontStyle.Normal,
+                "$formattedPrice$"
+                , fontStyle = FontStyle.Normal,
                 fontSize = 12.sp,
                 color = MaterialTheme.colorScheme.onBackground,
                 modifier = Modifier.padding(start = 12.dp, 4.dp)

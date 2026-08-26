@@ -11,6 +11,11 @@ import com.example.crypto_tracker_app.presentation.viewmodel.TokenViewModel
 import com.example.crypto_tracker_app.ui.theme.CryptoTrackerAppTheme
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
+import androidx.compose.material3.Surface
+import androidx.compose.ui.Modifier
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.material3.MaterialTheme
+
 class MainActivity : ComponentActivity() {
     private val tokenPriceViewModel: TokenP_TimeViewModel by viewModel()
     private val tokenViewModel: TokenViewModel by viewModel()
@@ -20,7 +25,12 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
         setContent {
             CryptoTrackerAppTheme {
-                MainListTokens(tokenViewModel, tokenPriceViewModel)
+                Surface(
+                    modifier = Modifier.fillMaxSize(),
+                    color = MaterialTheme.colorScheme.background
+                ) {
+                    MainListTokens(tokenViewModel, tokenPriceViewModel)
+                }
             }
         }
     }

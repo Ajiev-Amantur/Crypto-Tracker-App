@@ -116,15 +116,19 @@ fun BuyScreen(
                         modifier = Modifier.fillMaxWidth().padding(vertical = 10.dp).background(
                             MaterialTheme.colorScheme.background),
                     )
-                    val inputPrice = priceText.toFloatOrNull()?: 0.0f
-                    val tokenPrice = token?.currentPrice?.toFloat()?: 0.0f
+                    val inputPrice = priceText.toDoubleOrNull() ?: 0.0
+                    val tokenPrice = token?.currentPrice ?: 0.0
 
-                    val result = if(tokenPrice > 0){
+                    val result = if (tokenPrice > 0) {
                         inputPrice / tokenPrice
-                    } else{
+                    } else {
                         0.0
                     }
-                    quantityTextState = if (priceText.isEmpty()) "" else result.toString()
+
+                    // Форматируем до 8 знаков после запятой, убирая лишние нули в конце
+                    quantityTextState = if (priceText.isEmpty()) "" else "%.8f".format(result).trimEnd('0').trimEnd('.', ',')
+                    
+                    if (quantityTextState == "-0") quantityTextState = "0"
                     Text(
                         "Quantity",
                         color = MaterialTheme.colorScheme.onBackground,
@@ -204,14 +208,14 @@ fun BuyScreen(
             modifier = Modifier.align(Alignment.Center)
         ) {
             Box(modifier = Modifier.size(200.dp).clip(RoundedCornerShape(12.dp))
-                .background(Color.White)){
+                .background(MaterialTheme.colorScheme.background)){
                 Column(modifier = Modifier.fillMaxWidth(),
                     horizontalAlignment = Alignment.CenterHorizontally,
                     verticalArrangement = Arrangement.Center) {
                     Text("Sucsess!",
                         fontSize = 20.sp,
                         fontFamily = FontFamily.SansSerif,
-                        color = Color.Black)
+                        color = MaterialTheme.colorScheme.onBackground)
 
                     Image(painter = painterResource(R.drawable.sucsess_icon_ic),
                         contentDescription = "image sucsess",
@@ -220,12 +224,12 @@ fun BuyScreen(
                     Text("good buy",
                         fontSize = 16.sp,
                         fontFamily = FontFamily.SansSerif,
-                        color = Color.Black)
+                        color = MaterialTheme.colorScheme.onBackground)
 
                     Text("$quantityTextState$name",
                         fontSize = 20.sp,
                         fontFamily = FontFamily.SansSerif,
-                        color = Color.Black)
+                        color = MaterialTheme.colorScheme.onBackground)
 
                 }
             }
