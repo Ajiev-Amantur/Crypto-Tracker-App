@@ -26,20 +26,23 @@ class TokenP_TimeViewModel(private val tokenByTime: PriceTimeRepository): ViewMo
         // points for grafic detailUI
    private val _graphPoints = MutableStateFlow<List<Point>>(emptyList())
     var graphPoints: StateFlow<List<Point>> = _graphPoints
-    //progress Bar
+    // Progress Bar
     private var _progressBar = MutableLiveData(false)
     val progressBar: LiveData<Boolean> = _progressBar
 
     // dates
     private var _dateGraph = MutableLiveData<List<Long>>(emptyList())
-    val dateGraph: MutableLiveData<List<Long>> = _dateGraph
+    val dateGraph: LiveData<List<Long>> = _dateGraph
+
+    private var fetchJob: kotlinx.coroutines.Job? = null // Для отмены старых запросов
 
     fun updateSelectB(selectedB: String) {
         _selectedButton.value = selectedB
     }
 
     fun loadTokensByTime(id: String, currency: String, days: String) {
-        viewModelScope.launch {
+        fetchJob?.cancel() // Отменяем предыдущий запрос, если он еще идет
+        fetchJob = viewModelScope.launch {
             _progressBar.value = true
             try {
                 val result = tokenByTime.getTokenPriceByTime(
@@ -51,7 +54,7 @@ class TokenP_TimeViewModel(private val tokenByTime: PriceTimeRepository): ViewMo
 
                 val filteredPrices = result.prices.filterIndexed { index, _ ->  index % 10 == 0}
 
-                dateGraph.value = filteredPrices.map { it[0].toLong() }
+                _dateGraph.value = filteredPrices.map { it[0].toLong() }
 
                 _graphPoints.value = filteredPrices.mapIndexed { index, priceByTime ->
                     Point(

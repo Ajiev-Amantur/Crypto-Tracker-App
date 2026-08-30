@@ -2,7 +2,6 @@ package com.example.crypto_tracker_app.presentation.viewmodel
 
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.ui.text.intl.Locale
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -44,7 +43,7 @@ class TokenViewModel(
     var isSecondLeft = mutableStateOf(86400L)
 
     private var _tokenList = MutableLiveData<List<CryptoTokenModel>>()
-    val tokenList : LiveData<List<CryptoTokenModel>> = _tokenList
+    val tokenList: LiveData<List<CryptoTokenModel>> = _tokenList
 
     private var _selectedToken = MutableLiveData<CryptoTokenModel>()
     val selectedToken: LiveData<CryptoTokenModel?> = _selectedToken
@@ -65,18 +64,18 @@ class TokenViewModel(
     val balanceToken = mutableStateListOf<UserTokenModel>()
 
     private val _uiState = MutableStateFlow<TokenUiState>(TokenUiState.loading)
-    val uiState : StateFlow<TokenUiState> = _uiState
+    val uiState: StateFlow<TokenUiState> = _uiState
 
 
     // know actual price token
     val totalPriceToken: Double
-        get(){
+        get() {
             val tokenPrice = balanceToken.sumOf { it.amount * it.price }
             return balance.value + tokenPrice
         }
 
     val tokenPriceUpOrDown: Double
-        get(){
+        get() {
             val priceBoughtToken = balanceToken.sumOf { it.amount * it.price }
             val money = balanceToken.sumOf { it.totalValue }
             return priceBoughtToken - money
@@ -89,34 +88,39 @@ class TokenViewModel(
             balanceToken.addAll(tokens)
         }
     }
+
     init {
         loadDailyBonus()
     }
-    fun loadDailyBonus(){
+
+    fun loadDailyBonus() {
         viewModelScope.launch {
             val currentData = dao.getBalance()
             if (currentData != null && currentData.lastBonusTime != 0L) {
                 val nowTime = System.currentTimeMillis()
                 val passed = nowTime - currentData.lastBonusTime
                 val dayMs = 24 * 60 * 60 * 1000L
-                if (passed < dayMs){
+                if (passed < dayMs) {
                     isTimeVisisble.value = true
                     isSecondLeft.value = (dayMs - passed) / 1000
                     startTime() // Запускаем тикалку!
-                }else{
+                } else {
                     isTimeVisisble.value = false
                 }
             }
         }
     }
-    fun checkDailyBonus(onResult: ((String) -> Unit)? = null){
+
+    fun checkDailyBonus(onResult: ((String) -> Unit)? = null) {
         viewModelScope.launch {
             val time = System.currentTimeMillis()
-            val today = SimpleDateFormat("yyyy-MM-dd",
-                java.util.Locale.getDefault()).format(Date())
+            val today = SimpleDateFormat(
+                "yyyy-MM-dd",
+                java.util.Locale.getDefault()
+            ).format(Date())
             val currentData = dao.getBalance()
-            if (currentData != null){
-                if (today != currentData.lastBonusData){
+            if (currentData != null) {
+                if (today != currentData.lastBonusData) {
                     val newBalance = balance.value + 50.0
                     dao.insertBalance(
                         BalanceDataModel(
@@ -131,29 +135,32 @@ class TokenViewModel(
                     startTime()
                     balance.value = newBalance
                     onResult?.invoke("Success! 50$ added to your balance.")
-                }else{
+                } else {
                     onResult?.invoke("You already claimed your reward today!")
 
-            }
-        }else{
-            val newBalance = balance.value + 50.0
+                }
+            } else {
+                val newBalance = balance.value + 50.0
                 balance.value = newBalance
-                dao.insertBalance(BalanceDataModel(
-                    id = 0,
-                    newBalance.toInt(),
-                    today,
-                    time
-                ))
+                dao.insertBalance(
+                    BalanceDataModel(
+                        id = 0,
+                        newBalance.toInt(),
+                        today,
+                        time
+                    )
+                )
                 isTimeVisisble.value = true
                 isSecondLeft.value = 86400L
                 startTime()
                 onResult?.invoke("Welcome! 50$ bonus awarded.")
             }
+        }
     }
-    }
-   private fun startTime(){
+
+    private fun startTime() {
         viewModelScope.launch {
-            while (isSecondLeft.value > 0 && isTimeVisisble.value){
+            while (isSecondLeft.value > 0 && isTimeVisisble.value) {
                 delay(1000)
                 isSecondLeft.value -= 1
             }
@@ -162,37 +169,43 @@ class TokenViewModel(
             }
         }
     }
-    fun sellUserToken(nameToken: String, sellAmount: Double, currentPrice: Double){
+
+    fun sellUserToken(nameToken: String, sellAmount: Double, currentPrice: Double) {
         val index = balanceToken.indexOfFirst { it.name == nameToken }
         if (index == -1) return
 
         val token = balanceToken[index]
-        val actualAmountSell = if (sellAmount > token.amount)token.amount else sellAmount
+        val actualAmountSell = if (sellAmount > token.amount) token.amount else sellAmount
         val money = actualAmountSell * currentPrice
-        if (actualAmountSell > token.amount){
+        
+        // 1. Обновляем баланс (прибавляем выручку)
+        val newWalletBalance = balance.value + money
+        updateBalane(newWalletBalance)
 
+        if (actualAmountSell >= token.amount) {
+            // Если продали всё — удаляем из списка
             balanceToken.removeAt(index)
-            updateBalane(money)
-            balance.value += money
             viewModelScope.launch {
+                // В Room лучше обнулять или удалять, здесь мы обнуляем для безопасности
                 TokenDao.addToken(token.copy(amount = 0.0, totalValue = 0.0))
             }
-        }else{
+        } else {
+            // Если продали часть — обновляем количество и вложенную стоимость
             val newAmount = token.amount - actualAmountSell
-            val value = (newAmount / token.amount * token.totalValue)
-            val updatedToken = token.copy(amount = newAmount, totalValue = value)
+            // Пропорционально уменьшаем вложенную стоимость (totalValue), чтобы профит считался верно
+            val newValue = (newAmount / token.amount * token.totalValue)
+            val updatedToken = token.copy(amount = newAmount, totalValue = newValue)
 
             balanceToken[index] = updatedToken
-            updateBalane(money)
-
             viewModelScope.launch {
                 TokenDao.addToken(updatedToken)
             }
         }
     }
-    fun addUserToken(newToken: UserTokenModel){
+
+    fun addUserToken(newToken: UserTokenModel) {
         val index = balanceToken.indexOfFirst { newToken.name == it.name }
-        if (index != -1){
+        if (index != -1) {
             val token = balanceToken[index]
 
             val updatedToken = token.copy(
@@ -202,40 +215,43 @@ class TokenViewModel(
 
             balanceToken[index] = updatedToken
             viewModelScope.launch {
-                TokenDao.addToken(token)
+                TokenDao.addToken(updatedToken) // Исправлено: сохраняем обновленный токен
             }
-        }else {
+        } else {
             viewModelScope.launch {
                 TokenDao.addToken(newToken)
                 balanceToken.add(newToken)
-          }
+            }
         }
     }
-init {
-    viewModelScope.launch {
-        val totalValue = dao.getBalance()?.balance
-        if (totalValue != null){
-            balance.value = totalValue.toDouble()
+
+    init {
+        viewModelScope.launch {
+            val totalValue = dao.getBalance()?.balance
+            if (totalValue != null) {
+                balance.value = totalValue.toDouble()
+            }
         }
     }
-}
 
 
     fun updateBalane(newSum: Double) {
         viewModelScope.launch {
             val currentData = dao.getBalance()
             balance.value = newSum
-            dao.insertBalance(BalanceDataModel(
-                id = 0,
-                balance = newSum.toInt(),
-                lastBonusData = currentData?.lastBonusData ?: "",
-                lastBonusTime = currentData?.lastBonusTime ?: 0L
-            ))
+            dao.insertBalance(
+                BalanceDataModel(
+                    id = 0,
+                    balance = newSum.toInt(),
+                    lastBonusData = currentData?.lastBonusData ?: "",
+                    lastBonusTime = currentData?.lastBonusTime ?: 0L
+                )
+            )
         }
     }
 
 
-    fun prepareSparkline(prices: List<Double>): List<Point>{
+    fun prepareSparkline(prices: List<Double>): List<Point> {
         return prices.mapIndexed { index, price ->
             Point(
                 x = index.toFloat(),
@@ -244,7 +260,7 @@ init {
         }
     }
 
-    fun selectToken(token: CryptoTokenModel){
+    fun selectToken(token: CryptoTokenModel) {
         _selectedToken.value = token
     }
 
@@ -253,115 +269,104 @@ init {
     }
 
 
-
     // Добавление сортировки списка по высокой цене
-    fun TokenByHighPrice(){
+    fun TokenByHighPrice() {
         _progressBar.value = true
         _selectedPrice.value = false
-        viewModelScope.launch {
-            try {
-                val token = sortTokenHighPriceUseCase.execute()
-                _tokenList.value = token
-            } catch (e: Exception){
-                println(e)
-            } finally {
-                _progressBar.value = false
-            }
+
+        val currentList = _tokenList.value
+        if (!currentList.isNullOrEmpty()) {
+            _tokenList.value = sortTokenHighPriceUseCase.execute(currentList)
+            _progressBar.value = false
+        } else {
+            loadTokens()
         }
     }
 
     // Добавление сортировки списка по низкой цене
-    fun TokenByLowPrice(){
+    fun TokenByLowPrice() {
         _progressBar.value = true
         _selectedPrice.value = true
-        viewModelScope.launch {
-            try {
-                val token = sortTokenLowPriceUseCase.execute()
-                _tokenList.value = token
-            } catch (e: Exception){
-                println(e)
-            } finally {
-                _progressBar.value = false
-            }
+
+        val currentList = _tokenList.value
+        if (!currentList.isNullOrEmpty()) {
+            _tokenList.value = sortTokenLowPriceUseCase.execute(currentList)
+            _progressBar.value = false
+        } else {
+            loadTokens()
         }
     }
-    fun TokenByRankTop(){
-        viewModelScope.launch {
+
+    fun TokenByRankTop() {
+        _progressBar.value = true
+        _selectedRank.value = false
+        val currentList = _tokenList.value
+        if (!currentList.isNullOrEmpty()) {
+            _tokenList.value = sortTokenByRankTopUseCase.execute(currentList)
+            _progressBar.value = false
+        } else {
+            loadTokens()
+        }
+    }
+
+        fun TokenByRankBottom() {
+                _progressBar.value = true
+                _selectedRank.value = true
+            val currentList = _tokenList.value
+            if (!currentList.isNullOrEmpty()) {
+                _tokenList.value = sortTokenByRankBottomUseCase.execute(currentList)
+                _progressBar.value = false
+            }else{
+                loadTokens()
+            }
+        }
+
+        fun TokenByPriceUp() {
             _progressBar.value = true
-            _selectedRank.value = false
-            try {
-                val tokens = sortTokenByRankTopUseCase.execute()
-                _tokenList.value = tokens
-            }catch (e: Exception){
-                println(e)
-            }finally {
+            _selectedPrice24h.value = false
+            val currentList = _tokenList.value
+            if (!currentList.isNullOrEmpty()) {
+                _tokenList.value = sortTokenByPriceUp24h.execute(currentList)
                 _progressBar.value = false
+            }else{
+                loadTokens()
             }
         }
-    }
-    fun TokenByRankBottom(){
-        viewModelScope.launch {
+
+        fun TokenByPriceDown() {
             _progressBar.value = true
-            _selectedRank.value = true
-            try {
-                val tokens = sortTokenByRankBottomUseCase.execute()
-                _tokenList.value = tokens
-            }catch (e: Exception){
-                println(e)
-            }finally {
+            _selectedPrice24h.value = true
+            val currentList = _tokenList.value
+            if (!currentList.isNullOrEmpty()) {
+                _tokenList.value = sortTokenByPriceDown24h.execute(currentList)
                 _progressBar.value = false
+            }else{
+                loadTokens()
             }
         }
-    }
-    fun TokenByPriceUp(){
-        _progressBar.value = true
-        _selectedPrice24h.value = false
-        viewModelScope.launch {
-            try {
-                val tokens = sortTokenByPriceUp24h.execute()
-                _tokenList.value = tokens
-            }catch (e: Exception){
-                println(e)
-            }finally {
-                _progressBar.value = false
-            }
-        }
-    }
-    fun TokenByPriceDown(){
-        _progressBar.value = true
-        _selectedPrice24h.value = true
-        viewModelScope.launch {
-            try {
-                val tokens = sortTokenByPriceDown24h.execute()
-                _tokenList.value = tokens
-            }catch (e: Exception){
-                println(e)
-            }finally {
-                _progressBar.value = false
-            }
-        }
-    }
-    fun loadTokens(){
-        _progressBar.value = true
-        viewModelScope.launch {
-            try {
-                _uiState.value = TokenUiState.loading
-                val tokens = getTokenRepo.getAllTokens()
-                delay(1000)
-                balanceToken.forEachIndexed { index, tokenUser ->
-                    val searchedToken = tokens.find { it.name == tokenUser.name }
-                    if (searchedToken != null){
-                        balanceToken[index] = tokenUser.copy(price = searchedToken.currentPrice)
+
+        fun loadTokens() {
+            _progressBar.value = true
+            viewModelScope.launch {
+                try {
+                    _uiState.value = TokenUiState.loading
+                    val tokens = getTokenRepo.getAllTokens()
+                    delay(1000)
+                    balanceToken.forEachIndexed { index, tokenUser ->
+                        val searchedToken = tokens.find { it.name == tokenUser.name }
+                        if (searchedToken != null) {
+                            balanceToken[index] = tokenUser.copy(price = searchedToken.currentPrice)
+                        }
                     }
+                    _tokenList.value = tokens
+                    _uiState.value = TokenUiState.Sucsess(tokens)
+                } catch (e: Exception) {
+                    println("ERROR:  $e")
+                    _uiState.value = TokenUiState.Error(e.message ?: "Error")
+                } finally {
+                    _progressBar.value = false
                 }
-                _tokenList.value = tokens
-                _uiState.value = TokenUiState.Sucsess(tokens)
-            } catch (e: Exception){
-                println("ERROR:  $e")
-                _uiState.value = TokenUiState.Error(e.message?: "Error")
-            } finally {
-                _progressBar.value = false
             }
         }
-    }
+
 }
