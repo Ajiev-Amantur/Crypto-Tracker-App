@@ -186,7 +186,6 @@ class TokenViewModel(
             // Если продали всё — удаляем из списка
             balanceToken.removeAt(index)
             viewModelScope.launch {
-                // В Room лучше обнулять или удалять, здесь мы обнуляем для безопасности
                 TokenDao.addToken(token.copy(amount = 0.0, totalValue = 0.0))
             }
         } else {
@@ -252,7 +251,9 @@ class TokenViewModel(
 
 
     fun prepareSparkline(prices: List<Double>): List<Point> {
-        return prices.mapIndexed { index, price ->
+        return prices
+            .filterIndexed { index, _ -> index % 10 == 0  }
+            .mapIndexed { index, price ->
             Point(
                 x = index.toFloat(),
                 price.toFloat()
@@ -276,8 +277,11 @@ class TokenViewModel(
 
         val currentList = _tokenList.value
         if (!currentList.isNullOrEmpty()) {
-            _tokenList.value = sortTokenHighPriceUseCase.execute(currentList)
-            _progressBar.value = false
+            viewModelScope.launch {
+                delay(500L)
+                _tokenList.value = sortTokenHighPriceUseCase.execute(currentList)
+                _progressBar.value = false
+            }
         } else {
             loadTokens()
         }
@@ -290,8 +294,11 @@ class TokenViewModel(
 
         val currentList = _tokenList.value
         if (!currentList.isNullOrEmpty()) {
-            _tokenList.value = sortTokenLowPriceUseCase.execute(currentList)
-            _progressBar.value = false
+            viewModelScope.launch {
+                delay(500L)
+                _tokenList.value = sortTokenLowPriceUseCase.execute(currentList)
+                _progressBar.value = false
+            }
         } else {
             loadTokens()
         }
@@ -302,8 +309,11 @@ class TokenViewModel(
         _selectedRank.value = false
         val currentList = _tokenList.value
         if (!currentList.isNullOrEmpty()) {
-            _tokenList.value = sortTokenByRankTopUseCase.execute(currentList)
-            _progressBar.value = false
+            viewModelScope.launch {
+                delay(500L)
+                _tokenList.value = sortTokenByRankTopUseCase.execute(currentList)
+                _progressBar.value = false
+            }
         } else {
             loadTokens()
         }
@@ -314,8 +324,11 @@ class TokenViewModel(
                 _selectedRank.value = true
             val currentList = _tokenList.value
             if (!currentList.isNullOrEmpty()) {
-                _tokenList.value = sortTokenByRankBottomUseCase.execute(currentList)
-                _progressBar.value = false
+                viewModelScope.launch {
+                    delay(500L)
+                    _tokenList.value = sortTokenByRankBottomUseCase.execute(currentList)
+                    _progressBar.value = false
+                }
             }else{
                 loadTokens()
             }
@@ -326,8 +339,11 @@ class TokenViewModel(
             _selectedPrice24h.value = false
             val currentList = _tokenList.value
             if (!currentList.isNullOrEmpty()) {
-                _tokenList.value = sortTokenByPriceUp24h.execute(currentList)
-                _progressBar.value = false
+                viewModelScope.launch {
+                    delay(500L)
+                    _tokenList.value = sortTokenByPriceUp24h.execute(currentList)
+                    _progressBar.value = false
+                }
             }else{
                 loadTokens()
             }
@@ -338,8 +354,11 @@ class TokenViewModel(
             _selectedPrice24h.value = true
             val currentList = _tokenList.value
             if (!currentList.isNullOrEmpty()) {
-                _tokenList.value = sortTokenByPriceDown24h.execute(currentList)
-                _progressBar.value = false
+                viewModelScope.launch {
+                    delay(500L)
+                    _tokenList.value = sortTokenByPriceDown24h.execute(currentList)
+                    _progressBar.value = false
+                }
             }else{
                 loadTokens()
             }

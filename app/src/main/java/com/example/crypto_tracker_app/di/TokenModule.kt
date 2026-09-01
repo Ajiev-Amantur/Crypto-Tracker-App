@@ -15,18 +15,17 @@ import com.example.crypto_tracker_app.presentation.viewmodel.TokenViewModel
 import com.example.crypto_tracker_app.presentation.viewmodel.TokenP_TimeViewModel
 import org.koin.androidx.viewmodel.dsl.viewModel
 import org.koin.dsl.module
-import kotlin.math.sin
 
 val tokenModule = module {
     single { RetrofitInstance.api }
     single<GetTokensRepository> { GetTokensRepositoryImpl(get()) }
 
-    factory { SortTokenByPriceDown24h(get()) }
-    factory { SortTokenByRankBottomUseCase(get()) }
-    factory { SortTokenByRankTopUseCase(get()) }
-    factory { SortTokenHighPriceUseCase(get()) }
-    factory { SortTokenLowPriceUseCase(get()) }
-    factory { SortTokensByPriceUp24h(get()) }
+    factory { SortTokenByPriceDown24h() }
+    factory { SortTokenByRankBottomUseCase() }
+    factory { SortTokenByRankTopUseCase() }
+    factory { SortTokenHighPriceUseCase() }
+    factory { SortTokenLowPriceUseCase() }
+    factory { SortTokensByPriceUp24h() }
 
     single { BalanceDataBase.createBalanceDataBase(get()) }
     single<BalanceDao> { get<BalanceDataBase>().dao}

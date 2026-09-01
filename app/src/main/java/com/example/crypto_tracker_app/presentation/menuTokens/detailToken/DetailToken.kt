@@ -3,6 +3,7 @@ package com.example.crypto_tracker_app.presentation.menuTokens.detailToken
 import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -118,6 +119,7 @@ fun detailUIToken(id: String,name: String,price: Double,image: String,priceChang
                 .verticalScroll(rememberScrollState())
         ) {
             Row(
+                modifier = Modifier.fillMaxWidth().padding(vertical = 10.dp),
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.SpaceAround
             ) {
@@ -128,6 +130,14 @@ fun detailUIToken(id: String,name: String,price: Double,image: String,priceChang
                         days = "1"
                     )
                 }
+                Image(painter = painterResource(R.drawable.ic_back)
+                    , contentDescription = "",
+                    modifier = Modifier
+                        .size(30.dp)
+                        .clickable{
+                        nav.popBackStack()
+                    })
+                Spacer(modifier = Modifier.width(16.dp)) // Небольшой отступ от стрелки
                 AsyncImage(
                     image, contentDescription = "image",
                     modifier = Modifier.size(36.dp)

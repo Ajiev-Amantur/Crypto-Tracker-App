@@ -39,37 +39,44 @@ class TokenP_TimeViewModel(private val tokenByTime: PriceTimeRepository): ViewMo
     fun updateSelectB(selectedB: String) {
         _selectedButton.value = selectedB
     }
+    var savedTimeinMil = 0L
 
     fun loadTokensByTime(id: String, currency: String, days: String) {
-        fetchJob?.cancel() // Отменяем предыдущий запрос, если он еще идет
-        fetchJob = viewModelScope.launch {
-            _progressBar.value = true
-            try {
-                val result = tokenByTime.getTokenPriceByTime(
-                    id = id,
-                    currency = currency,
-                    days = days
-                )
-                _tokenP.value = result
-
-                val filteredPrices = result.prices.filterIndexed { index, _ ->  index % 10 == 0}
-
-                _dateGraph.value = filteredPrices.map { it[0].toLong() }
-
-                _graphPoints.value = filteredPrices.mapIndexed { index, priceByTime ->
-                    Point(
-                        x = index.toFloat(),
-                        y = priceByTime[1].toFloat()
-                    )
-                }
-
-            } catch (e: Exception) {
-                e.printStackTrace()
-            } finally {
-                _progressBar.value = false
-
+        val timeinMil = System.currentTimeMillis()
+            if (timeinMil - savedTimeinMil < 2000) {
+                return
             }
-        }
+            savedTimeinMil = timeinMil
+            fetchJob?.cancel() // Отменяем предыдущий запрос, если он еще идет
+            fetchJob = viewModelScope.launch {
+            _progressBar.value = true
+
+                try {
+                    val result = tokenByTime.getTokenPriceByTime(
+                        id = id,
+                        currency = currency,
+                        days = days
+                    )
+                    _tokenP.value = result
+
+                    val filteredPrices = result.prices.filterIndexed { index, _ -> index % 10 == 0 }
+
+                    _dateGraph.value = filteredPrices.map { it[0].toLong() }
+
+                    _graphPoints.value = filteredPrices.mapIndexed { index, priceByTime ->
+                        Point(
+                            x = index.toFloat(),
+                            y = priceByTime[1].toFloat()
+                        )
+                    }
+
+                } catch (e: Exception) {
+                    e.printStackTrace()
+                } finally {
+                    _progressBar.value = false
+
+                }
+            }
     }
 
     suspend fun loadPoints(id: String, currency: String, day: String): List<Point> {

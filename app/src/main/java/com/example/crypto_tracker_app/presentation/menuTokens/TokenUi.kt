@@ -112,11 +112,9 @@ NavHostController, tokenViewModel: TokenViewModel,
                         )
                     }
                 } else {
-                    val points = remember(myPoint) {
-                        myPoint.takeLast(15)
-                    }
-                    val stepSize = remember(points) {
-                        (sizeScreen / (points.size - 1)).dp
+
+                    val stepSize = remember(myPoint) {
+                        (sizeScreen / (myPoint.size - 1)).dp
                     }
                     val chartBackgroundColor = MaterialTheme.colorScheme.background
 
@@ -142,14 +140,14 @@ NavHostController, tokenViewModel: TokenViewModel,
                             .labelData { "" }.build()
                     }
 
-                    val lineChartData = remember(points, xAxisData, yAxisData, chartBackgroundColor) {
+                    val lineChartData = remember(myPoint, xAxisData, yAxisData, chartBackgroundColor) {
                         LineChartData(
                             linePlotData = LinePlotData(
                                 lines = listOf(
                                     Line(
-                                        dataPoints = points,
+                                        dataPoints = myPoint,
                                         LineStyle(
-                                            color = if (priceChange24hProsent > 0) Color(0xFF0002E8) else Color.Red,
+                                            color = if (priceChange24hProsent > 0) Color(0xFF0AFE47) else Color.Red,
                                             width = 6.0f),
                                         intersectionPoint = null,
                                         selectionHighlightPoint = null,
@@ -202,7 +200,7 @@ NavHostController, tokenViewModel: TokenViewModel,
                         )
                         Text(
                             color = if (priceChange24hProsent > 0) MaterialTheme.colorScheme.onBackground
-                            else MaterialTheme.colorScheme.surface,
+                            else MaterialTheme.colorScheme.onBackground,
                             modifier = Modifier.padding(5.dp),
                             text = "$formatterPrice%",
                             fontSize = 16.sp,
