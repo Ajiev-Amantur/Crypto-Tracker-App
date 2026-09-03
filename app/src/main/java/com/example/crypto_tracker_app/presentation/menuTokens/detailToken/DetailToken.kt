@@ -25,6 +25,8 @@ import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -106,6 +108,14 @@ fun detailUIToken(id: String,name: String,price: Double,image: String,priceChang
         }
     }
 
+    LaunchedEffect(name) {
+        viewModel.loadTokensByTime(
+            id = id,
+            currency = "usd",
+            days = "1"
+        )
+    }
+
     Box(
         modifier = Modifier
             .fillMaxSize()
@@ -119,33 +129,27 @@ fun detailUIToken(id: String,name: String,price: Double,image: String,priceChang
                 .verticalScroll(rememberScrollState())
         ) {
             Row(
-                modifier = Modifier.fillMaxWidth().padding(vertical = 10.dp),
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.SpaceAround
+                modifier = Modifier.fillMaxWidth().padding(vertical = 5.dp),
+                verticalAlignment = Alignment.CenterVertically
             ) {
-                LaunchedEffect(name) {
-                    viewModel.loadTokensByTime(
-                        id = id,
-                        currency = "usd",
-                        days = "1"
+                IconButton(onClick = { nav.popBackStack() }) {
+                    Icon(
+                        painter = painterResource(R.drawable.ic_back),
+                        contentDescription = "Back",
+                        tint = MaterialTheme.colorScheme.onBackground,
+                        modifier = Modifier.size(24.dp)
                     )
                 }
-                Image(painter = painterResource(R.drawable.ic_back)
-                    , contentDescription = "",
-                    modifier = Modifier
-                        .size(30.dp)
-                        .clickable{
-                        nav.popBackStack()
-                    })
-                Spacer(modifier = Modifier.width(16.dp)) // Небольшой отступ от стрелки
+                Spacer(modifier = Modifier.width(8.dp))
                 AsyncImage(
                     image, contentDescription = "image",
-                    modifier = Modifier.size(36.dp)
+                    modifier = Modifier.size(32.dp)
                 )
                 Text(
                     name,
-                    Modifier.padding(10.dp),
+                    Modifier.padding(start = 12.dp),
                     fontSize = 20.sp,
+                    fontWeight = FontWeight.Bold,
                     color = MaterialTheme.colorScheme.onBackground
                 )
             }
